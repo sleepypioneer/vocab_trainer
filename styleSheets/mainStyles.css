@@ -1,0 +1,354 @@
+/*************** Mobile First - no grid Support ***************/
+
+/******* Text Styles *******/
+
+body {
+	font-size: 1.2em;
+	margin: auto;
+	width: 100vw;
+	height: 100vh;
+	overflow: hidden;
+	font-family: 'Numans', sans-serif;
+}
+
+p {
+	margin: 0.5em;
+}
+
+.stat {
+	font-size: 0.9em;
+	font-weight: 600;
+	margin: 0;
+}
+
+.info {
+	font-size: 0.75em;
+	padding: 2em 10vw;
+}
+
+.titleText {
+	color: #FFA975;
+}
+
+#wordToGuess {
+	font-family: 'NTR', sans-serif;
+	/* padding: 0 0.5em; */
+	margin: auto;
+	line-height: 90%;
+	font-weight: lighter;
+	font-size: 3em;
+}
+
+#answer {
+	margin: 0.5em auto;
+	flex-wrap: nowrap;
+	display: flex;
+}
+
+.answer {
+	font-family: 'Poiret One', cursive;
+	width: 80%;
+	height: 1.5em;
+	font-size: 1.7em;
+	line-height: 170%;
+	text-align: center;
+	margin: 0.15em auto;
+	border: solid rgba(255, 119, 35, 0.74) 0.1em;
+	border-radius: 0.1em;
+}
+
+
+/******* Image Styles *******/
+
+/* make home icon white*/
+
+#home {
+	color: white;
+}
+
+svg {
+	width: 3em;
+	height: 3em;
+	fill: #022B3A;
+}
+
+.fillclass {
+	fill: #022B3A;
+}
+
+
+/* https://css-tricks.com/examples/ShapesOfCSS/ */
+
+#moon {
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	box-shadow: 5px 5px 0 0 red;
+	margin: inherit;
+}
+
+
+/* make pencil svg slightly smaller to fit rest*/
+
+.smaller {
+	width: 2em;
+	height: 2em;
+	margin-left: 0.2em;
+}
+
+.larger {
+	width: 10em;
+	height: 10em;
+}
+
+
+/******* Layout Styles *******/
+
+.center {
+	justify-content: center;
+	text-align: center;
+	margin: auto;
+}
+
+.half-space {
+	width: 40vw;
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	align-items: start;
+	list-style: none;
+}
+
+#timer {
+	padding: 0 0.8em;
+}
+
+#content {
+	height: 75vh;
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+	text-align: center;
+}
+
+.innerContent {
+	height: 100%;
+	display: flex;
+	flex-direction: column;
+	/* justify-content: stretch; */
+	flex-wrap: wrap;
+	/* flex: 1; */
+}
+
+.title {
+	flex: 1;
+}
+
+.input {
+	margin: 1em;
+	display: flex;
+	flex-direction: column;
+	border: solid 0.05em rgba(2, 43, 58, 0.44);
+	border-radius: 0.15em;
+	padding: 1em 0;
+}
+
+
+.footer {
+	height: 10vh;
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+}
+
+.banner {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	width: 90vw;
+	height: 8vh;
+	margin: auto;
+	background-color: #F0F0C9;
+	border: solid 0.1em #F2BB05;
+	border-radius: 0.5em;
+}
+
+ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+
+/******* Nav Styles *******/
+
+nav {
+	height: 3em;
+	display: flex;
+	background-color: #359C8C;
+}
+
+.rowNav {
+	display: flex;
+	justify-content: space-between;
+	padding: 0 1em;
+	align-items: center;
+}
+
+/* icons in top bar*/
+
+.topbar {
+	width: 100%;
+}
+
+.topbar li {
+	color: #022B3A;
+	font-size: 1.5em;
+	flex: 1;
+	display: flex;
+	justify-content: center;
+	width: fit-content;
+}
+
+/* pts & timer in top bar*/
+
+.topbar li h4 {
+	font-size: 0.75em;
+	margin: 0 0.5em;
+}
+
+.pageLink {
+	box-sizing: border-box;
+	display: flex;
+	padding: 0.5em;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	margin: auto;
+	flex: 2;
+}
+
+.pageLink p {
+	padding-left: 1em;
+	min-width: 8em;
+	text-align: left;
+}
+
+.pageLink button {
+	margin: 1em;
+}
+
+/******* PopUp Styles *******/
+
+.popUp {
+	border: 0.2em solid;
+	border-color: yellow;
+	border-radius: 0.25em;
+	background: rgb(255, 255, 255);
+	height: max-content;
+	width: 80%;
+	margin: auto;
+	padding: 0.5em;
+	position: absolute;
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+    opacity: 1;
+    transition:all 1.5s ease;
+}
+
+.popUpFadeOut {
+    opacity: 0;
+    transform: scale(0.8);
+}
+
+.popUp p {
+	font-size: 0.65em;
+	padding: 3em;
+	padding-top: 2em;
+	position: fixed;
+	top: 7em;
+	left: 4.5em;
+	z-index: 0;
+	width: 55vw;
+	height: 22vh;
+	border-radius: 5em;
+	margin: auto;
+	background: antiquewhite;
+}
+
+.cross {
+	width: 100%;
+	text-align: right;
+}
+
+/*************** Night Time colors ***************/
+
+/*************** With grid Support ***************/
+
+/*************** Media Query Small Screen ***************/
+
+/******* Text Styles *******/
+
+/******* Image Styles *******/
+
+/******* Layout Styles *******/
+
+/******* Nav Styles *******/
+
+/*************** With grid Support **************
+
+font-family: 'Numans', sans-serif;
+font-family: 'Nova Round', cursive;
+font-family: 'Orbitron', sans-serif;
+
+*/
+
+/*************** Media Query Medium Screen ***************/
+
+@media screen and (min-width: 951px) {
+
+	/******* Text Styles *******/
+	/******* Image Styles *******/
+	/******* Layout Styles *******/
+	.banner {
+		width: 60vw;
+	}
+
+	#content {
+		max-width: 500px;
+		margin: auto;
+	}
+
+
+	/******* Nav Styles *******/
+	.topbar {
+		width: 400px;
+	}
+	nav {
+		display: flex;
+		justify-content: flex-end;
+	}
+
+	#home {
+		color: white;
+		position: fixed;
+		left: 2vw;
+	}
+
+	/*************** With grid Support ***************/
+}
+
+/*************** Media Query Large Screen ***************/
+
+/******* Text Styles *******/
+
+/******* Image Styles *******/
+
+/******* Layout Styles *******/
+
+/******* Nav Styles *******/
+
+/*************** With grid Support ***************/

@@ -1,0 +1,38 @@
+.titleText {
+	color: #F5CB5C;
+}
+
+nav {
+	height: 3em;
+	display: flex;
+	background-color: #080f14;
+}
+
+body {
+	background: #0d1922;
+	color: #dbe8f1;
+}
+
+.topbar li,
+#home {
+	color: #E8EDDF;
+}
+
+svg {
+	width: 3em;
+	height: 3em;
+	fill: #F5CB5C;
+}
+
+.fillclass {
+	fill: #F5CB5C;
+}
+
+.banner {
+	background-color: #022B3A;
+	border: solid 0.1em #F5CB5C;
+}
+
+.answer {
+	border: solid #F5CB5C 0.1em;
+}

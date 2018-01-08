@@ -1,0 +1,245 @@
+
+    /*************** Global Variables ***************/
+    const pages = [
+            {
+                name: "home",
+                url: "pages/home.html",
+                pageTitle: "home",
+                urlPath: "/home",
+                script: "scripts/home.js"
+		},
+            {
+                name: "vocabTrainer",
+                url: "pages/vocabTrainer.php",
+                pageTitle: "vocabTrainer",
+                urlPath: "/vocabTrainer",
+                script: "scripts/vocabTrainer.js"
+		},
+            {
+                name: "timedSession",
+                url: "pages/timedSession.html",
+                pageTitle: "timedSession",
+                urlPath: "/timedSession",
+                script: "scripts/timedSession.js"
+		},
+            {
+                name: "addVocab",
+                url: "pages/addVocab.html",
+                pageTitle: "addVocab",
+                urlPath: "/addVocab",
+                script: "scripts/addVocab.js"
+		},
+            {
+                name: "stats",
+                url: "pages/stats.html",
+                pageTitle: "stats",
+                urlPath: "/stats",
+                script: "scripts/stats.js"
+		},
+            {
+                name: "account",
+                url: "pages/account.html",
+                pageTitle: "account",
+                urlPath: "/account",
+                script: "scripts/account.js"
+		}
+],
+        content = document.querySelector("#content"),
+        body = document.querySelector("body"),
+        head = document.querySelector("head"),
+        banner = document.querySelector('.banner'),
+        homeBtn = document.getElementById('home'),
+        navBarTimer = document.getElementById("timer"),
+        timerset = document.getElementById("timerSet"),
+        accountBtn = document.getElementById('account');
+
+    let vocab = [
+            {
+                wordInEnglish: "Keyboard",
+                wordInGerman: "Tastatur",
+                gender: "Das"
+		},
+            {
+                wordInEnglish: "Monitor",
+                wordInGerman: "Bildschirm",
+                gender: "Der"
+		},
+            {
+                wordInEnglish: "Slideshow",
+                wordInGerman: "Diashow",
+                gender: "Die"
+		}
+],
+        userAccount = {
+            name: "Ada Lovelace",
+            joined: "01/12/2017",
+            score: "200",
+            totalTime: 0,
+            lastSession: 0
+        },
+        newScore,
+        wordToGuess,
+        currentIndex,
+        answer,
+        gender,
+        hintTaken = false,
+        time = 0,
+        timer,
+        interval,
+        runningTimer = document.getElementById('timer'),
+        /*** score & stats Variables ***/
+        actualScore = document.getElementById('actualScore'),
+        addOrDelete = document.getElementById('addOrDeleteAccount'),
+        account = false,
+        a = 100,
+        b,
+        started = false;
+
+
+    /*************** Utility Functions ***************/
+    /* set url in browser */
+    function processAjaxData(response, page) {
+        document.title = page.pageTitle;
+        window.history.pushState({
+            "html": response,
+            "pageTitle": page.pageTitle
+        }, "", /*page.urlPath*/); /* routing not working with paths */
+    }
+
+    /* To use back and forwards buttons in Browser */
+    window.onpopstate = function(e) {
+        if (e.state) {
+            content.innerHTML = e.state.html;
+            document.title = e.state.pageTitle;
+        }
+    };
+
+    /* To set Time format */
+    function convertTime(time) {
+        var hh = Math.floor(time / 3600);
+        var mm = Math.floor((time % 3600) / 60);
+        var ss = time % 60;
+        var convertedTime = pad(hh, 2) + ":" + pad(mm, 2) + ":" + pad(ss, 2);
+        return convertedTime;
+    }
+
+    function pad(b, width) {
+        b = b + '';
+        return b.length >= width ? b : new Array(width - b.length + 1)
+            .join('0') + b;
+    }
+
+    /*************** Functions ***************/
+    /* Navigation */
+    function changeContent(a, pages){
+    let pageMatch = (pages.filter(page => page.name === a));
+    let page = pageMatch[0];
+    let xhr = new XMLHttpRequest();
+
+    fetch(page.url).then(function(response) {
+      if(response.ok) {
+        console.log(response);
+        response.text().then(function(text) {
+            content.innerHTML = text;
+        });
+        addScript(page.script, page.name);
+        //processAjaxData(response, page);
+
+        if (a === "home" || a == "account") {
+            banner.style.display = "flex";
+        } else {
+            banner.style.display = "none";
+        }
+      } else {
+        console.log('Network request for products.json failed with response ' + response.status + ': ' + response.statusText);
+      }
+    });
+}
+
+    /* Add script */
+    function addScript(script, scriptName) {
+        let newScript = document.createElement("script");
+        newScript.type = "text/javascript";
+        newScript.id = scriptName;
+        newScript.src = script;
+        
+        body.appendChild(newScript);
+    }
+
+    /* Add style sheet */
+    function addStyle(styleSheet, styleName) {
+        let newStyleSheet = document.createElement("link");
+        newStyleSheet.rel = "stylesheet";
+        newStyleSheet.type = "text/css";
+        newStyleSheet.id = styleName;
+        newStyleSheet.href = styleSheet;
+        head.appendChild(newStyleSheet);
+    }
+
+
+    /* Update Score */
+    function plusPoint() {
+        if (hintTaken) {
+            newScore = parseInt(userAccount.score) + 1;
+            hintTaken = false;
+        } else {
+            newScore = parseInt(userAccount.score) + 2;
+        }
+        actualScore.innerHTML = newScore;
+        userAccount.score = newScore.toString();
+    }
+
+    /* Update Timer */
+    function NavTimer() {
+        navBarTimer.innerHTML = "<h3>" + timer + "</h3>";
+    }
+
+    /* run timer */
+    function startTimer() {
+        sessionTime = time;
+        interval = setInterval(function() {
+            time -= 1;
+            timer = convertTime(time);
+            if (timerset != null) {
+                timerset.innerHTML = timer;
+            }
+            NavTimer();
+            checkIfTimerDone();
+        }, 1000);
+            /*
+            //Pause button in nav bar for timer - would not work on mobile!
+            timerset.addEventListener('mouseover', function(){
+                timerSet.innerHTML = "<i class=\"fa fa-pause\" aria-hidden=\"true\"></i>";
+            });
+            timerset.addEventListener('mouseleave', function(){
+                 timerset.innerHTML = timer;
+            });
+            */
+    }
+
+    function checkIfTimerDone() {
+        if (time == 0) {
+            //make pop up with option to cont learning or go to stats
+            popUp(7);
+            setTimeout(changeContent("stats", pages), 2000);
+            started = false;
+            userAccount.lastSession = sessionTime;
+            userAccount.totalTime += sessionTime;
+            reset();
+        }
+    }
+
+    /***************  Event Listeners ***************/
+    
+    
+    homeBtn.addEventListener('click', function() {
+        changeContent("home", pages);
+    });
+    accountBtn.addEventListener('click', function() {
+        changeContent("account", pages);
+    });
+
+    window.addEventListener('load', function() {
+        changeContent("home", pages);
+        actualScore.innerHTML = userAccount.score;
+    });
