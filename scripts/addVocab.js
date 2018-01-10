@@ -9,7 +9,7 @@
 
     /*************** Functions ***************/
     function addWord() {
-        vocab.push(newWord);
+        vocabMine.push(newWord);
         // change to div popup
         alert(newWord.wordInEnglish + " was added to your Vocab List.");
         clearForm();
@@ -58,10 +58,6 @@
                 englishWordList.push(word.wordInEnglish);
                 germanWordList.push(word.wordInGerman);
             });
-
-            console.log(englishWordList);
-            console.log(germanWordList);
-
 
             if (englishWordList.includes(newWord.wordInEnglish) || germanWordList.includes(newWord.wordInGerman)) {
                 //should this change only be local (change indices but not actually over write word??)

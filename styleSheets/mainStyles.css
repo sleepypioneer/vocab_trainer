@@ -31,9 +31,10 @@ p {
 }
 
 #wordToGuess {
+	color: white;
 	font-family: 'NTR', sans-serif;
-	/* padding: 0 0.5em; */
-	margin: auto;
+	padding: 0 0.5em;
+	margin: 20 0;
 	line-height: 90%;
 	font-weight: lighter;
 	font-size: 3em;
@@ -119,6 +120,13 @@ svg {
 	list-style: none;
 }
 
+.halfCircle{
+	 padding: 5% 0 0 0;
+     width:100%;
+     border-radius: 90px 90px 0 0;
+     background:#F2F4F3;
+}
+
 #timer {
 	padding: 0 0.8em;
 }
@@ -146,11 +154,13 @@ svg {
 
 .input {
 	margin: 1em;
-	display: flex;
-	flex-direction: column;
-	border: solid 0.05em rgba(2, 43, 58, 0.44);
-	border-radius: 0.15em;
-	padding: 1em 0;
+    display: flex;
+    background-color: #359C8C;
+    flex-direction: column;
+    border: solid em;
+    border-bottom: 0.5em #F2F4F3 solid;
+    border-radius: 0.5em;
+    padding: 1em 0 0 0;
 }
 
 

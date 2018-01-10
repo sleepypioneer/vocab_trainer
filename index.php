@@ -1,3 +1,20 @@
+
+<?php
+	include('./php/dbconnection.php');
+    $query = "SELECT * FROM vocab";  
+    $run = mysqli_query($connection, $query);
+	$myJSON = array ();
+	while($result = mysqli_fetch_assoc($run)){
+
+		array_push($myJSON,$result);
+	}	
+?>
+<script type="text/javascript" language="javascript">
+	vocab =<?php echo json_encode($myJSON); ?> ;
+	console.log(vocab);
+	let vocabMine = vocab;
+</script>
+
 <!DOCTYPE html>
 <html>
 
@@ -56,3 +73,9 @@
 	</body>
 
 </html>
+
+<?php
+
+
+   	mysqli_close($connection);     
+?>

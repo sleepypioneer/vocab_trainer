@@ -10,7 +10,7 @@
 		},
             {
                 name: "vocabTrainer",
-                url: "pages/vocabTrainer.php",
+                url: "pages/vocabTrainer.html",
                 pageTitle: "vocabTrainer",
                 urlPath: "/vocabTrainer",
                 script: "scripts/vocabTrainer.js"
@@ -53,7 +53,7 @@
         timerset = document.getElementById("timerSet"),
         accountBtn = document.getElementById('account');
 
-    let vocab = [
+    let vocab2 = [
             {
                 wordInEnglish: "Keyboard",
                 wordInGerman: "Tastatur",
@@ -138,7 +138,6 @@
 
     fetch(page.url).then(function(response) {
       if(response.ok) {
-        console.log(response);
         response.text().then(function(text) {
             content.innerHTML = text;
         });

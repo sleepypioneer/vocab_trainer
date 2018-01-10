@@ -7,7 +7,7 @@
 
     /************* Functions **************/
     function startTrainer() {
-        wordToGuess.innerHTML = vocab[currentIndex].wordInEnglish;
+        wordToGuess.innerHTML = vocabMine[currentIndex].wordInEnglish;
     }
 
     function removeArticles(str) {
@@ -29,7 +29,7 @@
         }, false);
         //answer converted to string to avoid non string inputs
         let answerToCheck = answer.value.toString();
-        let correctAnswer = vocab[currentIndex].gender + " " + vocab[currentIndex].wordInGerman;
+        let correctAnswer = vocabMine[currentIndex].gender + " " + vocabMine[currentIndex].wordInGerman;
         let correctExpression = new RegExp(removeArticles(correctAnswer), 'gi');
         //check if matches word exactly
         if (correctAnswer === answerToCheck) {
@@ -53,21 +53,21 @@
     //not working on firefox!!!!!
     function takeHint() {
         answer.value = "";
-        answer.value = vocab[currentIndex].wordInGerman.slice(0, 3);
+        answer.value = vocabMine[currentIndex].wordInGerman.slice(0, 3);
         hintTaken = true;
     }
 
     function changeWord(direction) {
-        if (direction == 1 && currentIndex === vocab.length - 1) {
+        if (direction == 1 && currentIndex === vocabMine.length - 1) {
             currentIndex = 0;
         } else if (direction == 1) {
             currentIndex++;
         } else if (direction == -1 && currentIndex === 0) {
-            currentIndex = vocab.length - 1;
+            currentIndex = vocabMine.length - 1;
         } else {
             currentIndex--;
         }
-        wordToGuess.innerHTML = vocab[currentIndex].wordInEnglish;
+        wordToGuess.innerHTML = vocabMine[currentIndex].wordInEnglish;
         answer.value = "";
         checkAnswer();
     }
