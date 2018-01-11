@@ -1,11 +1,22 @@
-
+(function() {
+    'use strict';
     /*************** Global Variables ***************/
-    wordToGuess = document.getElementById('wordToGuess');
-    currentIndex = Math.floor(Math.random() * 3);
-    answer = document.querySelector('.answer');
-
+    let wordToGuess = document.getElementById('wordToGuess');
+    let currentIndex = Math.floor(Math.random() * 3);
+    let answer = document.querySelector('.answer');
+    let vocabListOptions =document.querySelector('.vocabList');
+    let vocabLists = document.querySelectorAll('.vocabList li');
+    let vocabCard = document.querySelector('.card');
 
     /************* Functions **************/
+    function chosenWordList(event){
+        console.log(this.dataset.vocablist);
+        vocabListOptions.setAttribute('class', 'hide');
+        vocabCard.classList.remove('hide');
+    }
+
+
+
     function startTrainer() {
         wordToGuess.innerHTML = vocabMine[currentIndex].wordInEnglish;
     }
@@ -73,6 +84,9 @@
     }
 
     /************* Event Listeners **************/
+
+    vocabLists.forEach(vocabList => vocabList.addEventListener('click', chosenWordList)); 
+    
     answer.addEventListener('change', checkAnswer);
     answer.addEventListener('keyup', checkAnswer); //runs whenever a key is released
 
@@ -92,3 +106,4 @@
         .addEventListener('click', function() {
             changeWord(-1);
         });
+    })();

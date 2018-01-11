@@ -1,5 +1,20 @@
 /*************** Mobile First - no grid Support ***************/
+.hide{
+    display: none !important;
+}
 
+input, textarea, select {
+   -webkit-appearance: none;
+ }
+input, textarea, select:focus{
+   outline: none;
+ }
+
+select {
+    width: 400px;
+    text-align-last: center;
+    line-height: inherit !important;
+}
 /******* Text Styles *******/
 
 body {
@@ -58,6 +73,13 @@ p {
 	border-radius: 0.1em;
 }
 
+.answer #username:focus {
+    outline: none;
+}
+
+.title {
+	flex: 1;
+}
 
 /******* Image Styles *******/
 
@@ -77,20 +99,7 @@ svg {
 	fill: #022B3A;
 }
 
-
-/* https://css-tricks.com/examples/ShapesOfCSS/ */
-
-#moon {
-	width: 20px;
-	height: 20px;
-	border-radius: 50%;
-	box-shadow: 5px 5px 0 0 red;
-	margin: inherit;
-}
-
-
 /* make pencil svg slightly smaller to fit rest*/
-
 .smaller {
 	width: 2em;
 	height: 2em;
@@ -102,6 +111,66 @@ svg {
 	height: 10em;
 }
 
+
+/* loader */
+.loader {
+  left: 50%;
+  top: 50%;
+  position: fixed;
+  -webkit-transform: translate(-50%, -50%);
+          transform: translate(-50%, -50%); }
+  .loader #ud811Spinner {
+    box-sizing: border-box;
+    stroke: #359C8C;
+    stroke-width: 3px;
+    -webkit-transform-origin: 50%;
+            transform-origin: 50%;
+    -webkit-animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite;
+            animation: line 1.6s cubic-bezier(0.4, 0, 0.2, 1) infinite, rotate 1.6s linear infinite; }
+
+@-webkit-keyframes rotate {
+  from {
+    -webkit-transform: rotate(0);
+            transform: rotate(0); }
+  to {
+    -webkit-transform: rotate(450deg);
+            transform: rotate(450deg); } }
+
+@keyframes rotate {
+  from {
+    -webkit-transform: rotate(0);
+            transform: rotate(0); }
+  to {
+    -webkit-transform: rotate(450deg);
+            transform: rotate(450deg); } }
+
+@-webkit-keyframes line {
+  0% {
+    stroke-dasharray: 2, 85.964;
+    -webkit-transform: rotate(0);
+            transform: rotate(0); }
+  50% {
+    stroke-dasharray: 65.973, 21.9911;
+    stroke-dashoffset: 0; }
+  100% {
+    stroke-dasharray: 2, 85.964;
+    stroke-dashoffset: -65.973;
+    -webkit-transform: rotate(90deg);
+            transform: rotate(90deg); } }
+
+@keyframes line {
+  0% {
+    stroke-dasharray: 2, 85.964;
+    -webkit-transform: rotate(0);
+            transform: rotate(0); }
+  50% {
+    stroke-dasharray: 65.973, 21.9911;
+    stroke-dashoffset: 0; }
+  100% {
+    stroke-dasharray: 2, 85.964;
+    stroke-dashoffset: -65.973;
+    -webkit-transform: rotate(90deg);
+            transform: rotate(90deg); } }
 
 /******* Layout Styles *******/
 
@@ -120,11 +189,8 @@ svg {
 	list-style: none;
 }
 
-.halfCircle{
-	 padding: 5% 0 0 0;
-     width:100%;
-     border-radius: 90px 90px 0 0;
-     background:#F2F4F3;
+.half-space div{
+    margin:auto;
 }
 
 #timer {
@@ -148,21 +214,80 @@ svg {
 	/* flex: 1; */
 }
 
-.title {
-	flex: 1;
-}
-
-.input {
+.card {
 	margin: 1em;
     display: flex;
     background-color: #359C8C;
     flex-direction: column;
-    border: solid em;
     border-bottom: 0.5em #F2F4F3 solid;
     border-radius: 0.5em;
     padding: 1em 0 0 0;
+    box-shadow: 11px 12px 9px 0px #359c8c57;
 }
 
+.halfCircle{
+	 padding: 5% 0 0 0;
+     width:100%;
+     border-radius: 90px 90px 0 0;
+     background:#F2F4F3;
+}
+
+.addVocab {
+    height: fit-content;
+    margin: 1em;
+    display: flex;
+    background-color: #F2F4F3;
+    flex-direction: column;
+    border-radius: 0.5em;
+    padding: 1em 0 0 0;
+    box-shadow: 11px 12px 9px 0px #359c8c57;
+}
+
+.addVocab .pageLink {
+    width: 80%;
+    padding: 0;
+}
+
+.half-space div input {
+    border-radius: 20%;
+    font-size: xx-large;
+    padding: 4%;
+    width: 10vw;
+}
+
+ul {
+	list-style: none;
+	padding: 0;
+	margin: 0;
+}
+
+.vocabList{
+    display: flex;
+    flex-direction: column;
+    height: -webkit-fill-available;
+    padding-bottom: 4vh;
+}
+
+.vocabList li{
+    flex:1;
+    background: cornflowerblue;
+    padding: 10px;
+    border-radius: 5px;
+    margin: 5px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 1s ease; 
+}
+
+.vocabList li:hover {
+    flex: 2;
+}
+
+.vocabList li h4 {
+    padding:0; 
+    margin: 0;
+}
 
 .footer {
 	height: 10vh;
@@ -182,13 +307,6 @@ svg {
 	border: solid 0.1em #F2BB05;
 	border-radius: 0.5em;
 }
-
-ul {
-	list-style: none;
-	padding: 0;
-	margin: 0;
-}
-
 
 /******* Nav Styles *******/
 
