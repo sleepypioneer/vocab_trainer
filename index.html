@@ -10,9 +10,10 @@
 	}	
 ?>
 <script type="text/javascript" language="javascript">
-	vocab =<?php echo json_encode($myJSON); ?> ;
-	console.log(vocab);
-	let vocabMine = vocab;
+	vocabImport =<?php echo json_encode($myJSON); ?> ;
+	if (vocabImport.length > 0){
+        let vocabMine = vocabImport;
+    }
 </script>
 
 <!DOCTYPE html>

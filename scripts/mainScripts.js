@@ -52,7 +52,7 @@ const pages = [
     timerset = document.getElementById("timerSet"),
     accountBtn = document.getElementById('account');
 
-let vocab2 = [
+let vocabMine = [
         {
             wordInEnglish: "Keyboard",
             wordInGerman: "Tastatur",
