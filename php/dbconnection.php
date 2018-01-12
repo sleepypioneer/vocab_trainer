@@ -9,7 +9,12 @@ try {
     
     if($connection){
         // set this color a symbol in nav bar to show that db is connected, similary the erro should change the element to red
-        echo "Database connection was successful";
+        ?>
+
+<script type="text/javascript">
+        console.log("<?php echo "Database connection was successful";?>");
+</script>
+<?php
     }
 } catch (Exception $errormsg){
     echo $errormsg->getMessage();

@@ -54,7 +54,7 @@
             .length === 1 && forbiddenChars.test(englishWord) && forbiddenChars.test(germanWord) && newWord.gender != undefined) {
             let englishWordList = [];
             let germanWordList = [];
-            vocab.forEach(word => {
+            vocabMine.forEach(word => {
                 englishWordList.push(word.wordInEnglish);
                 germanWordList.push(word.wordInGerman);
             });

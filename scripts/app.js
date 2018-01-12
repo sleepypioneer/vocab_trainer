@@ -49,7 +49,7 @@ app.updateVocabList = function (data) {
 };
 
 app.saveSelectedVocab = function () {
-    alert("saving to DB");
+    console.log("saving to DB");
     window.localforage.setItem('localVocab', app.localVocab);
 };
 
@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             //app.updateForecastCard(vocab2);
             app.localVocab = [
-          ...vocab2
+          ...vocabMine
         ];
             app.saveSelectedVocab();
         }

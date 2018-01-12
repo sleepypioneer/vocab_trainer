@@ -274,6 +274,10 @@ svg {
     padding: 0;
 }
 
+input[type="radio"] {
+    -webkit-appearance: radio;
+}
+
 .half-space div input {
     border-radius: 20%;
     font-size: xx-large;
