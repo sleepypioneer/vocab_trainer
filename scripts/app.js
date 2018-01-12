@@ -4,9 +4,9 @@ var app = {
     spinner: document.querySelector('.loader')
 };
 
-
+/*
 if (!('serviceWorker' in navigator)) {
-    console.log('No service-worker on this browser');
+    alert('No service-worker on this browser');
 } else {
     navigator.serviceWorker.register('service-worker.js').then(function (registration) {
         console.log('SW registered! Scope is:', registration.scope);
@@ -15,11 +15,11 @@ if (!('serviceWorker' in navigator)) {
         console.log('ServiceWorker registration failed: ', err);
     });
     //catch a registration error
-}*/
+}
 
-/*navigator.serviceWorker.ready.then(function(swRegistration) {
+navigator.serviceWorker.ready.then(function(swRegistration) {
     return swRegistration.sync.register('foo');
-});
+});*/
 
 if (!('indexedDB' in window)) {
     console.log('This browser doesn\'t support IndexedDB');
