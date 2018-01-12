@@ -1,5 +1,5 @@
 //code for add Vocab page
-(function() {
+(function () {
     'use strict';
     /*************** Global Variables ***************/
     let wordInEnglish = document.getElementById('english');

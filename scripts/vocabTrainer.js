@@ -1,15 +1,15 @@
-(function() {
+(function () {
     'use strict';
     /*************** Global Variables ***************/
     let wordToGuess = document.getElementById('wordToGuess');
     let currentIndex = Math.floor(Math.random() * 3);
     let answer = document.querySelector('.answer');
-    let vocabListOptions =document.querySelector('.vocabList');
+    let vocabListOptions = document.querySelector('.vocabList');
     let vocabLists = document.querySelectorAll('.vocabList li');
     let vocabCard = document.querySelector('.card');
 
     /************* Functions **************/
-    function chosenWordList(event){
+    function chosenWordList(event) {
         console.log(this.dataset.vocablist);
         vocabListOptions.setAttribute('class', 'hide');
         vocabCard.classList.remove('hide');
@@ -33,7 +33,7 @@
 
     function checkAnswer() {
         // NOT WORKING - prevent enter key from working during submitting of input(should stop bug when moving on to next work in vocab)
-        window.addEventListener("keydown", function(e) {
+        window.addEventListener("keydown", function (e) {
             if ([13].indexOf(e.keyCode) > -1) {
                 e.preventDefault();
             }
@@ -47,7 +47,7 @@
             answer.style.borderColor = "green";
             plusPoint();
             popUpHide();
-            setTimeout(function() {
+            setTimeout(function () {
                 changeWord(1);
             }, 1000);
             //check if matches regardless of case & alert
@@ -85,25 +85,25 @@
 
     /************* Event Listeners **************/
 
-    vocabLists.forEach(vocabList => vocabList.addEventListener('click', chosenWordList)); 
-    
+    vocabLists.forEach(vocabList => vocabList.addEventListener('click', chosenWordList));
+
     answer.addEventListener('change', checkAnswer);
     answer.addEventListener('keyup', checkAnswer); //runs whenever a key is released
 
     document.getElementById('hint')
         .addEventListener('click', takeHint);
     document.getElementById('info')
-        .addEventListener('click', function() {
+        .addEventListener('click', function () {
             popUp(0);
         });
 
     document.addEventListener('load', startTrainer(wordToGuess, answer));
     document.getElementById('next')
-        .addEventListener('click', function() {
+        .addEventListener('click', function () {
             changeWord(1);
         });
     document.getElementById('back')
-        .addEventListener('click', function() {
+        .addEventListener('click', function () {
             changeWord(-1);
         });
-    })();
+})();

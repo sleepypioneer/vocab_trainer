@@ -19,7 +19,7 @@ var filesToCache = [
      'scripts/stats.js',
      'scripts/timedSession.js',
      'scripts/vocabTrainer.js',
-    'index.php'
+    'index.html'
     /*
     'pages/offline.html',
     'pages/404.html'*/
