@@ -4,7 +4,7 @@ var app = {
     spinner: document.querySelector('.loader')
 };
 
-if (!('serviceWorker' in navigator)) {
+/*if (!('serviceWorker' in navigator)) {
     alert('No service-worker on this browser');
 } else {
     navigator.serviceWorker.register('service-worker.js').then(function (registration) {
@@ -18,7 +18,7 @@ if (!('serviceWorker' in navigator)) {
 
 navigator.serviceWorker.ready.then(function(swRegistration) {
     return swRegistration.sync.register('foo');
-});
+});*/
 
 if (!('indexedDB' in window)) {
     console.log('This browser doesn\'t support IndexedDB');
@@ -63,7 +63,7 @@ document.addEventListener('DOMContentLoaded', function () {
         } else {
             //app.updateForecastCard(vocab2);
             app.localVocab = [
-          ...vocabMine
+            	...vocabMine1
         ];
             app.saveSelectedVocab();
         }

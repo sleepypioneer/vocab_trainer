@@ -2,18 +2,34 @@
 (function () {
     'use strict';
     /*************** Global Variables ***************/
-    let wordInEnglish = document.getElementById('english');
-    let wordInGerman = document.getElementById('german');
-    let gender = document.whichGender.gender;
+    const wordInEnglish = document.getElementById('english');
+    const wordInGerman = document.getElementById('german');
+    const gender = document.whichGender.gender;
+    const listOptions = document.getElementById('listOptions');
+    let localVocab;
     let newWord;
 
     /*************** Functions ***************/
+    function populateWordLists(){
+        localVocab = vocabMine;
+        let keysVocabLists = Object.keys(localVocab);
+        let i = 0;
+        while (i < keysVocabLists.length){
+            listOptions.innerHTML += "<option value= \"" + keysVocabLists[i] + "\">" + keysVocabLists[i] + "</option>";
+            i++;
+        }
+
+    }
+
+    
+    
     function addWord() {
-        vocabMine.push(newWord);
+        vocabMine[listOptions.value].push(newWord);
         // change to div popup
         alert(newWord.wordInEnglish + " was added to your Vocab List.");
         clearForm();
     }
+    
 
     function clearForm() {
         document.getElementById('english')
@@ -45,6 +61,7 @@
             .trim();
         let forbiddenChars = /^[A-Za-z]+$/;
         newWord = {
+            "id": "null",
             "wordInEnglish": englishWord,
             "wordInGerman": germanWord,
             "gender": getGender()
@@ -54,7 +71,7 @@
             .length === 1 && forbiddenChars.test(englishWord) && forbiddenChars.test(germanWord) && newWord.gender != undefined) {
             let englishWordList = [];
             let germanWordList = [];
-            vocabMine.forEach(word => {
+            vocabMine[listOptions.value].forEach(word => {
                 englishWordList.push(word.wordInEnglish);
                 germanWordList.push(word.wordInGerman);
             });
@@ -98,5 +115,8 @@
         .addEventListener('click', checkInput);
     document.getElementById('clearForm')
         .addEventListener('click', clearForm);
+    
+    /*************** Function calls ***************/
+    populateWordLists();
 
 })();

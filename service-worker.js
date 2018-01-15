@@ -1,4 +1,4 @@
-var filesToCache = [
+/*var filesToCache = [
     '.',
     'styleSheets/mainStyles.css',
     'styleSheets/nightMode.css',
@@ -23,7 +23,7 @@ var filesToCache = [
     /*
     'pages/offline.html',
     'pages/404.html'*/
-
+/*
 ];
 
 var staticCacheName = 'pages-cache-v1';

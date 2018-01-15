@@ -1,24 +1,48 @@
 (function () {
     'use strict';
     /*************** Global Variables ***************/
-    let wordToGuess = document.getElementById('wordToGuess');
-    let currentIndex = Math.floor(Math.random() * 3);
-    let answer = document.querySelector('.answer');
-    let vocabListOptions = document.querySelector('.vocabList');
-    let vocabLists = document.querySelectorAll('.vocabList li');
-    let vocabCard = document.querySelector('.card');
-
+    const wordToGuess = document.getElementById('wordToGuess'),
+    answer = document.querySelector('.answer'),
+    vocabCard = document.querySelector('.card'),
+    chooseList = document.getElementById('chooseList'),
+    instruct = document.getElementById('Instruct'),
+    vocabList = document.getElementById('vocabList');
+    let currentIndex = Math.floor(Math.random() * 3),
+    vocabToTrain,
+    allVocab,
+    vocabLists;
     /************* Functions **************/
+    
     function chosenWordList(event) {
         console.log(this.dataset.vocablist);
-        vocabListOptions.setAttribute('class', 'hide');
-        vocabCard.classList.remove('hide');
+        chooseList.setAttribute('class', 'hide');
+        instruct.classList.remove('hide');
+        vocabToTrain = allVocab[Object.keys(allVocab)[this.dataset.vocablist]];
+        startTrainer();
+    }
+    
+    function populateWordLists(){
+        allVocab = Object.assign({}, vocabMine, ImportedVocab);
+        let keysAllVocab = Object.keys(allVocab);
+        let i = 0;
+        while (i < keysAllVocab.length){
+            vocabList.innerHTML += "<li data-vocabList = \"" + i + "\">" + keysAllVocab[i] + "</li>";
+            i++;
+        }
+
+        vocabLists = document.querySelectorAll('#vocabList li');
+        vocabLists.forEach(vocabList => vocabList.addEventListener('click', chosenWordList));
     }
 
 
-
-    function startTrainer() {
-        wordToGuess.innerHTML = vocabMine[currentIndex].wordInEnglish;
+    function startTrainer() { //need to make on click through to trainer and list specific
+        wordToGuess.innerHTML = vocabToTrain[currentIndex].wordInEnglish;
+        document.getElementById('answer').addEventListener("click", function (e) {
+            if (document.activeElement == document.getElementById('answer')){
+                console.log("focused");
+                
+            }
+        });
     }
 
     function removeArticles(str) {
@@ -40,7 +64,7 @@
         }, false);
         //answer converted to string to avoid non string inputs
         let answerToCheck = answer.value.toString();
-        let correctAnswer = vocabMine[currentIndex].gender + " " + vocabMine[currentIndex].wordInGerman;
+        let correctAnswer = vocabToTrain[currentIndex].gender + " " + vocabToTrain[currentIndex].wordInGerman;
         let correctExpression = new RegExp(removeArticles(correctAnswer), 'gi');
         //check if matches word exactly
         if (correctAnswer === answerToCheck) {
@@ -64,28 +88,31 @@
     //not working on firefox!!!!!
     function takeHint() {
         answer.value = "";
-        answer.value = vocabMine[currentIndex].wordInGerman.slice(0, 3);
+        answer.value = vocabToTrain[currentIndex].wordInGerman.slice(0, 3);
         hintTaken = true;
     }
 
     function changeWord(direction) {
-        if (direction == 1 && currentIndex === vocabMine.length - 1) {
+        if (direction == 1 && currentIndex === vocabToTrain.length - 1) {
             currentIndex = 0;
         } else if (direction == 1) {
             currentIndex++;
         } else if (direction == -1 && currentIndex === 0) {
-            currentIndex = vocabMine.length - 1;
+            currentIndex = vocabToTrain.length - 1;
         } else {
             currentIndex--;
         }
-        wordToGuess.innerHTML = vocabMine[currentIndex].wordInEnglish;
+        wordToGuess.innerHTML = vocabToTrain[currentIndex].wordInEnglish;
         answer.value = "";
+        flipToNext();
         checkAnswer();
+    }
+    
+    function flipToNext(){
+        vocabCard.classList.toggle('flipped');
     }
 
     /************* Event Listeners **************/
-
-    vocabLists.forEach(vocabList => vocabList.addEventListener('click', chosenWordList));
 
     answer.addEventListener('change', checkAnswer);
     answer.addEventListener('keyup', checkAnswer); //runs whenever a key is released
@@ -97,7 +124,7 @@
             popUp(0);
         });
 
-    document.addEventListener('load', startTrainer(wordToGuess, answer));
+    //document.addEventListener('load', startTrainer(wordToGuess, answer));
     document.getElementById('next')
         .addEventListener('click', function () {
             changeWord(1);
@@ -106,4 +133,7 @@
         .addEventListener('click', function () {
             changeWord(-1);
         });
+    
+     /************* function call **************/
+    populateWordLists();
 })();

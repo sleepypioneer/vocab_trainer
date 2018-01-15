@@ -249,6 +249,32 @@ svg {
     border-radius: 0.5em;
     padding: 1em 0 0 0;
     box-shadow: 11px 12px 9px 0px #359c8c57;
+    -webkit-transform-style: preserve-3d;
+    -webkit-transition: 1.5s cubic-bezier(0.15, 0.77, 0.58, 1);
+}
+
+.card .face {
+    width: 100%;
+    height: 100%;
+    position: absolute;
+    -webkit-backface-visibility: hidden;
+    z-index: 2;
+    font-family: Georgia;
+    font-size: 3em;
+    text-align: center;
+    line-height: 200px;
+}
+
+
+.card .back {
+    -webkit-transform: rotatey(180deg);
+    background-color: #359C8C;
+    color: black;
+    cursor: pointer;
+}
+
+.card.flipped {
+    -webkit-transform: rotatey(-360deg);
 }
 
 .halfCircle {
@@ -291,14 +317,14 @@ ul {
     margin: 0;
 }
 
-.vocabList {
+#vocabList {
     display: flex;
     flex-direction: column;
     height: -webkit-fill-available;
     padding-bottom: 4vh;
 }
 
-.vocabList li {
+#vocabList li {
     color: #ffa975;
     border-top: 1em #359C8C solid;
     border-bottom: antiquewhite 2.5em solid;
@@ -312,11 +338,11 @@ ul {
     transition: all 1s ease;
 }
 
-.vocabList li:hover {
+#vocabList li:hover {
     flex: 2;
 }
 
-.vocabList li h4 {
+#vocabList li h4 {
     padding: 0;
     margin: 0;
 }
@@ -345,6 +371,7 @@ nav {
     height: 3em;
     display: flex;
     background-color: #359C8C;
+    /*background: linear-gradient(180deg, rgba(53, 156, 140,1), rgba(53, 156, 140,0.7));*/
 }
 
 .rowNav {

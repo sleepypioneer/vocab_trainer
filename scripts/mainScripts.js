@@ -52,24 +52,26 @@ const pages = [
     timerset = document.getElementById("timerSet"),
     accountBtn = document.getElementById('account');
 
-let vocabMine = [
-        {
-            wordInEnglish: "Keyboard",
-            wordInGerman: "Tastatur",
-            gender: "Das"
-		},
-        {
-            wordInEnglish: "Monitor",
-            wordInGerman: "Bildschirm",
-            gender: "Der"
-		},
-        {
-            wordInEnglish: "Slideshow",
-            wordInGerman: "Diashow",
-            gender: "Die"
-		}
+
+let vocabMine1 = [
+    {id: "null", wordInEnglish: "Keyboard", wordInGerman: "Tastatur", gender: "Das"},
+    {id: "null", wordInEnglish: "Monitor", wordInGerman: "Bildschirm", gender: "Der"},
+    {id: "null", wordInEnglish: "Slideshow", wordInGerman: "Diashow", gender: "Die"}
+];
+let vocabMine2 = [
+    {id: "null", wordInEnglish: "Staff Member (sg/m)", wordInGerman: "Mitarbeiter", gender: "Der"},
+    {id: "null", wordInEnglish: "Staff Member(sg f)", wordInGerman: "Mitarbeiterin", gender: "Die"},
+    {id: "null", wordInEnglish: "Telephone System", wordInGerman: "Telefonanlage", gender: "Die"},
+    {id: "null", wordInEnglish: "Sister Company", wordInGerman: "Tochterunternehmen", gender: "Das"}   
+],  
+vocabMine3 = [   
+    {id: "null", wordInEnglish: "Department", wordInGerman: "Abteilung", gender: "Die"},
+    {id: "null", wordInEnglish: "Purchase", wordInGerman: "Einkauf", gender: "Der"},
+    {id: "null", wordInEnglish: "Management", wordInGerman: "Geschaeftsleitung", gender: "Die"}
 ],
-    userAccount = {
+vocabMine = {vocabMine1 : vocabMine1, vocabMine2 : vocabMine2, vocabMine3 : vocabMine3};
+        
+    let userAccount = {
         name: "Ada Lovelace",
         joined: "01/12/2017",
         score: "200",
@@ -143,7 +145,7 @@ function changeContent(a, pages) {
             addScript(page.script, page.name);
             //processAjaxData(response, page);
 
-            if (a === "home" || a == "account") {
+            if (a === "home") {
                 banner.style.display = "flex";
             } else {
                 banner.style.display = "none";
