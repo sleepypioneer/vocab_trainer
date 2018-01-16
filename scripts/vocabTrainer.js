@@ -2,17 +2,17 @@
     'use strict';
     /*************** Global Variables ***************/
     const wordToGuess = document.getElementById('wordToGuess'),
-    answer = document.querySelector('.answer'),
-    vocabCard = document.querySelector('.card'),
-    chooseList = document.getElementById('chooseList'),
-    instruct = document.getElementById('Instruct'),
-    vocabList = document.getElementById('vocabList');
+        answer = document.querySelector('.answer'),
+        vocabCard = document.querySelector('.card'),
+        chooseList = document.getElementById('chooseList'),
+        instruct = document.getElementById('Instruct'),
+        vocabList = document.getElementById('vocabList');
     let currentIndex = Math.floor(Math.random() * 3),
-    vocabToTrain,
-    allVocab,
-    vocabLists;
+        vocabToTrain,
+        allVocab,
+        vocabLists;
     /************* Functions **************/
-    
+
     function chosenWordList(event) {
         console.log(this.dataset.vocablist);
         chooseList.setAttribute('class', 'hide');
@@ -20,27 +20,44 @@
         vocabToTrain = allVocab[Object.keys(allVocab)[this.dataset.vocablist]];
         startTrainer();
     }
-    
-    function populateWordLists(){
-        allVocab = Object.assign({}, vocabMine, ImportedVocab);
-        let keysAllVocab = Object.keys(allVocab);
-        let i = 0;
-        while (i < keysAllVocab.length){
-            vocabList.innerHTML += "<li data-vocabList = \"" + i + "\">" + keysAllVocab[i] + "</li>";
-            i++;
+
+    function populateWordLists() {
+        if (ImportedVocab != null && vocabMine != null) {
+            console.log("a");
+            allVocab = Object.assign({}, vocabMine, ImportedVocab);
+        } else if (ImportedVocab != null) {
+            console.log("b");
+            allVocab = Object.assign({}, ImportedVocab);
+        } else if (vocabMine != null) {
+            console.log("c");
+            allVocab = Object.assign({}, vocabMine);
+        } else {
+            console.log("d");
+            allVocab = {}
         }
 
-        vocabLists = document.querySelectorAll('#vocabList li');
-        vocabLists.forEach(vocabList => vocabList.addEventListener('click', chosenWordList));
+        let keysAllVocab = Object.keys(allVocab);
+        if (keysAllVocab.length < 1) {
+            vocabList.innerHTML += "<li data-vocabList = \"1\">No categories currently available, or add your own</li>";
+            //Not working - goes straight to add vocab page // document.querySelector('#vocabList li').addEventListener('click', changeContent("addVocab", pages));
+        } else {
+            let i = 0;
+            while (i < keysAllVocab.length) {
+                vocabList.innerHTML += "<li data-vocabList = \"" + i + "\">" + keysAllVocab[i] + "</li>";
+                i++;
+            }
+            vocabLists = document.querySelectorAll('#vocabList li');
+            vocabLists.forEach(vocabList => vocabList.addEventListener('click', chosenWordList));
+        }
     }
 
 
     function startTrainer() { //need to make on click through to trainer and list specific
         wordToGuess.innerHTML = vocabToTrain[currentIndex].wordInEnglish;
         document.getElementById('answer').addEventListener("click", function (e) {
-            if (document.activeElement == document.getElementById('answer')){
+            if (document.activeElement == document.getElementById('answer')) {
                 console.log("focused");
-                
+
             }
         });
     }
@@ -107,8 +124,8 @@
         flipToNext();
         checkAnswer();
     }
-    
-    function flipToNext(){
+
+    function flipToNext() {
         vocabCard.classList.toggle('flipped');
     }
 
@@ -133,7 +150,7 @@
         .addEventListener('click', function () {
             changeWord(-1);
         });
-    
-     /************* function call **************/
+
+    /************* function call **************/
     populateWordLists();
 })();

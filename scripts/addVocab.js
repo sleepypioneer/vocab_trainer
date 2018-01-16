@@ -10,26 +10,21 @@
     let newWord;
 
     /*************** Functions ***************/
-    function populateWordLists(){
-        localVocab = vocabMine;
-        let keysVocabLists = Object.keys(localVocab);
-        let i = 0;
-        while (i < keysVocabLists.length){
-            listOptions.innerHTML += "<option value= \"" + keysVocabLists[i] + "\">" + keysVocabLists[i] + "</option>";
-            i++;
+    function populateWordLists() {
+        listOptions.innerHTML = "";
+        if (vocabMine != null) {
+            localVocab = vocabMine;
+            let keysVocabLists = Object.keys(localVocab);
+            let i = 0;
+            while (i < keysVocabLists.length) {
+                listOptions.innerHTML += "<option value= \"" + keysVocabLists[i] + "\">" + keysVocabLists[i] + "</option>";
+                i++;
+            }
+        } else {
+            localVocab = {};
         }
-
+        listOptions.innerHTML += "<option value= \"createNew\"> Create New Category </option>";
     }
-
-    
-    
-    function addWord() {
-        vocabMine[listOptions.value].push(newWord);
-        // change to div popup
-        alert(newWord.wordInEnglish + " was added to your Vocab List.");
-        clearForm();
-    }
-    
 
     function clearForm() {
         document.getElementById('english')
@@ -53,6 +48,31 @@
         }
     }
 
+    function checkIfDoubled() {
+        console.log("checking for dupliate...");
+        return true;
+        /*
+        let englishWordList = [];
+        let germanWordList = [];
+        vocabMine[listOptions.value].forEach(word => {
+            englishWordList.push(word.wordInEnglish);
+            germanWordList.push(word.wordInGerman);
+        });
+
+        if (englishWordList.includes(newWord.wordInEnglish) || germanWordList.includes(newWord.wordInGerman)) {
+            //should this change only be local (change indices but not actually over write word??)
+            confirm("that word is already in your vocab list do you want to replace it?");
+            if (englishWordList.includes(newWord.wordInEnglish)) {
+                console.log(englishWordList.indexOf(newWord.wordInEnglish));
+                vocab.splice(englishWordList.indexOf(newWord.wordInEnglish), 1);
+            } else if (germanWordList.includes(newWord.wordInGerman)) {
+                vocab.splice(germanWordList.indexOf(newWord.wordInGerman), 1);
+            }
+        }*/
+    }
+
+
+
     // check answer fits format, alert if not
     function checkInput() {
         let englishWord = wordInEnglish.value.toString()
@@ -69,24 +89,9 @@
         if (englishWord.split(" ")
             .length === 1 && germanWord.split(" ")
             .length === 1 && forbiddenChars.test(englishWord) && forbiddenChars.test(germanWord) && newWord.gender != undefined) {
-            let englishWordList = [];
-            let germanWordList = [];
-            vocabMine[listOptions.value].forEach(word => {
-                englishWordList.push(word.wordInEnglish);
-                germanWordList.push(word.wordInGerman);
-            });
-
-            if (englishWordList.includes(newWord.wordInEnglish) || germanWordList.includes(newWord.wordInGerman)) {
-                //should this change only be local (change indices but not actually over write word??)
-                confirm("that word is already in your vocab list do you want to replace it?");
-                if (englishWordList.includes(newWord.wordInEnglish)) {
-                    console.log(englishWordList.indexOf(newWord.wordInEnglish));
-                    vocab.splice(englishWordList.indexOf(newWord.wordInEnglish), 1);
-                } else if (germanWordList.includes(newWord.wordInGerman)) {
-                    vocab.splice(germanWordList.indexOf(newWord.wordInGerman), 1);
-                }
+            if (checkIfDoubled()) {
+                return true;
             }
-            addWord();
         } else {
             console.log("that is not a valid input!");
             if (newWord.gender == undefined) {
@@ -110,12 +115,41 @@
         }
     }
 
+    function addWord() {
+        if (checkInput()) {
+            if (listOptions.value) {
+                if (listOptions.value == "createNew") {
+                    // change to div popup
+                    let newList = prompt("name you new list", "New Category Name");
+                    listOptions.value = newList;
+                    Object.keys(vocabMine).forEach(key => {
+                        if (newList == key){
+                            // change to div popup
+                            confirm("You will be overwriting an existing list");
+                        }
+                    });
+
+                    vocabMine[newList] = [];
+                    vocabMine[newList].push(newWord);
+                } else {
+                    vocabMine[listOptions.value].push(newWord);
+                }
+            }
+            // change to div popup
+            alert(newWord.wordInEnglish + " was added to your " + listOptions.value + " List.");
+            clearForm();
+            populateWordLists();
+        }
+
+    }
+
+
     /*************** Event Listener ***************/
     document.getElementById('addWord')
-        .addEventListener('click', checkInput);
+        .addEventListener('click', addWord);
     document.getElementById('clearForm')
         .addEventListener('click', clearForm);
-    
+
     /*************** Function calls ***************/
     populateWordLists();
 

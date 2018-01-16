@@ -20,6 +20,7 @@ const pages = [
             pageTitle: "timedSession",
             urlPath: "/timedSession",
             script: "scripts/timedSession.js"
+
 		},
         {
             name: "addVocab",
@@ -52,26 +53,7 @@ const pages = [
     timerset = document.getElementById("timerSet"),
     accountBtn = document.getElementById('account');
 
-
-let vocabMine1 = [
-    {id: "null", wordInEnglish: "Keyboard", wordInGerman: "Tastatur", gender: "Das"},
-    {id: "null", wordInEnglish: "Monitor", wordInGerman: "Bildschirm", gender: "Der"},
-    {id: "null", wordInEnglish: "Slideshow", wordInGerman: "Diashow", gender: "Die"}
-];
-let vocabMine2 = [
-    {id: "null", wordInEnglish: "Staff Member (sg/m)", wordInGerman: "Mitarbeiter", gender: "Der"},
-    {id: "null", wordInEnglish: "Staff Member(sg f)", wordInGerman: "Mitarbeiterin", gender: "Die"},
-    {id: "null", wordInEnglish: "Telephone System", wordInGerman: "Telefonanlage", gender: "Die"},
-    {id: "null", wordInEnglish: "Sister Company", wordInGerman: "Tochterunternehmen", gender: "Das"}   
-],  
-vocabMine3 = [   
-    {id: "null", wordInEnglish: "Department", wordInGerman: "Abteilung", gender: "Die"},
-    {id: "null", wordInEnglish: "Purchase", wordInGerman: "Einkauf", gender: "Der"},
-    {id: "null", wordInEnglish: "Management", wordInGerman: "Geschaeftsleitung", gender: "Die"}
-],
-vocabMine = {vocabMine1 : vocabMine1, vocabMine2 : vocabMine2, vocabMine3 : vocabMine3};
-        
-    let userAccount = {
+let userAccount = {
         name: "Ada Lovelace",
         joined: "01/12/2017",
         score: "200",
@@ -94,7 +76,84 @@ vocabMine = {vocabMine1 : vocabMine1, vocabMine2 : vocabMine2, vocabMine3 : voca
     account = false,
     a = 100,
     b,
+    ImportedVocab,
+    vocabMine,
     started = false;
+
+
+/*************** Emulating local Content ***************/
+let vocabMine1 = [
+    {
+        id: "null",
+        wordInEnglish: "Keyboard",
+        wordInGerman: "Tastatur",
+        gender: "Das"
+    },
+    {
+        id: "null",
+        wordInEnglish: "Monitor",
+        wordInGerman: "Bildschirm",
+        gender: "Der"
+    },
+    {
+        id: "null",
+        wordInEnglish: "Slideshow",
+        wordInGerman: "Diashow",
+        gender: "Die"
+    }
+];
+let vocabMine2 = [
+        {
+            id: "null",
+            wordInEnglish: "Staff Member (sg/m)",
+            wordInGerman: "Mitarbeiter",
+            gender: "Der"
+        },
+        {
+            id: "null",
+            wordInEnglish: "Staff Member(sg f)",
+            wordInGerman: "Mitarbeiterin",
+            gender: "Die"
+        },
+        {
+            id: "null",
+            wordInEnglish: "Telephone System",
+            wordInGerman: "Telefonanlage",
+            gender: "Die"
+        },
+        {
+            id: "null",
+            wordInEnglish: "Sister Company",
+            wordInGerman: "Tochterunternehmen",
+            gender: "Das"
+        }
+],
+    vocabMine3 = [
+        {
+            id: "null",
+            wordInEnglish: "Department",
+            wordInGerman: "Abteilung",
+            gender: "Die"
+        },
+        {
+            id: "null",
+            wordInEnglish: "Purchase",
+            wordInGerman: "Einkauf",
+            gender: "Der"
+        },
+        {
+            id: "null",
+            wordInEnglish: "Management",
+            wordInGerman: "Geschaeftsleitung",
+            gender: "Die"
+        }
+];
+vocabMine = {
+    vocabMine1: vocabMine1,
+    vocabMine2: vocabMine2,
+    vocabMine3: vocabMine3
+};
+
 
 
 /*************** Utility Functions ***************/
@@ -130,34 +189,15 @@ function pad(b, width) {
         .join('0') + b;
 }
 
-/*************** Functions ***************/
-/* Navigation */
-function changeContent(a, pages) {
-    let pageMatch = (pages.filter(page => page.name === a));
-    let page = pageMatch[0];
-    let xhr = new XMLHttpRequest();
-
-    fetch(page.url).then(function (response) {
-        if (response.ok) {
-            response.text().then(function (text) {
-                content.innerHTML = text;
-            });
-            addScript(page.script, page.name);
-            //processAjaxData(response, page);
-
-            if (a === "home") {
-                banner.style.display = "flex";
-            } else {
-                banner.style.display = "none";
-            }
-        } else {
-            console.log('Network request for products.json failed with response ' + response.status + ': ' + response.statusText);
+/* Add script to site */
+function addScript(script, scriptName) {
+    let scripts = document.querySelectorAll('script');
+    scripts.forEach(script => {
+        if (script.id != "") {
+            document.querySelector("body")
+                .removeChild(script);
         }
     });
-}
-
-/* Add script */
-function addScript(script, scriptName) {
     let newScript = document.createElement("script");
     newScript.type = "text/javascript";
     newScript.id = scriptName;
@@ -166,7 +206,7 @@ function addScript(script, scriptName) {
     body.appendChild(newScript);
 }
 
-/* Add style sheet */
+/* Add style sheet to site */
 function addStyle(styleSheet, styleName) {
     let newStyleSheet = document.createElement("link");
     newStyleSheet.rel = "stylesheet";
@@ -174,6 +214,32 @@ function addStyle(styleSheet, styleName) {
     newStyleSheet.id = styleName;
     newStyleSheet.href = styleSheet;
     head.appendChild(newStyleSheet);
+}
+
+
+/*************** Functions ***************/
+/* Navigation */
+function changeContent(a, pages) {
+    let pageMatch = (pages.filter(page => page.name === a));
+    let page = pageMatch[0];
+    let xhr = new XMLHttpRequest();
+    fetch(page.url).then(function (response) {
+        if (response.ok) {
+            response.text().then(function (text) {
+                content.innerHTML = text;
+            }).then(function () {
+                addScript(page.script, page.name);
+                if (a === "home") {
+                    banner.style.display = "flex";
+                } else {
+                    banner.style.display = "none";
+                }
+
+            });
+        } else {
+            console.log('Network request for products.json failed with response ' + response.status + ': ' + response.statusText);
+        }
+    })
 }
 
 
@@ -206,15 +272,6 @@ function startTimer() {
         NavTimer();
         checkIfTimerDone();
     }, 1000);
-    /*
-    //Pause button in nav bar for timer - would not work on mobile!
-    timerset.addEventListener('mouseover', function(){
-        timerSet.innerHTML = "<i class=\"fa fa-pause\" aria-hidden=\"true\"></i>";
-    });
-    timerset.addEventListener('mouseleave', function(){
-         timerset.innerHTML = timer;
-    });
-    */
 }
 
 function checkIfTimerDone() {
@@ -229,9 +286,8 @@ function checkIfTimerDone() {
     }
 }
 
+
 /***************  Event Listeners ***************/
-
-
 homeBtn.addEventListener('click', function () {
     changeContent("home", pages);
 });
