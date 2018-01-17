@@ -7,32 +7,21 @@
         chooseList = document.getElementById('chooseList'),
         instruct = document.getElementById('Instruct'),
         vocabList = document.getElementById('vocabList');
-    let currentIndex = Math.floor(Math.random() * 3),
+        let currentIndex = Math.floor(Math.random() * 3),
         vocabToTrain,
         allVocab,
         vocabLists;
     /************* Functions **************/
-
-    function chosenWordList(event) {
-        console.log(this.dataset.vocablist);
-        chooseList.setAttribute('class', 'hide');
-        instruct.classList.remove('hide');
-        vocabToTrain = allVocab[Object.keys(allVocab)[this.dataset.vocablist]];
-        startTrainer();
-    }
-
+    
     function populateWordLists() {
         if (ImportedVocab != null && vocabMine != null) {
-            console.log("a");
             allVocab = Object.assign({}, vocabMine, ImportedVocab);
+            console.log(allVocab);
         } else if (ImportedVocab != null) {
-            console.log("b");
             allVocab = Object.assign({}, ImportedVocab);
         } else if (vocabMine != null) {
-            console.log("c");
             allVocab = Object.assign({}, vocabMine);
         } else {
-            console.log("d");
             allVocab = {}
         }
 
@@ -128,6 +117,15 @@
     function flipToNext() {
         vocabCard.classList.toggle('flipped');
     }
+    
+    function chosenWordList(event) {
+        chooseList.setAttribute('class', 'hide');
+        instruct.classList.remove('hide');
+        vocabToTrain = allVocab[Object.keys(allVocab)[this.dataset.vocablist]];
+        currentIndex = Math.floor(Math.random() * vocabToTrain.length),
+        startTrainer();
+    }
+
 
     /************* Event Listeners **************/
 
