@@ -51,6 +51,7 @@ const pages = [
     homeBtn = document.getElementById('home'),
     navBarTimer = document.getElementById("timer"),
     timerset = document.getElementById("timerSet"),
+    nav = document.querySelector("nav"),
     accountBtn = document.getElementById('account');
 
 let userAccount = {
@@ -284,6 +285,15 @@ function checkIfTimerDone() {
         userAccount.totalTime += sessionTime;
         reset();
     }
+}
+
+function keyboardUp(){
+    if(document.documentElement.clientHeight < 350 && document.documentElement.clientWidth < 800){
+        console.log("keyboardUp");
+        nav.classList.add("keyboardUp");
+        document.querySelector('#Instruct div h3').setAttribute('style', 'display: none;')
+    }
+    
 }
 
 

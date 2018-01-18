@@ -46,6 +46,7 @@
         document.getElementById('answer').addEventListener("click", function (e) {
             if (document.activeElement == document.getElementById('answer')) {
                 console.log("focused");
+                keyboardUp();
 
             }
         });
