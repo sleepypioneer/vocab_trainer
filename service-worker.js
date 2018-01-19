@@ -1,4 +1,4 @@
-/*var filesToCache = [
+var filesToCache = [
     '.',
     'styleSheets/mainStyles.css',
     'styleSheets/nightMode.css',
@@ -19,11 +19,12 @@
      'scripts/stats.js',
      'scripts/timedSession.js',
      'scripts/vocabTrainer.js',
-    'index.php'
+    'scripts/popups.js',
+    'index.html'
     /*
     'pages/offline.html',
     'pages/404.html'*/
-/*
+
 ];
 
 var staticCacheName = 'pages-cache-v1';
