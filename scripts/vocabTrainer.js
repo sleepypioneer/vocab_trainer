@@ -13,7 +13,117 @@
         vocabLists;
     /************* Functions **************/
     
-    function populateWordLists() {
+     /* const vocabTrainer = {
+        populateWordLists : function(){
+            if (ImportedVocab != null && vocabMine != null) {
+                allVocab = Object.assign({}, vocabMine, ImportedVocab);
+                console.log(allVocab);
+            } else if (ImportedVocab != null) {
+                allVocab = Object.assign({}, ImportedVocab);
+            } else if (vocabMine != null) {
+                allVocab = Object.assign({}, vocabMine);
+            } else {
+                allVocab = {}
+            }
+
+            let keysAllVocab = Object.keys(allVocab);
+
+            if (keysAllVocab.length < 1) {
+                vocabList.innerHTML += "<li data-vocabList = \"1\">No categories currently available, or add your own</li>";
+                //Not working - goes straight to add vocab page // document.querySelector('#vocabList li').addEventListener('click', changeContent("addVocab", pages));
+            } else {
+                let i = 0;
+                while (i < keysAllVocab.length) {
+                    vocabList.innerHTML += "<li data-vocabList = \"" + i + "\">" + keysAllVocab[i] + "</li>";
+                    i++;
+                }
+                vocabLists = document.querySelectorAll('#vocabList li');
+                vocabLists.forEach(vocabList => vocabList.addEventListener('click', this.chosenWordList));
+            }
+        },
+        startTrainer: function(){
+            wordToGuess.innerHTML = vocabToTrain[currentIndex].wordInEnglish;
+            document.getElementById('answer').addEventListener("click", function (e) {
+                if (document.activeElement == document.getElementById('answer')) {
+                    console.log("focused");
+                    keyboardUp();
+
+                }
+            });
+        },
+        removeArticles(str){
+            let words = str.split(" ");
+            if (words.length <= 1) return (str);
+            if (words[0] == "Der" || words[0] == "Die" || words[0] == "Das") {
+                return words.splice(1)
+                    .join(" ");
+            }
+            return str;
+        },
+        flipToNext: function(){
+            vocabCard.classList.toggle('flipped');
+        },
+        chosenWordList: function(event) {
+            chooseList.setAttribute('class', 'hide');
+            instruct.classList.remove('hide');
+            vocabToTrain = allVocab[Object.keys(allVocab)[this.dataset.vocablist]];
+            currentIndex = Math.floor(Math.random() * vocabToTrain.length),
+            this.startTrainer;
+        },
+        changeWord: function(direction) {
+            if (direction == 1 && currentIndex === vocabToTrain.length - 1) {
+                currentIndex = 0;
+            } else if (direction == 1) {
+                currentIndex++;
+            } else if (direction == -1 && currentIndex === 0) {
+                currentIndex = vocabToTrain.length - 1;
+            } else {
+                currentIndex--;
+            }
+            wordToGuess.innerHTML = vocabToTrain[currentIndex].wordInEnglish;
+            answer.value = "";
+            this.flipToNext;
+            this.checkAnswer();
+        },
+        checkAnswer: function() {
+            // NOT WORKING - prevent enter key from working during submitting of input(should stop bug when moving on to next work in vocab)
+            window.addEventListener("keydown", function (e) {
+                if ([13].indexOf(e.keyCode) > -1) {
+                    e.preventDefault();
+                }
+            }, false);
+            //answer converted to string to avoid non string inputs
+            let answerToCheck = answer.value.toString();
+            let correctAnswer = vocabToTrain[currentIndex].gender + " " + vocabToTrain[currentIndex].wordInGerman;
+            let correctExpression = new RegExp(this.removeArticles(correctAnswer), 'gi');
+            //check if matches word exactly
+            if (correctAnswer === answerToCheck) {
+                answer.style.borderColor = "green";
+                plusPoint();
+                popUpHide();
+                setTimeout(function () {
+                    changeWord(1);
+                }, 1000);
+                //check if matches regardless of case & alert
+            } else if (correctAnswer.toLowerCase() === answerToCheck.toLowerCase()) {
+                popUp(1);
+                //check if matches without article 
+            } else if (answerToCheck.match(correctExpression)) {
+                popUp(2);
+            } else {
+                answer.style.borderColor = "rgba(255, 119, 35, 0.74)";
+            }
+        },
+
+        //not working on firefox!!!!!
+        takeHint: function() {
+            answer.value = "";
+            answer.value = vocabToTrain[currentIndex].wordInGerman.slice(0, 3);
+            hintTaken = true;
+        }
+    }*/
+    
+  function populateWordLists() {
         if (ImportedVocab != null && vocabMine != null) {
             allVocab = Object.assign({}, vocabMine, ImportedVocab);
             console.log(allVocab);
@@ -26,6 +136,7 @@
         }
 
         let keysAllVocab = Object.keys(allVocab);
+        
         if (keysAllVocab.length < 1) {
             vocabList.innerHTML += "<li data-vocabList = \"1\">No categories currently available, or add your own</li>";
             //Not working - goes straight to add vocab page // document.querySelector('#vocabList li').addEventListener('click', changeContent("addVocab", pages));

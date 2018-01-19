@@ -33,6 +33,9 @@
         <!-- Add Style Sheet -->
         <link rel="stylesheet" type="text/css" href="styleSheets/mainStyles.css">
         <link rel="stylesheet" type="text/css" href="styleSheets/mainStyles.css">
+        
+        <!-- Add Babel -->
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.24/browser.js"></script>
 
         <!-- Web Manifest for Chrome -->
         <link rel="" href="maifest.json">
