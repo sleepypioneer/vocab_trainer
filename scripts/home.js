@@ -6,7 +6,7 @@
 
     /************* Event Listeners **************/
     navBtns.forEach(navBtn => navBtn.addEventListener('click', function() {
-        changeContent(this.dataset.page, pages);
+        navi.changeContent(this.dataset.page);
     }));
 
 })();
