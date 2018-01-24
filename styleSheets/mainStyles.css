@@ -70,9 +70,9 @@ p {
 
 .answer {
     font-family: 'Poiret One', cursive;
+    font-size: 150%;
     width: 80%;
     height: 1.5em;
-    font-size: 1.7em;
     line-height: 170%;
     text-align: center;
     margin: 0.15em auto;
@@ -495,8 +495,6 @@ nav.keyboardUp{
     
 }
 
-
-/*************** With grid Support ***************/
 
 /*************** Media Query Small Screen ***************/
 

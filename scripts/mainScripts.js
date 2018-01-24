@@ -1,96 +1,88 @@
 (function() {
     'use strict';
-    /*************** Global Variables ***************/
-    const
-        navBarTimer = document.getElementById("timer"),
-        nav = document.querySelector("nav"),
-        homeBtn = document.getElementById('home'),
-        accountBtn = document.getElementById('account'),
-        actualScore = document.getElementById('actualScore');
-
-    let userAccount = {
-            name: "Ada Lovelace",
-            joined: "01/12/2017",
-            score: "200",
-            totalTime: 0,
-            lastSession: 0
-        },
-        newScore,
-        hintTaken = false;
-
     /*************** Emulating local Content ***************/
-    let vocabMine1 = [
-        {
-            id: "null",
-            wordInEnglish: "Keyboard",
-            wordInGerman: "Tastatur",
-            gender: "Das"
-        },
-        {
-            id: "null",
-            wordInEnglish: "Monitor",
-            wordInGerman: "Bildschirm",
-            gender: "Der"
-        },
-        {
-            id: "null",
-            wordInEnglish: "Slideshow",
-            wordInGerman: "Diashow",
-            gender: "Die"
-        }
-    ];
-    let vocabMine2 = [
-            {
-                id: "null",
-                wordInEnglish: "Staff Member (sg/m)",
-                wordInGerman: "Mitarbeiter",
-                gender: "Der"
-            },
-            {
-                id: "null",
-                wordInEnglish: "Staff Member(sg f)",
-                wordInGerman: "Mitarbeiterin",
-                gender: "Die"
-            },
-            {
-                id: "null",
-                wordInEnglish: "Telephone System",
-                wordInGerman: "Telefonanlage",
-                gender: "Die"
-            },
-            {
-                id: "null",
-                wordInEnglish: "Sister Company",
-                wordInGerman: "Tochterunternehmen",
-                gender: "Das"
+    let vocabMine = {};
+    let userAccount = {};
+
+    function emulateLocalStorage(url) {
+        let xhr = new XMLHttpRequest();
+        return fetch(url).then(function (response) {
+            if (response.ok) {
+                return response.json();
+            } else {
+                console.log('Network request for products.json failed with response ' + response.status + ': ' + response.statusText);
             }
-    ],
-        vocabMine3 = [
-            {
-                id: "null",
-                wordInEnglish: "Department",
-                wordInGerman: "Abteilung",
-                gender: "Die"
-            },
-            {
-                id: "null",
-                wordInEnglish: "Purchase",
-                wordInGerman: "Einkauf",
-                gender: "Der"
-            },
-            {
-                id: "null",
-                wordInEnglish: "Management",
-                wordInGerman: "Geschaeftsleitung",
-                gender: "Die"
-            }
-    ];
-    let vocabMine = {
-        vocabMine1: vocabMine1,
-        vocabMine2: vocabMine2,
-        vocabMine3: vocabMine3
+        }).then((json) => {
+            return json;
+        });
+    }
+
+    let app = {
+        /*************** Global Variables ***************/
+        navBarTimer: document.getElementById("timer"),
+        nav: document.querySelector("nav"),
+        homeBtn: document.getElementById('home'),
+        accountBtn: document.getElementById('account'),
+        actualScore: document.getElementById('actualScore'),
+        userAccount: {},
+        newScore: "",
+        hintTaken: false,
+        isLoading: true,
+        localVocab: [],
+        spinner: document.querySelector('.loader')
     };
 
+    /*************** Service Worker ***************/
+
+    /*if (!('serviceWorker' in navigator)) {
+        alert('No service-worker on this browser');
+    } else {
+        navigator.serviceWorker.register('service-worker.js').then(function (registration) {
+            console.log('SW registered! Scope is:', registration.scope);
+        }).catch(function (err) {
+            //registration failed :(
+            console.log('ServiceWorker registration failed: ', err);
+        });
+        //catch a registration error
+    }
+
+    navigator.serviceWorker.ready.then(function(swRegistration) {
+        return swRegistration.sync.register('foo');
+    });
+    */
+
+    /*************** Indexed DB for local storage ***************/
+    if (!('indexedDB' in window)) {
+        console.log('This browser doesn\'t support IndexedDB');
+    }
+
+    /*************** Methods to update/refresh the local Storage ***************/
+    app.updateVocabList = function (data) {
+        if (app.isLoading) {
+            app.spinner.setAttribute('hidden', true);
+            app.isLoading = false;
+        }
+    };
+
+    app.saveSelectedVocab = function () {
+        console.log("saving to DB");
+        window.localforage.setItem('localVocab', app.localVocab);
+    };
+
+    app.loadLocalStorage = function () {
+        window.localforage.getItem('localVocab', function (err, vocabList) {
+            if (vocabList) {
+                app.localVocab = vocabList;
+            } else {
+                app.localVocab = Object.keys(vocabMine).map(function (key) {
+                    return {
+                        [key]: vocabMine[key]
+                    };
+                });
+                app.saveSelectedVocab();
+            }
+        });
+    };
 
     /* Utility Functions */
     let utils = {
@@ -121,19 +113,19 @@
         },
         plusPoint: function () {
             /* Update Score */
-            if (hintTaken) {
-                newScore = parseInt(userAccount.score) + 1;
-                hintTaken = false;
+            if (app.hintTaken) {
+                app.newScore = parseInt(userAccount.score) + 1;
+                app.hintTaken = false;
             } else {
-                newScore = parseInt(userAccount.score) + 2;
+                app.newScore = parseInt(userAccount.score) + 2;
             }
-            actualScore.innerHTML = newScore;
-            userAccount.score = newScore.toString();
+            app.actualScore.innerHTML = app.newScore;
+            userAccount.score = app.newScore.toString();
         },
         keyboardUp: function () {
             if (document.documentElement.clientHeight < 350 && document.documentElement.clientWidth < 800) {
                 console.log("keyboardUp");
-                nav.classList.add("keyboardUp");
+                app.nav.classList.add("keyboardUp");
                 document.querySelector('#Instruct div h3').setAttribute('style', 'display: none;')
             }
 
@@ -210,7 +202,7 @@
         },
         NavTimer: function () {
             /* Update Timer */
-            navBarTimer.innerHTML = "<h3>" + timer.timer + "</h3>";
+            app.navBarTimer.innerHTML = "<h3>" + timer.timer + "</h3>";
         },
         timerDone: function () {
             console.log("done");
@@ -234,59 +226,59 @@
                 top: "8%",
                 left: "7%",
                 borderColor: "rgba(0, 0, 0, 0.6)"
-     },
+         },
             {
                 text: "caseSensitive",
                 url: "pages/popups/hint1.html",
                 top: "8%",
                 left: "7%",
                 borderColor: "rgba(0, 0, 0, 0.6)"
-      },
+          },
             {
                 text: "article",
                 url: "pages/popups/hint2.html",
                 top: "8%",
                 left: "7%",
                 borderColor: "rgba(0, 0, 0, 0.6)"
-      },
+          },
             {
                 text: "account",
                 url: "pages/popups/addAccount.html",
                 top: "8%",
                 left: "7%",
                 borderColor: "rgba(0, 0, 0, 0.6)"
-      },
+          },
             {
                 text: "deleteAccount",
                 url: "pages/popups/addAccount.html",
                 top: "8%",
                 left: "7%",
                 borderColor: "rgba(0, 0, 0, 0.6)"
-      },
+          },
             {
                 text: "assignTime",
                 url: "pages/popups/timerAddTime.html",
                 top: "8%",
                 left: "7%",
                 borderColor: "rgba(0, 0, 0, 0.6)"
-      },
+          },
             {
                 text: "start",
                 url: "pages/popups/startTimerTraining.html",
                 top: "8%",
                 left: "7%",
                 borderColor: "rgba(0, 0, 0, 0.6)"
-      },
+          },
             {
                 text: "timerEnd",
                 url: "pages/popups/TimerTrainingEnd.html",
                 top: "8%",
                 left: "7%",
                 borderColor: "rgba(0, 0, 0, 0.6)"
-      }
+          }
 
 
-    ],
+        ],
         /*************** Functions ***************/
         setCSS: function (e, style) {
             for (let prop in style) {
@@ -333,11 +325,11 @@
         }
     };
 
-    
+
     /* addVocab functions */
     let addVocab = {
         ImportedVocab: "",
-        localVocab: "",
+        localVocabList: "",
         newWord: "",
         wordInEnglish: "",
         wordInGerman: "",
@@ -351,16 +343,16 @@
         },
         populateWordLists: function () {
             this.listOptions.innerHTML = "";
-            if (vocabMine != null) {
-                addVocab.localVocab = vocabMine;
-                let keysVocabLists = Object.keys(addVocab.localVocab);
+            if (this.localVocabList != null) {
+                this.localVocabList = app.localVocab;
+                let keysVocabLists = Object.keys(addVocab.localVocabList);
                 let i = 0;
                 while (i < keysVocabLists.length) {
                     addVocab.listOptions.innerHTML += "<option value= \"" + keysVocabLists[i] + "\">" + keysVocabLists[i] + "</option>";
                     i++;
                 }
             } else {
-                addVocab.localVocab = {};
+                addVocab.localVocabList = {};
             }
             this.listOptions.innerHTML += "<option value= \"createNew\"> Create New Category </option>";
         },
@@ -388,7 +380,7 @@
             /*
             let englishWordList = [];
             let germanWordList = [];
-            vocabMine[listOptions.value].forEach(word => {
+            app.localVocab[listOptions.value].forEach(word => {
                 englishWordList.push(word.wordInEnglish);
                 germanWordList.push(word.wordInGerman);
             });
@@ -452,17 +444,17 @@
                         // change to div popup
                         let newList = prompt("name you new list", "New Category Name");
                         addVocab.listOptions.value = newList;
-                        Object.keys(vocabMine).forEach(key => {
+                        Object.keys(app.localVocab).forEach(key => {
                             if (newList == key) {
                                 // change to div popup
                                 confirm("You will be overwriting an existing list");
                             }
                         });
 
-                        vocabMine[newList] = [];
-                        vocabMine[newList].push(addVocab.newWord);
+                        app.localVocab[newList] = [];
+                        app.localVocab[newList].push(addVocab.newWord);
                     } else {
-                        vocabMine[addVocab.listOptions.value].push(addVocab.newWord);
+                        app.localVocab[addVocab.listOptions.value].push(addVocab.newWord);
                     }
                 }
                 // change to div popup
@@ -474,7 +466,7 @@
         }
     };
 
-    
+
     /* Page navigation functions */
     let navi = {
         pages: [
@@ -491,7 +483,7 @@
                         navi.changeContent(this.dataset.page);
                     }));
                 }
-            },
+                },
             {
                 name: "vocabTrainer",
                 url: "pages/vocabTrainer.html",
@@ -522,7 +514,7 @@
                     /************* function call **************/
                     vocabTrainer.initialize();
                 }
-            },
+                },
             {
                 name: "timedSession",
                 url: "pages/timedSession.html",
@@ -543,7 +535,7 @@
                         });
                 }
 
-            },
+                },
             {
                 name: "addVocab",
                 url: "pages/addVocab.html",
@@ -559,7 +551,7 @@
                     addVocab.setProperties();
                     addVocab.populateWordLists();
                 }
-            },
+                },
             {
                 name: "stats",
                 url: "pages/stats.html",
@@ -569,9 +561,10 @@
                     document.getElementById('totalPoints').innerHTML = userAccount.score;
                     document.getElementById('totalTime').innerHTML = timer.convertTime(userAccount.totalTime);
                     document.getElementById('lastSession').innerHTML = timer.convertTime(userAccount.lastSession);
-                    document.getElementById('wordCount').innerHTML = vocab.length;
+                    
+                    //logic for adding in word Lists and their length
                 }
-            },
+                },
             {
                 name: "account",
                 url: "pages/account.html",
@@ -607,8 +600,8 @@
 
                     account.checkAccount();
                 }
-            }
-        ],
+                }
+            ],
         content: document.querySelector("#content"),
         processAjaxData: function (response, page) {
             /* set url in browser */
@@ -644,42 +637,42 @@
         }
     };
 
-    
+
     /* account functions */
     let account = {
         haveAccount: false,
-        size: 100,           
+        size: 150,
+        textLength: 0,
         reduceFontSizeOnInput: function (e) {
             let answer = document.querySelector('.answer');
             let input = document.querySelector('#username');
-            let textLength = 0;
             if (e.which === 13) {
                 e.preventDefault();
             }
-            
+
             if (input.innerText.length < 3) {
                 answer.style.border = "solid red 0.1em";
-                textLength = input.innerText.length;
-            } 
-            else if (input.innerText.length < 18) {
+                account.textLength = input.innerText.length;
+            } else if (input.innerText.length < 18) {
                 input.contentEditable = true;
                 answer.style.border = "solid green 0.1em";
-                if (input.innerText.length > textLength) {
+                if (input.innerText.length > account.textLength) {
                     if (input.innerText.length % 4 === 0) {
-                        account.size -= 18;
+                        if(account.size > 45){
+                            account.size -= 35;
+                        }
                         input.style.fontSize = account.size.toString() + "%";
                     }
-                    textLength = input.innerText.length;
-                } 
-                else if (input.innerText.length < textLength) {
+                    account.textLength = input.innerText.length;
+                } else if (input.innerText.length < account.textLength) {
                     if (input.innerText.length % 4 === 0) {
-                        account.size += 18;
-                        input.style.fontSize = size.toString() + "%";
+                        account.size += 35;
+                        input.style.fontSize = account.size.toString() + "%";
                     }
-                    textLength = input.innerText.length;
+                    account.textLength = input.innerText.length;
                 }
-                
-            } else if (input.innerText.length >= 18)  {
+
+            } else if (input.innerText.length >= 18) {
                 console.log("username must be between 3 and 25 characters");
                 answer.style.border = "solid red 0.1em";
                 if (e.which != 8) {
@@ -731,13 +724,13 @@
             userAccount.score = "0";
             userAccount.totalTime = 0;
             userAccount.lastSession = 0;
-            document.querySelector('#actualScore').innerHTML = 0;
+            app.actualScore.innerHTML = 0;
             this.haveAccount = false;
             account.checkAccount();
         }
     }
 
-    
+
     /* addVocab functions */
     let vocabTrainer = {
         wordToGuess: "",
@@ -748,9 +741,9 @@
         vocabList: "",
         currentIndex: Math.floor(Math.random() * 3),
         vocabToTrain: "",
-        allVocab: "",
+        allVocab: [],
         vocabLists: "",
-        initialize: function (){
+        initialize: function () {
             this.wordToGuess = document.getElementById('wordToGuess');
             this.answer = document.querySelector('.answer');
             this.vocabCard = document.querySelector('.card');
@@ -761,26 +754,26 @@
         },
         /************* Functions **************/
         populateWordLists: function () {
-            if (ImportedVocab != null && vocabMine != null) {
-                vocabTrainer.allVocab = Object.assign({}, vocabMine, ImportedVocab);
-                console.log(vocabTrainer.allVocab);
-            } else if (ImportedVocab != null) {
-                vocabTrainer.allVocab = Object.assign({}, ImportedVocab);
-            } else if (vocabMine != null) {
-                vocabTrainer.allVocab = Object.assign({}, vocabMine);
-            } else {
-                vocabTrainer.allVocab = {}
+            this.allVocab = function(){
+                    if (ImportedVocab != null && app.localVocab != null) {
+                        return [... app.localVocab, ...ImportedVocab];
+                    } else if (ImportedVocab != null) {
+                        return [...ImportedVocab];
+                    } else if (app.localVocab != null) {
+                        return [... app.localVocab];
+                    } else {
+                       return [];
+                    }
             }
 
-            let keysAllVocab = Object.keys(this.allVocab);
 
-            if (keysAllVocab.length < 1) {
-                vocabTrainer.vocabList.innerHTML += "<li data-vocabList = \"1\">No categories currently available, or add your own</li>";
+            if (vocabTrainer.allVocab().length < 1) {
+                vocabTrainer.vocabList.innerHTML += "<li data-vocabList = \"1\">No categories currently available, add your own</li>";
                 //Not working - goes straight to add vocab page // document.querySelector('#vocabList li').addEventListener('click', changeContent("addVocab", pages));
             } else {
                 let i = 0;
-                while (i < keysAllVocab.length) {
-                    vocabTrainer.vocabList.innerHTML += "<li data-vocabList = \"" + i + "\">" + keysAllVocab[i] + "</li>";
+                while (i < vocabTrainer.allVocab().length) {
+                    vocabTrainer.vocabList.innerHTML += "<li data-vocabList = \"" + i + "\">" + Object.keys(vocabTrainer.allVocab()[i])[0] + "</li>";
                     i++;
                 }
                 vocabTrainer.vocabLists = document.querySelectorAll('#vocabList li');
@@ -839,7 +832,7 @@
         takeHint: function () {
             vocabTrainer.answer.value = "";
             vocabTrainer.answer.value = vocabTrainer.vocabToTrain[vocabTrainer.currentIndex].wordInGerman.slice(0, 3);
-            hintTaken = true;
+            app.hintTaken = true;
         },
         changeWord: function (direction) {
             if (direction == 1 && vocabTrainer.currentIndex === vocabTrainer.vocabToTrain.length - 1) {
@@ -862,15 +855,15 @@
         chosenWordList: function (event) {
             vocabTrainer.chooseList.setAttribute('class', 'hide');
             vocabTrainer.instruct.classList.remove('hide');
-            vocabTrainer.vocabToTrain = vocabTrainer.allVocab[Object.keys(vocabTrainer.allVocab)[this.dataset.vocablist]];
+            vocabTrainer.vocabToTrain = vocabTrainer.allVocab()[this.dataset.vocablist][this.innerHTML];
             vocabTrainer.currentIndex = Math.floor(Math.random() * vocabTrainer.vocabToTrain.length),
             vocabTrainer.startTrainer();
         }
 
     }
 
-    
-    
+
+
     /***************  Event Listeners ***************/
     /* To use back and forwards buttons in Browser */
     window.onpopstate = function (e) {
@@ -880,16 +873,29 @@
         }
     };
 
-    homeBtn.addEventListener('click', function () {
+    app.homeBtn.addEventListener('click', function () {
         navi.changeContent("home");
     });
-    accountBtn.addEventListener('click', function () {
+
+    app.accountBtn.addEventListener('click', function () {
         navi.changeContent("account");
     });
 
     window.addEventListener('load', function () {
+        //need to change later so 
+        emulateLocalStorage('assets/wordLists.json').then((value) => {
+            vocabMine = value;
+            app.loadLocalStorage();
+        });
+        emulateLocalStorage('assets/userAccount.json').then((value) => {
+            userAccount = value;
+            if (!userAccount.score) {
+                app.actualScore.innerHTML = "0";
+            } else {
+                app.actualScore.innerHTML = userAccount.score;
+            }
+        });
         navi.changeContent("home");
-        actualScore.innerHTML = userAccount.score;
     });
-    
+
 })();

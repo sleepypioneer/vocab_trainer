@@ -94,7 +94,6 @@
         </div>-->
 
         <script src="scripts/mainScripts.js"></script>
-        <script src="scripts/app.js"></script>
         <script src="scripts/localforage-1.4.0.js"></script>
         <script type="text/javascript" language="javascript">
             let vocabImport1 = [{id: "1", wordInEnglish: "Keyboard", wordInGerman: "Tastatur", gender: "Der"},
@@ -124,10 +123,8 @@
                 
                 
                 /*<?php echo json_encode($myJSON2); ?>;*/
-            ImportedVocab = {
-                vocabImport1: vocabImport1,
-                vocabImport2: vocabImport2
-            };
+            ImportedVocab = [{"vocabImport1" : vocabImport1}, {"vocabImport2": vocabImport2}
+            ];
 
         </script>
 
