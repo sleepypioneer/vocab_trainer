@@ -4,6 +4,10 @@
     display: none !important;
 }
 
+.blank {
+    height: 2vh;
+}
+
 input,
 textarea,
 select {
@@ -38,8 +42,7 @@ p {
 }
 
 .stat {
-    font-size: 0.9em;
-    font-weight: 600;
+    font-size: 0.8em;
     margin: 0;
 }
 
@@ -88,35 +91,37 @@ p {
     flex: 1;
 }
 
+.circle{
+    border: solid rgba(121, 120, 119, 0.62) 0.05em;
+    border-radius: 100%;
+    height: 4em;
+    width: 4em;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: auto;
+    margin-top: 2em;
+    background: #ccc;
+    color: rgba(121, 120, 119, 0.74);
+    font-size: x-large;
+}
+
+.iconsHome {
+    font-size: 2.6em;
+}
 /******* Image Styles *******/
 
+.fa-camera{
+     font-size: -webkit-xxx-large;
+}
+
 /* make home icon white*/
+i {
+  margin: 0.25em;  
+}
 
 #home {
     color: white;
-}
-
-svg {
-    width: 3em;
-    height: 3em;
-    fill: #022B3A;
-}
-
-.fillclass {
-    fill: #022B3A;
-}
-
-/* make pencil svg slightly smaller to fit rest*/
-
-.smaller {
-    width: 2em;
-    height: 2em;
-    margin-left: 0.2em;
-}
-
-.larger {
-    width: 10em;
-    height: 10em;
 }
 
 
@@ -326,6 +331,7 @@ ul {
 
 #vocabList li {
     color: #ffa975;
+    font-weight: 800;
     border-top: 1em #359C8C solid;
     border-bottom: antiquewhite 2.5em solid;
     background: white;
@@ -365,6 +371,102 @@ ul {
     border-radius: 0.5em;
 }
 
+/******* ADD VOCAB FORM *******/
+/* Style inputs with type="text", select elements and textareas */
+input[type=text], select, textarea {
+    width: 100%; /* Full width */
+    padding: 12px; /* Some padding */  
+    border: 1px solid #ccc; /* Gray border */
+    border-radius: 4px; /* Rounded borders */
+    box-sizing: border-box; /* Make sure that padding and width stays in place */
+    margin-top: 6px; /* Add a top margin */
+    margin-bottom: 16px; /* Bottom margin */
+    resize: vertical /* Allow the user to vertically resize the textarea (not horizontally) */
+}
+
+/* Style the submit button with a specific background color etc */
+input[type=submit] {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+/* When moving the mouse over the submit button, add a darker green color */
+input[type=submit]:hover {
+    background-color: #45a049;
+}
+
+/* Add a background color and some padding around the form */
+.container {
+    border-radius: 5px;
+    background-color: #f2f2f2;
+    padding: 20px;
+}
+/* Customize the label (the container) */
+.radioBtn {
+  display: block;
+  position: relative;
+  padding-left: 35px;
+  margin-bottom: 12px;
+  cursor: pointer;
+  font-size: 22px;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
+/* Hide the browser's default radio button */
+.radioBtn input {
+  position: absolute;
+  opacity: 0;
+}
+
+/* Create a custom radio button */
+.checkmark {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 25px;
+  width: 25px;
+  background-color: #eee;
+  border-radius: 50%;
+}
+
+/* On mouse-over, add a grey background color */
+.container:hover input ~ .checkmark {
+  background-color: #ccc;
+}
+
+/* When the radio button is checked, add a blue background */
+.container input:checked ~ .checkmark {
+  background-color: #2196F3;
+}
+
+/* Create the indicator (the dot/circle - hidden when not checked) */
+.checkmark:after {
+  content: "";
+  position: absolute;
+  display: none;
+}
+
+/* Show the indicator (dot/circle) when checked */
+.container input:checked ~ .checkmark:after {
+  display: block;
+}
+
+/* Style the indicator (dot/circle) */
+.container .checkmark:after {
+  top: 9px;
+  left: 9px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: white;
+}
 /******* Nav Styles *******/
 
 nav {
@@ -372,7 +474,7 @@ nav {
     display: flex;
     background-color: #359C8C;
     /*background: linear-gradient(180deg, rgba(53, 156, 140,1), rgba(53, 156, 140,0.7));*/
-    box-shadow: 0px 2px 7px 1px rgba(121, 120, 119, 0.74);
+    box-shadow: 0 2px 7px 0px rgba(121, 120, 119, 0.74);
 }
 
 .rowNav {
@@ -394,6 +496,7 @@ nav {
     flex: 1;
     display: flex;
     justify-content: center;
+    align-items: center;
     width: fit-content;
 }
 
@@ -412,8 +515,6 @@ nav {
     justify-content: center;
     margin: auto;
     flex: 2;
-    /* flex-shrink: 1; */
-    flex-flow: inherit;
 }
 
 .pageLink p {
@@ -425,6 +526,100 @@ nav {
 .pageLink button {
     margin: 1em;
 }
+
+
+div#volumeControl {
+    margin: 0 1em;
+    margin-top: 2vh;
+    font-size: x-large;
+    color: #022B3A;
+    align-items: right;
+}
+
+#dayNightSwitch {    
+    margin-left: auto;
+    margin-top: 2vh;
+    display: flex;
+    align-items: center;
+    color: #022B3A;
+}
+
+/* The switch - the box around the slider */
+.switch {
+    position: relative;
+    display: inline-block;
+    width: 60px;
+    height: 34px;
+}
+
+/* Hide default HTML checkbox */
+.switch input {display:none;}
+
+/* The slider */
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #ccc;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 26px;
+  width: 26px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  -webkit-transition: .4s;
+  transition: .4s;
+}
+
+input:checked + .slider {
+  background-color: #359C8C;
+}
+
+input:focus + .slider {
+  box-shadow: 0 0 1px #2196F3;
+}
+
+input:checked + .slider:before {
+  -webkit-transform: translateX(26px);
+  -ms-transform: translateX(26px);
+  transform: translateX(26px);
+}
+
+/* Rounded sliders */
+.slider.round {
+  border-radius: 34px;
+}
+
+.slider.round:before {
+  border-radius: 50%;
+}
+
+/*stats table */
+table {
+    margin: 1em auto;
+    border: 0.15em solid #359C8C;
+    border-radius: 0.5em;
+    padding: 1em;
+    width: 80%;
+    background: #fbfbfb;
+    box-shadow: 0 0 9px 3px #359c8c57;
+    text-align: left;
+    padding-left: 2em;
+}
+
+th, td {
+    padding: 0.2em 0.5em;
+}
+
 
 /******* PopUp Styles *******/
 
@@ -472,6 +667,20 @@ nav {
     text-align: right;
 }
 
+.outlineBtn {
+    color: #359C8C;
+    border-radius: 0.5em;
+    border: 0.15em solid #359C8C;
+    background-color: white;
+    padding: 14px 28px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.outlineBtn:hover {
+    background: #359C8C;
+    color: white;
+}
 /******* Keyboard up when Input in focus Styles (Mobile only) *******/
 
 .keyboardUp #Instruct h3 {

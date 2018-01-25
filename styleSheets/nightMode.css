@@ -15,7 +15,7 @@ body {
 
 .topbar li,
 #home {
-	color: #E8EDDF;
+	color: #dbe8f1;
 }
 
 svg {
@@ -36,3 +36,5 @@ svg {
 .answer {
 	border: solid #F5CB5C 0.1em;
 }
+
+

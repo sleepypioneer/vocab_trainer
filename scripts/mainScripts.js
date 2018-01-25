@@ -1,11 +1,10 @@
-(function() {
+//(function() {
     'use strict';
     /*************** Emulating local Content ***************/
     let vocabMine = {};
     let userAccount = {};
 
     function emulateLocalStorage(url) {
-        let xhr = new XMLHttpRequest();
         return fetch(url).then(function (response) {
             if (response.ok) {
                 return response.json();
@@ -125,8 +124,8 @@
         keyboardUp: function () {
             if (document.documentElement.clientHeight < 350 && document.documentElement.clientWidth < 800) {
                 console.log("keyboardUp");
-                app.nav.classList.add("keyboardUp");
-                document.querySelector('#Instruct div h3').setAttribute('style', 'display: none;')
+                //app.nav.classList.add("keyboardUp");
+                //document.querySelector('#Instruct div h3').setAttribute('style', 'display: none;')
             }
 
         }
@@ -558,10 +557,10 @@
                 pageTitle: "stats",
                 urlPath: "/stats",
                 script: function () {
-                    document.getElementById('totalPoints').innerHTML = userAccount.score;
+                    /*document.getElementById('totalPoints').innerHTML = userAccount.score;
                     document.getElementById('totalTime').innerHTML = timer.convertTime(userAccount.totalTime);
                     document.getElementById('lastSession').innerHTML = timer.convertTime(userAccount.lastSession);
-                    
+                    */
                     //logic for adding in word Lists and their length
                 }
                 },
@@ -582,21 +581,25 @@
                     });
 
                     /**** Day/Night Mode ****/
-                    document.getElementById('day')
-                        .addEventListener('click', function () {
-                            if (document.querySelector('#nightMode') != null) {
-                                let a = document.querySelector('#nightMode');
-                                document.querySelector("head")
-                                    .removeChild(a);
-                            }
-                        });
+                    let NightMode = false;
+                    let checkbox = document.querySelector('.switch');
 
-                    document.getElementById('night')
-                        .addEventListener('click', function () {
-                            if (document.querySelector('#nightMode') == null) {
-                                utils.addStyle("styleSheets/nightMode.css", "nightMode");
-                            }
-                        });
+                    checkbox.addEventListener( 'change', function() {
+                        
+                        if(!NightMode) {
+                            utils.addStyle("styleSheets/nightMode.css", "nightMode");
+                            document.querySelector(".fa-sun-o").classList.add('hide');
+                            document.querySelector(".fa-moon-o").classList.remove('hide');
+                            NightMode = true;
+                        } else {
+                            let a = document.querySelector('#nightMode');
+                            document.querySelector("head")
+                                .removeChild(a);
+                            document.querySelector(".fa-moon-o").classList.add('hide');
+                            document.querySelector(".fa-sun-o").classList.remove('hide');
+                            NightMode = false;
+                        }
+                    });
 
                     account.checkAccount();
                 }
@@ -615,7 +618,6 @@
             let pageMatch = (navi.pages.filter(page => page.name === clickedPage));
             let page = pageMatch[0];
             let script = page.script;
-            let xhr = new XMLHttpRequest();
             let banner = document.querySelector('.banner');
             fetch(page.url).then(function (response) {
                 if (response.ok) {
@@ -686,16 +688,16 @@
             let userId = document.getElementById('userId');
             let joinedOn = document.getElementById('joinedOn');
             if (this.haveAccount) {
-                userId.innerHTML = userAccount.name;
-                joinedOn.innerHTML = userAccount.joined;
+                /*userId.innerHTML = userAccount.name;
+                joinedOn.innerHTML = userAccount.joined;*/
                 addOrDelete.innerHTML = "Delete Account";
             } else {
-                userId.innerHTML = "<div class=\"answer\"> <div contenteditable=\"true\" id=\"username\"  type=\"text\" placeholder=\"username\"></div></div>";
+                /*userId.innerHTML = "<div class=\"answer\"> <div contenteditable=\"true\" id=\"username\"  type=\"text\" placeholder=\"username\"></div></div>";
 
                 userId.addEventListener('keydown', (event) => {
                     account.reduceFontSizeOnInput(event);
                 });
-                joinedOn.innerHTML = "";
+                joinedOn.innerHTML = "";*/
                 addOrDelete.innerHTML = "Add Account";
             }
         },
@@ -898,4 +900,4 @@
         navi.changeContent("home");
     });
 
-})();
+//})();
