@@ -867,9 +867,11 @@
         },
         chosenWordList: function (event) {
             vocabTrainer.chooseList.setAttribute('class', 'hide');
+            vocabTrainer.chooseList.setAttribute('class', 'hide');
             vocabTrainer.instruct.classList.remove('hide');
             vocabTrainer.vocabToTrain = vocabTrainer.allVocab()[this.dataset.vocablist][this.innerHTML];
-            vocabTrainer.currentIndex = Math.floor(Math.random() * vocabTrainer.vocabToTrain.length),
+            //vocabTrainer.currentIndex = Math.floor(Math.random() * vocabTrainer.vocabToTrain.length);
+            
             vocabTrainer.startTrainer();
         }
 
