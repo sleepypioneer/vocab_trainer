@@ -10,9 +10,24 @@
     </div>
 </div>
 
-<div id="Instruct" class="hide">
-    <div>
-        <h3>Write the word below in <span class="titleText">German</span> with the correct Article </h3>
+<div id="Instruct" class="">
+    <div class="trainerNavBar">
+
+        <div class="outerTimer">
+            <div class="exit">
+                <i class="fa fa-sign-out" aria-hidden="true">
+                    </i>
+            </div>
+            <div class="innerTimer">
+                <div>00
+                    <h10>h</h10>10
+                    <h10>m</h10>01
+                    <h10>s</h10>
+                </div>
+
+            </div>
+            <i class="fa fa-pause-circle-o" aria-hidden="true"></i>
+        </div>
     </div>
 
     <div class="input card">
@@ -30,12 +45,12 @@
     padding: 0 20px;
 "></i>
         </div>
-        <h1 id="wordToGuess"></h1>
+        <h1 id="wordToGuess">Slideshow</h1>
         <div class="halfCircle">
-            <input type="text" class="answer" id="answer" placeholder="Your Answer.." pattern="[A-Za-z]" />
+            <input type="text" class="answer" id="answer" placeholder="Your Answer.." pattern="[A-Za-z]" style="border-color: rgba(255, 119, 35, 0.74);">
             <form class="rowNav">
-                <input type="button" id="back" value="<<" />
-                <input type="button" id="next" value=">>" />
+                <input type="button" id="back" value="<<">
+                <input type="button" id="next" value=">>">
             </form>
         </div>
         <div class="face back">

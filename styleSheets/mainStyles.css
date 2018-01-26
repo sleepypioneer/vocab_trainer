@@ -53,6 +53,10 @@ p {
 
 .titleText {
     color: #FFA975;
+    margin: 6vh 4vw 2vh 4vw;
+    font-style: italic;
+    font-weight: 800;
+    font-size: initial;
 }
 
 #wordToGuess {
@@ -232,18 +236,64 @@ i {
     height: 75vh;
     display: flex;
     flex-direction: column;
-    width: 100%;
+    /* width: 100%; */
     text-align: center;
+    padding: 0 4vw;
 }
 
 .innerContent {
     height: 100%;
     display: flex;
-    flex-direction: column;
-    /* justify-content: stretch; */
+    justify-content: center;
     flex-wrap: wrap;
-    /* flex: 1; */
+    align-items: center;
 }
+
+.trainerNavBar {
+    display: flex;
+    justify-content: space-between;
+    font-size: 1.4em;
+    color: #359c8c;
+    margin: auto;
+    margin-top: 0.4em;
+    width: 89%;
+}
+
+.innerTimer{
+    text-align: right;
+    border: solid 0.04em;
+    border-radius: 0.2em;
+    padding: 0 0.2em;
+    box-shadow: inset 0 0 6px 0px #fbfbfb;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.exit {
+    text-align: left;
+}
+
+.exit i {
+    transform: rotate(180deg);
+    margin: 6vw 0;
+}
+
+.outerTimer {
+    background: #359C8C;
+    padding: 0 0.2em;
+    border-radius: 0.4em;
+    height: fit-content;
+    color: white;
+    display: flex;
+    justify-content: space-between;
+    margin-top: 4vw;
+    width: 100%;
+    align-items: center;
+}
+
+
 
 .card {
     margin: 1em;
@@ -360,15 +410,16 @@ ul {
 }
 
 .banner {
-    display: flex;
     justify-content: center;
     align-items: center;
     width: 90vw;
     height: 8vh;
     margin: auto;
-    background-color: #F0F0C9;
-    border: solid 0.1em #F2BB05;
+    color: #022b3a;
+    background-color: #f2bb053b;
+    border: solid 0.1em #ffa975;
     border-radius: 0.5em;
+    box-shadow: 0px 0 8px 0px #022b3a8a;
 }
 
 /******* ADD VOCAB FORM *******/
@@ -385,18 +436,19 @@ input[type=text], select, textarea {
 }
 
 /* Style the submit button with a specific background color etc */
-input[type=submit] {
-    background-color: #4CAF50;
+#addWord {
+    background-color: #359c8c;
     color: white;
     padding: 12px 20px;
     border: none;
-    border-radius: 4px;
+    border-radius: 0.2em;
     cursor: pointer;
+    margin: 4vh;
 }
 
 /* When moving the mouse over the submit button, add a darker green color */
-input[type=submit]:hover {
-    background-color: #45a049;
+#addWord:hover {
+    background-color: rgb(36, 114, 102);
 }
 
 /* Add a background color and some padding around the form */
@@ -407,7 +459,7 @@ input[type=submit]:hover {
 }
 /* Customize the label (the container) */
 .radioBtn {
-  display: block;
+    display: inline-flex;
   position: relative;
   padding-left: 35px;
   margin-bottom: 12px;
@@ -443,12 +495,11 @@ input[type=submit]:hover {
 
 /* When the radio button is checked, add a blue background */
 .container input:checked ~ .checkmark {
-  background-color: #2196F3;
+  background-color: #359C8C;
 }
 
 /* Create the indicator (the dot/circle - hidden when not checked) */
 .checkmark:after {
-  content: "";
   position: absolute;
   display: none;
 }
@@ -480,7 +531,7 @@ nav {
 .rowNav {
     display: flex;
     justify-content: space-between;
-    padding: 0 1em;
+    /*padding: 0 1em;*/
     align-items: center;
 }
 
@@ -509,18 +560,25 @@ nav {
 
 .pageLink {
     box-sizing: border-box;
+    height: fit-content;
+    width: fit-content;
     display: flex;
-    padding: 0.5em;
+    padding: 1.4em 1.4em;
     align-items: center;
     justify-content: center;
-    margin: auto;
+    margin: 0.65em;
     flex: 2;
+    color: #022b3a;
+    font-size: initial;
+    font-weight: 600;
+    border: solid 0.15em  #359C8C;
+    border-radius: 0.5em;
+    background: #ffffff7d;
+    box-shadow: 0px 0 8px 0px #022b3a8a;
 }
 
 .pageLink p {
-    padding-left: 1em;
-    min-width: 8em;
-    text-align: left;
+
 }
 
 .pageLink button {
@@ -611,7 +669,7 @@ table {
     padding: 1em;
     width: 80%;
     background: #fbfbfb;
-    box-shadow: 0 0 9px 3px #359c8c57;
+    box-shadow: 0px 0 8px 0px #022b3a8a;
     text-align: left;
     padding-left: 2em;
 }

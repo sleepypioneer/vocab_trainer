@@ -3,43 +3,37 @@
     <h3>Add your own words to train with!</h3>
 </div>
 
-<!--<div class="container">
-  <form action="action_page.php">
+<div class="container">
+  <form name="addVocab" action="">
       
-    <label for="country">Category</label>
-    <select id="country" name="country">
-      <option value="australia">Vocab1</option>
-      <option value="canada">Vocab2</option>
-      <option value="usa">Vocab3</option>
+    <label for="vocabLists">Vocab List</label>
+    <select id="listOptions" name="vocabLists" name="country">
     </select>
 
-    <label for="fname">Word in English</label>
-    <input type="text" id="fname" name="firstname" placeholder="Word in English..">
+    <input type="text" id="english" name="wordInEnglish" placeholder="Word in English..">
 
-    <label for="lname">Word in German</label>
-    <input type="text" id="lname" name="lastname" placeholder="Word in German..">
+    <input type="text" id="german" name="wordInGerman" placeholder="Word in German..">
     
     <div>
       <label class="radioBtn">Die
-          <input type="radio" checked="checked" name="radio">
+          <input type="radio" checked="checked" name="gender" data-gender="Die">
           <span class="checkmark"></span>
         </label>
         <label class="radioBtn">Der
-          <input type="radio" name="radio">
+          <input type="radio" name="gender" data-gender="Der">
           <span class="checkmark"></span>
         </label>
         <label class="radioBtn">Das
-          <input type="radio" name="radio">
+          <input type="radio" name="gender" data-gender="Das">
           <span class="checkmark"></span>
         </label>
     </div>
       
-    <input type="submit" value="Submit">
-
+    <input type="button" value="Add" id="addWord" />
   </form>
-</div>-->
+</div>
 
-
+<!--
 <div class="input addVocab">
     <select id="listOptions" class="answer" name="vocabLists">
       
@@ -67,4 +61,4 @@
             </div>
         </div>
     </div>
-</div>
+</div>-->

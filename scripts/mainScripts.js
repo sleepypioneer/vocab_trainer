@@ -337,32 +337,31 @@
         setProperties: function () {
             this.wordInEnglish = document.getElementById('english');
             this.wordInGerman = document.getElementById('german');
-            this.gender = document.whichGender.gender;
+            this.gender = document.addVocab.gender;
             this.listOptions = document.getElementById('listOptions');
         },
-        populateWordLists: function () {
+        populateWordLists: function (selected) {
+            
             this.listOptions.innerHTML = "";
             if (this.localVocabList != null) {
                 this.localVocabList = app.localVocab;
-                let keysVocabLists = Object.keys(addVocab.localVocabList);
                 let i = 0;
-                while (i < keysVocabLists.length) {
-                    addVocab.listOptions.innerHTML += "<option value= \"" + keysVocabLists[i] + "\">" + keysVocabLists[i] + "</option>";
+                while (i < this.localVocabList.length) {
+                    addVocab.listOptions.innerHTML += "<option value= \"" + Object.keys(addVocab.localVocabList[i])[0] + "\">" + Object.keys(addVocab.localVocabList[i])[0] + "</option>";
                     i++;
                 }
             } else {
                 addVocab.localVocabList = {};
             }
             this.listOptions.innerHTML += "<option value= \"createNew\"> Create New Category </option>";
+            if(selected){
+                this.listOptions.querySelector('option[value=\"' + selected + '\"]' ).selected = true;
+            }
         },
         clearForm: function () {
             this.wordInEnglish.value = "";
             this.wordInGerman.value = "";
-            document.whichGender.gender.forEach(gender => {
-                if (gender.checked) {
-                    gender.checked = false;
-                }
-            });
+            this.gender[0].checked = true;
             this.wordInGerman.style.borderColor = "rgba(255, 119, 35, 0.74)";
             this.wordInEnglish.style.borderColor = "rgba(255, 119, 35, 0.74)";
         },
@@ -443,23 +442,35 @@
                         // change to div popup
                         let newList = prompt("name you new list", "New Category Name");
                         addVocab.listOptions.value = newList;
-                        Object.keys(app.localVocab).forEach(key => {
-                            if (newList == key) {
+                        for(let k = 0; k < app.localVocab.length; k++){
+                            if(app.localVocab[k][0] === newList){
                                 // change to div popup
                                 confirm("You will be overwriting an existing list");
                             }
-                        });
-
-                        app.localVocab[newList] = [];
-                        app.localVocab[newList].push(addVocab.newWord);
+                            
+                        }
+                        let insertList = {
+                        }
+                        insertList[newList] = [addVocab.newWord];
+                        app.localVocab.unshift(insertList);
+                        // change to div popup
+                        alert(addVocab.newWord.wordInEnglish + " was added to your " + newList + " List.");
+                        addVocab.clearForm();
+                        addVocab.populateWordLists(newList);
+                        
                     } else {
-                        app.localVocab[addVocab.listOptions.value].push(addVocab.newWord);
+                        for(let t = 0; t < app.localVocab.length; t++){
+                            if(app.localVocab[t][0] === addVocab.listOptions.value){
+                                app.localVocab[t][addVocab.listOptions.value].push(addVocab.newWord);
+                            }
+                        }
+                        // change to div popup
+                        alert(addVocab.newWord.wordInEnglish + " was added to your " + addVocab.listOptions.value + " List.");
+                        
+                        addVocab.clearForm();
+                        addVocab.populateWordLists(addVocab.listOptions.value);
                     }
                 }
-                // change to div popup
-                alert(addVocab.newWord.wordInEnglish + " was added to your " + addVocab.listOptions.value + " List.");
-                addVocab.clearForm();
-                addVocab.populateWordLists();
             }
 
         }
@@ -541,10 +552,9 @@
                 pageTitle: "addVocab",
                 urlPath: "/addVocab",
                 script: function () {
-                    document.getElementById('addWord')
+                    document.querySelector('#addWord')
                         .addEventListener('click', addVocab.addWord);
-                    document.getElementById('clearForm')
-                        .addEventListener('click', addVocab.clearForm);
+                    //document.getElementById('clearForm').addEventListener('click', addVocab.clearForm);
 
                     /*************** Function calls ***************/
                     addVocab.setProperties();
@@ -783,6 +793,7 @@
             }
         },
         startTrainer: function () { //need to make on click through to trainer and list specific
+            this.currentIndex = Math.floor(Math.random() * this.vocabToTrain.length)
             this.wordToGuess.innerHTML = this.vocabToTrain[this.currentIndex].wordInEnglish;
             this.answer.addEventListener("click", function (e) {
                 if (document.activeElement == document.getElementById('answer')) {
