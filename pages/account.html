@@ -8,7 +8,13 @@
     box-sizing: border-box;
 ">
         <div id="volumeControl">
-	       <i class="fa fa-volume-up" aria-hidden="true"></i>		
+            <!-- Rounded switch -->
+            <label class="switch">
+              <input type="checkbox" checked>
+              <span class="slider round"></span>
+            </label>
+            <i class="fa fa-volume-up" aria-hidden="true"></i>	
+            <i class="fa fa-volume-off hide" aria-hidden="true"></i>
 		</div>
         <div id="dayNightSwitch">
             <i class="fa fa-sun-o" aria-hidden="true"></i>
@@ -21,9 +27,10 @@
         </div>
 
 	</li>
-	<li class="center">
+	<li class="center addAccount">
         <div class="circle">
-            <i class="fa fa-camera" aria-hidden="true"></i>
+            <i class="fa fa-user-plus" aria-hidden="true"></i>
+            <i class="fa fa-camera hide" aria-hidden="true"></i>
         </div>
         
 		<p class="info">
@@ -32,26 +39,14 @@
 	</li>
 	
 	<li class="center">
-		<button class="outlineBtn" id="addOrDeleteAccount">Add Account</button>
+        <input type="text" id="username" name="accountName" placeholder="accountName.." style="width: 80%;">
+		<button class="outlineBtn" id="addOrDeleteAccount"></button>
 	</li>
+    
 	<li class="center">
 		<p class="info">
 			
 		</p>
 	</li>
+    <li class="center accountInfo">
 </ul>
-
-
-<!--
-    <li class="pageLink">
-		<i class="fa fa-user-circle-o" aria-hidden="true"></i>
-		<h2 class="stat">Name</h2>
-		<p id="userId">Bugs Bunny</p>
-	</li>
-	<li class="pageLink">
-		<i class="fa fa-user-circle-o" aria-hidden="true"></i>
-		<h2 class="stat">Joined</h2>
-		<p id="joinedOn">02/12/2017</p>
-	</li>
-
--->

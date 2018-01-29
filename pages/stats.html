@@ -3,27 +3,33 @@
     <li class="center">
         <div class="blank"></div>
     </li>
-	<li class="center">
-		<table>
-                <th colspan="2">Score Board</th>
+    <li class="center">
+        <table>
+            <th colspan="2">Score Board</th>
             <tr>
                 <td>Total Points:</td>
-                <td class="stat">20:00:00</td>
+                <td id="totalPoints" class="stat">20:00:00</td>
             </tr>
             <tr>
                 <td>Total Time:</td>
-                <td class="stat">10:00:00</td>
+                <td id="totalTime" class="stat">10:00:00</td>
             </tr>
+            <th colspan="2" style="
+    font-size: x-small;
+    font-weight: 300;
+    font-style: italic;
+    text-align: center;
+">**only timed sessions included**</th>
             <tr>
                 <td>Last Session:</td>
-                <td class="stat">20:00:00</td>
+                <td id="lastSession" class="stat">20:00:00</td>
             </tr>
         </table>
     </li>
     <li class="center">
-        <table>
-                <th colspan="2">Word Lists</th>
-            <tr>
+        <table id="wordLists">
+            <th colspan="2">Locally stored Vocab Lists</th>
+            <!--<tr>
                 <td>MyVocab1 </td>
                 <td class="stat">(200 words)</td>
             </tr>
@@ -34,12 +40,9 @@
             <tr>
                 <td>MyVocab3</td>
                 <td class="stat">(50 words)</td>
-            </tr>
+            </tr>-->
         </table>
     </li>
-	<li class="center">
-		<button class="outlineBtn">Download Lists </button>
-	</li>
 </ul>
 
 

@@ -1,7 +1,7 @@
 <!-- vocab Trainer page -->
 <div id="chooseList">
     <div>
-        <h3>Choose which <span class="titleText">List</span> You want to train from</h3>
+        <h3>Choose which List you want to train from</h3>
     </div>
 
     <div id="wordList">
@@ -10,7 +10,7 @@
     </div>
 </div>
 
-<div id="Instruct" class="">
+<div id="Instruct" class="hide">
     <div class="trainerNavBar">
 
         <div class="outerTimer">
@@ -19,14 +19,14 @@
                     </i>
             </div>
             <div class="innerTimer">
-                <div>00
-                    <h10>h</h10>10
-                    <h10>m</h10>01
-                    <h10>s</h10>
+                <div id="vocabTimer">
                 </div>
 
             </div>
-            <i class="fa fa-pause-circle-o" aria-hidden="true"></i>
+            <div id="timerControl">
+                <i class="fa fa-pause-circle-o" aria-hidden="true"></i>
+                <i class="fa fa-play-circle-o hide" aria-hidden="true"></i>
+            </div>
         </div>
     </div>
 
@@ -57,7 +57,10 @@
             <!-- <div class="halfCircle"></div> -->
         </div>
     </div>
-
+    <audio id="pointSound" src="assets/audio/pointSound.mp3">
+      <!-- audio files from https://www.zapsplat.com/ -->
+      Your browser does not support the <code>audio</code> element.
+    </audio>
 
 
 </div>
