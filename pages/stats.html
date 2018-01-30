@@ -1,7 +1,11 @@
 <!-- stats page -->
 <ul>
-    <li class="center">
-        <div class="blank"></div>
+    <li class="center blank">
+        <div class="accountDetails hide">
+            <h5 id="userId"></h5>
+            <h8 style="font-size: small;margin: 0;padding: 0;">Member since: </h8>
+            <h5 id="joinedOn"></h5>
+        </div>
     </li>
     <li class="center">
         <table>
@@ -26,53 +30,12 @@
             </tr>
         </table>
     </li>
-    <li class="center">
-        <table id="wordLists">
-            <th colspan="2">Locally stored Vocab Lists</th>
-            <!--<tr>
-                <td>MyVocab1 </td>
-                <td class="stat">(200 words)</td>
-            </tr>
-            <tr>
-                <td>MyVocab2 </td>
-                <td class="stat">(100 words)</td>
-            </tr>
-            <tr>
-                <td>MyVocab3</td>
-                <td class="stat">(50 words)</td>
-            </tr>-->
-        </table>
+    <li id="addAccountHint" class="center">
+        <p class="info">
+			Why not create a free profile and save your progress!
+		</p>
+        <button class="outlineBtn" id="makeAccount">Make Account</button>
     </li>
 </ul>
 
 
-
-
-
-<!--
-	<li class="pageLink">
-		<div>
-			<p>Total Points:</p>
-			<h2 class="stat" id="totalPoints"></h2>
-		</div>
-	</li>
-	<li class="pageLink">
-		<div>
-			<p>Total time:</p>
-			<h2 class="stat" id="totalTime"></h2>
-		</div>
-	</li>
-	<li class="pageLink">
-		<div>
-			<p>Last Session:</p>
-			<h2 class="stat" id="lastSession"></h2>
-		</div>
-	</li>
-	<li class="pageLink">
-		<div>
-			<p>Word Lists</p>
-			<p class="stat" id="wordLists"></p>
-		</div>
-	</li>
-	<li class="center">
--->

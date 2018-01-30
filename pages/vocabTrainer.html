@@ -11,29 +11,47 @@
 </div>
 
 <div id="Instruct" class="hide">
-    <div class="trainerNavBar">
+    <nav>
+        <ul class="rowNav topbar">
+            <li class="exit">
+                <i class="fa fa-sign-out" aria-hidden="true"></i>
+            </li>
+            <li id="score">
+                <i class="fa fa-trophy" aria-hidden="true"></i>
+                <h4> <span id="actualScore"></span>pts</h4>
+            </li>
+            <li id="vocabTimer" style="font-size: large;">
 
-        <div class="outerTimer">
-            <div class="exit">
-                <i class="fa fa-sign-out" aria-hidden="true">
-                    </i>
-            </div>
-            <div class="innerTimer">
-                <div id="vocabTimer">
-                </div>
-
-            </div>
-            <div id="timerControl">
+            </li>
+            <li id="timerControl">
                 <i class="fa fa-pause-circle-o" aria-hidden="true"></i>
                 <i class="fa fa-play-circle-o hide" aria-hidden="true"></i>
+            </li>
+        </ul>
+    </nav>
+    <!--<div class="trainerNavBar">
+            <div class="outerTimer">
+                <div class="exit">
+                    <i class="fa fa-sign-out" aria-hidden="true">
+                        </i>
+                </div>
+                <div class="innerTimer">
+                    <div id="vocabTimer">
+                    </div>
+
+                </div>
+                <div id="timerControl">
+                    <i class="fa fa-pause-circle-o" aria-hidden="true"></i>
+                    <i class="fa fa-play-circle-o hide" aria-hidden="true"></i>
+                </div>
             </div>
-        </div>
-    </div>
+        </div>-->
 
     <div class="input card">
         <div style="
     display: flex;
     justify-content: space-around;
+    font-size: 1.4em;
     color: white;
 ">
             <i id="hint" class="fa fa-question-circle" aria-hidden="true" style="
@@ -47,7 +65,7 @@
         </div>
         <h1 id="wordToGuess">Slideshow</h1>
         <div class="halfCircle">
-            <input type="text" class="answer" id="answer" placeholder="Your Answer.." pattern="[A-Za-z]" style="border-color: rgba(255, 119, 35, 0.74);">
+            <input type="text" class="answer" id="answer" placeholder="Your Answer.." pattern="[A-Za-z]" style="border-color: rgba(255, 119, 35, 0.74);width: 80%;">
             <form class="rowNav">
                 <input type="button" id="back" value="<<">
                 <input type="button" id="next" value=">>">

@@ -24,12 +24,14 @@ let app = {
     /*************** Global Variables for App ***************/
     body: document.querySelector("body"),
     nav: document.querySelector("nav"),
+    footer: document.querySelector('.footer'),
     homeBtn: document.getElementById('home'),
     accountBtn: document.getElementById('account'),
     actualScore: document.getElementById('actualScore'),
     userAccount: {},
-    newScore: "",
+    newScore: 0,
     soundOn: true,
+    nightMode: false,
     hintTaken: false,
     isLoading: true,
     localVocab: [],
@@ -109,6 +111,7 @@ let utils = {
             app.newScore = parseInt(userAccount.score) + 2;
         }
         app.actualScore.innerHTML = app.newScore;
+        vocabTrainer.instruct.querySelector('#actualScore').innerHTML = app.newScore;
         userAccount.score = app.newScore.toString();
     },
     // play sound to notify a correct answer (can turn off sounds on account page)
@@ -117,7 +120,7 @@ let utils = {
             document.querySelector('#pointSound').play();
         }
     },
-    // add stylesheet to page - should change to fetch ***** Temporary *****
+    // add stylesheet reference to page
     addStyle: function (styleSheet, styleName) {
         /* Add style sheet to site */
         const head = document.querySelector("head");
@@ -135,7 +138,8 @@ let utils = {
             //app.nav.classList.add("keyboardUp");
             //document.querySelector('#Instruct div h3').setAttribute('style', 'display: none;')
         }
-    }
+    },
+    
 };
 
 
@@ -239,60 +243,61 @@ let timer = {
         popUps functions
 ******************************/
 let popUps = {
+    popUpElement: document.querySelector('#popUp'),
     // Object containing texts for all popups also additional info
     popUpTexts: [
         {
-            text: "trainerInfo",
-            url: "pages/popups/vocabTrainerInfo.html",
+            title: "trainerInfo",
+            text: "Info text - how to play!",
             top: "8%",
             left: "7%",
             borderColor: "rgba(0, 0, 0, 0.6)"
          },
         {
-            text: "caseSensitive",
-            url: "pages/popups/hint1.html",
+            title: "caseSensitive",
+            text: "Good work but this test is case sensitive!",
             top: "8%",
             left: "7%",
             borderColor: "rgba(0, 0, 0, 0.6)"
           },
         {
-            text: "article",
-            url: "pages/popups/hint2.html",
+            title: "article",
+            text: "Almost there, you must have the correct Article!",
             top: "8%",
             left: "7%",
             borderColor: "rgba(0, 0, 0, 0.6)"
           },
         {
-            text: "account",
-            url: "pages/popups/addAccount.html",
+            title: "account",
+            text: "Account Added!",
             top: "8%",
             left: "7%",
             borderColor: "rgba(0, 0, 0, 0.6)"
           },
         {
-            text: "deleteAccount",
-            url: "pages/popups/addAccount.html",
+            title: "deleteAccount",
+            text: "pages/popups/addAccount.html",
             top: "8%",
             left: "7%",
             borderColor: "rgba(0, 0, 0, 0.6)"
           },
         {
-            text: "assignTime",
-            url: "pages/popups/timerAddTime.html",
+            title: "assignTime",
+            text: "You need to add a time first!",
             top: "8%",
             left: "7%",
             borderColor: "rgba(0, 0, 0, 0.6)"
           },
         {
-            text: "start",
-            url: "pages/popups/startTimerTraining.html",
+            title: "start",
+            text: "Ready......Steady......Go!",
             top: "8%",
             left: "7%",
             borderColor: "rgba(0, 0, 0, 0.6)"
           },
         {
-            text: "timerEnd",
-            url: "pages/popups/TimerTrainingEnd.html",
+            title: "timerEnd",
+            text: "You're done!",
             top: "8%",
             left: "7%",
             borderColor: "rgba(0, 0, 0, 0.6)"
@@ -306,45 +311,15 @@ let popUps = {
             e.style[prop] = style[prop];
         }
     },
-    //add Popup to body element
-    // Stop multiply instances of same popup
+    //Display PopUp and set content and position
     popUp: function (textNumber) {
-        let popUpName = this.popUpTexts[textNumber].text;
-        if (document.querySelector("#" + popUpName) == null) {
-            let popUpBox = document.createElement("div");
-            popUpBox.setAttribute("class", "popUp");
-            popUpBox.setAttribute("id", popUpName);
-            let xhr = new XMLHttpRequest();
-            xhr.onreadystatechange = function () {
-                if (this.readyState == 4 && this.status == 200) {
-                    popUpBox.innerHTML = this.response;
-                }
-            };
-            xhr.open("POST", popUps.popUpTexts[textNumber].url, true);
-            xhr.send(null);
-            popUps.setCSS(popUpBox, {
-                top: popUps.popUpTexts[textNumber].top,
-                left: popUps.popUpTexts[textNumber].left,
-                borderColor: popUps.popUpTexts[textNumber].borderColor
-            });
-            app.body.appendChild(popUpBox);
-            if (popUpName != "trainerInfo") {
-                setTimeout(popUps.popUpHide, 2000);
-            }
-        }
+        let selectedPopUp = this.popUpTexts[textNumber];
+        this.popUpElement.innerHTML = selectedPopUp['text'];
+        this.popUpElement.classList.remove('hide');
     },
-    // deletes the first instance with class popup and not the one clicked on need to change this.
-    //instigated after a timeout or on click
+    //Hide PopUp
     popUpHide: function () {
-        if (document.querySelector(".popUp") != null) {
-            document.querySelectorAll("#content").forEach(cross => {
-                document.querySelector(".popUp").classList.add('popUpFadeOut')
-                setTimeout(function () {
-                    cross.removeChild(document.querySelector(".popUpFadeOut"));
-                }, 2000);
-                //timeout causes some console errors if person is impatient and double clicks on cross to close
-            });
-        }
+        this.popUpElement.classList.add('hide');
     }
 };
 
@@ -560,7 +535,17 @@ let navi = {
                     .addEventListener('click', function () {
                         vocabTrainer.changeWord(-1);
                     });
-
+                 document.getElementById('timerControl').addEventListener('click', function(){
+                    if(timer.started){
+                        timer.pause();
+                        document.querySelector('.fa-pause-circle-o').classList.add('hide');
+                        document.querySelector('.fa-play-circle-o').classList.remove('hide');
+                    } else {
+                        timer.start();
+                        document.querySelector('.fa-play-circle-o').classList.add('hide');
+                        document.querySelector('.fa-pause-circle-o').classList.remove('hide');
+                    }
+                });
                 /************* function call **************/
                 vocabTrainer.initialize();
             }
@@ -593,7 +578,10 @@ let navi = {
             script: function () {
                 document.querySelector('#addWord')
                     .addEventListener('click', addVocab.addWord);
-                //document.getElementById('clearForm').addEventListener('click', addVocab.clearForm);
+                document.getElementById('manageLocalLists').addEventListener('click', function(){
+                    console.log("click");
+                    navi.changeContent("manageVocab");
+                });
 
                 /*************** Function calls ***************/
                 addVocab.setProperties();
@@ -612,11 +600,21 @@ let navi = {
                 document.getElementById('totalTime').innerHTML = timer.convertTime(userAccount.totalTime);
                 // Add is Last Session Time to Score Board
                 document.getElementById('lastSession').innerHTML = timer.convertTime(userAccount.lastSession);
-                // Add is Word Lists and their length to table
-                let wordLists = document.getElementById('wordLists');
-                for (let r = 0; r < app.localVocab.length; r++){
-                   wordLists.innerHTML += "<tr><td>" + Object.keys(app.localVocab[r])[0] + " </td><td class=\"stat\">(" + Object.values(app.localVocab[r])[0].length + " words)</td></tr>";
+                // If Account display account details above score board, if not display hint to make one below.
+                if(account.haveAccount){
+                    document.querySelector('#userId').innerHTML = app.userAccount.name;
+                    document.querySelector('#joinedOn').innerHTML = app.userAccount.joined;
+                    document.querySelector('#addAccountHint').classList.add('hide');
+                    document.querySelector('.accountDetails').classList.remove('hide');
+                } else {
+                    document.querySelector('.accountDetails').classList.add('hide');
+                    document.querySelector('#addAccountHint').classList.remove('hide');
+                    document.querySelector('#addAccountHint button').addEventListener('click', function(){
+                        navi.changeContent("account");
+                    });
                 }
+                
+                
             }
         },
         {
@@ -628,14 +626,7 @@ let navi = {
                 /*********************
                  Add or Delete Account 
                 **********************/
-                let addOrDelete = document.getElementById('addOrDeleteAccount');
-                if(account.haveAccount){
-                    addOrDelete.innerHTML = "Delete Account";
-                } else {
-                    addOrDelete.innerHTML = "Add Account";
-                }
-                
-                addOrDelete.addEventListener('click', function () {
+                document.getElementById('addOrDeleteAccount').addEventListener('click', function () {
                     if (account.haveAccount) {
                         account.deleteAccount();
                     } else {
@@ -646,25 +637,33 @@ let navi = {
                 /*********************
                      Day/Night Mode 
                 **********************/
-                let NightMode = false;
-                let checkbox = document.querySelector('#dayNightSwitch');
-
-                checkbox.addEventListener('change', function () {
-                    if (!NightMode) {
-                        utils.addStyle("styleSheets/nightMode.css", "nightMode");
+                let nightDayMode = document.querySelector('#dayNightSwitch input');
+                function checkNightTime(){
+                    if (app.nightMode) {
                         document.querySelector(".fa-sun-o").classList.add('hide');
                         document.querySelector(".fa-moon-o").classList.remove('hide');
-                        NightMode = true;
+                        nightDayMode.setAttribute('checked', true);
                     } else {
-                        let a = document.querySelector('#nightMode');
-                        document.querySelector("head")
-                            .removeChild(a);
                         document.querySelector(".fa-moon-o").classList.add('hide');
                         document.querySelector(".fa-sun-o").classList.remove('hide');
-                        NightMode = false;
                     }
+                }
+                
+                nightDayMode.addEventListener('change', function(){
+                    if (!app.nightMode) {
+                        utils.addStyle("styleSheets/nightMode.css", "nightMode");
+                        app.nightMode = true;
+                    } else {
+                        let a = document.querySelector('#nightMode');
+                        document.querySelector("head").removeChild(a);
+                        app.nightMode = false;
+                    }
+                    checkNightTime();
                 });
-
+            
+                checkNightTime();
+                
+                
                 /*********************
                      Sound On / Off 
                 **********************/
@@ -684,7 +683,6 @@ let navi = {
                 }
 
                 soundSwitch.addEventListener('click', function () {
-                    console.log('click');
                     if (app.soundOn) {
                         app.soundOn = false;
                     } else {
@@ -703,17 +701,8 @@ let navi = {
             }
         },
         {
-            name: "addAccount",
-            url: "pages/addAccount.html",
-            pageTitle: "addAccount",
-            urlPath: "/addAccount",
-            script: function () {
-                document.querySelector('#addAccount').addEventListener('click', account.addAccount)
-            }
-        },
-        {
             name: "manageVocab",
-            url: "pages/manageLocalVocab.html",
+            url: "pages/manageLocalLists.html",
             pageTitle: "manageVocab",
             urlPath: "/manageVocab",
             script: function () {
@@ -737,7 +726,6 @@ let navi = {
         let pageMatch = (navi.pages.filter(page => page.name === clickedPage));
         let page = pageMatch[0];
         let script = page.script;
-        let banner = document.querySelector('.banner');
         fetch(page.url).then(function (response) {
             if (response.ok) {
                 response.text().then(function (text) {
@@ -745,9 +733,9 @@ let navi = {
                 }).then(function () {
                     script();
                     if (clickedPage === "home") {
-                        banner.style.display = "flex";
+                        app.footer.style.display = "flex";
                     } else {
-                        banner.style.display = "none";
+                        app.footer.style.display = "none";
                     }
 
                 });
@@ -814,54 +802,55 @@ let account = {
         let userId = document.getElementById('userId');
         let joinedOn = document.getElementById('joinedOn');
         if (this.haveAccount) {
-            /*userId.innerHTML = userAccount.name;
-            joinedOn.innerHTML = userAccount.joined;*/
+            userId.innerHTML = app.userAccount.name;
+            joinedOn.innerHTML = app.userAccount.joined;
             addOrDelete.innerHTML = "Delete Account";
+            document.querySelector('.addAccount').classList.add('hide');
+            document.querySelector('.accountDetails').classList.remove('hide');
         } else {
-            /*userId.innerHTML = "<div class=\"answer\"> <div contenteditable=\"true\" id=\"username\"  type=\"text\" placeholder=\"username\"></div></div>";
-
-            userId.addEventListener('keydown', (event) => {
-                account.reduceFontSizeOnInput(event);
-            });
-            joinedOn.innerHTML = "";*/
+            document.querySelector('.accountDetails').classList.add('hide');
+            document.querySelector('.addAccount').classList.remove('hide');
+            
             addOrDelete.innerHTML = "Add Account";
         }
     },
-    //add Accont
+    //add Account
     addAccount: function () {
-        console.log("account added");
         let inputUserName = document.getElementById('username');
         // should I add a message that you need a user name?
-        if (inputUserName.innerText != "") {
+        if (inputUserName.value != "") {
             let dateJoined = new Date(),
                 yearJoined = dateJoined.getFullYear(),
                 monthJoined = dateJoined.getMonth() + 1,
                 dayJoined = dateJoined.getDate();
             dateJoined = dayJoined + "/" + monthJoined + "/" + yearJoined;
-            app.userAccount.name = inputUserName.innerText.toString();
+            app.userAccount.name = inputUserName.value.toString();
             app.userAccount.joined = dateJoined;
             account.haveAccount = true;
         }
-        navi.changeContent("account");
+        account.checkAccount();
+        inputUserName.value = "";
+        console.log("account added");
     },
     // Delete Account 
     deleteAccount: function () {
         //prompt a confirmation!
-        console.log("Deleting account");
         userAccount.name = "";
         userAccount.joined = "";
         userAccount.score = "0";
         userAccount.totalTime = 0;
         userAccount.lastSession = 0;
         app.actualScore.innerHTML = 0;
-        this.haveAccount = false;
+        account.haveAccount = false;
         account.checkAccount();
+        console.log("Deleting account");
     }
 }
 
 
-/*****************************
-        Vocab Trainer functions */
+/********************************
+        Vocab Trainer functions
+*********************************/
 let vocabTrainer = {
     // word to be guessed
     wordToGuess: "",
@@ -883,7 +872,6 @@ let vocabTrainer = {
     vocabToTrain: "",
     // array to hold all vocab, both from the DB and locally stored
     allVocab: [],
-    
     vocabLists: "",
     //initialize values for above properties
     initialize: function () {
@@ -932,7 +920,6 @@ let vocabTrainer = {
             }, 1000);
         } else {
             document.querySelector('.fa-pause-circle-o').setAttribute('class', 'hide');
-            document.querySelector('.innerTimer').setAttribute('class', 'hide');
         }
 
         this.answer.addEventListener("click", function (e) {
@@ -942,17 +929,7 @@ let vocabTrainer = {
 
             }
         });
-        document.getElementById('timerControl').addEventListener('click', function(){
-            if(timer.time > 0){
-                timer.pause();
-                document.querySelector('.fa-pause-circle-o').classList.add('hide');
-                document.querySelector('.fa-play-circle-o').classList.remove('hide');
-            } else {
-                timer.start();
-                document.querySelector('.fa-play-circle-o').classList.add('hide');
-                document.querySelector('.fa-pause-circle-o').classList.remove('hide');
-            }
-        });
+       
         
         document.querySelector('.exit').addEventListener('click', this.endTrainer);
     },
@@ -1038,6 +1015,7 @@ let vocabTrainer = {
         vocabTrainer.chooseList.setAttribute('class', 'hide');
         app.nav.setAttribute('class', 'hide');
         vocabTrainer.instruct.classList.remove('hide');
+        vocabTrainer.instruct.querySelector('#actualScore').innerHTML = app.newScore;
         vocabTrainer.vocabToTrain = vocabTrainer.allVocab()[this.dataset.vocablist][this.innerHTML];
         vocabTrainer.startTrainer();
     }
@@ -1077,10 +1055,10 @@ window.addEventListener('load', function () {
     });
     emulateLocalStorage('assets/userAccount.json').then((value) => {
         userAccount = value;
-        if (!userAccount.score) {
-            app.actualScore.innerHTML = "0";
+        if (!app.userAccount.score) {
+            app.actualScore.innerHTML = app.newScore;
         } else {
-            app.actualScore.innerHTML = userAccount.score;
+            app.actualScore.innerHTML = app.userAccount.score;
         }
     });
     

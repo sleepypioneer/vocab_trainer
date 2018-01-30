@@ -31,8 +31,7 @@
         <link href="https://fonts.googleapis.com/css?family=Nova+Round|Numans|Orbitron|NTR|Poiret+One" rel="stylesheet">
 
         <!-- Add Style Sheet -->
-        <link rel="stylesheet" type="text/css" href="styleSheets/mainStyles.css">
-        <link rel="stylesheet" type="text/css" href="styleSheets/mainStyles.css">
+        <link rel="stylesheet" type="text/css" href="styleSheets/appStyles.css">
         
         <!-- Add Babel -->
         <script src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.24/browser.js"></script>
@@ -86,6 +85,11 @@
                 </p>
             </div>
         </div>
+        
+        <div id="popUp" class="popUp hide">
+            <span class="close">&times;</span>
+            <p></p>
+        </div>
 
         <!-- <div class="loader">
             <svg viewBox="0 0 32 32" width="32" height="32">
@@ -93,7 +97,7 @@
             </svg>
         </div>-->
 
-        <script src="scripts/mainScripts.js"></script>
+        <script src="scripts/appScripts.js"></script>
         <script src="scripts/localforage-1.4.0.js"></script>
         <script type="text/javascript" language="javascript">
             let vocabImport1 = [{id: "1", wordInEnglish: "Keyboard", wordInGerman: "Tastatur", gender: "Der"},

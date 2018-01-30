@@ -5,7 +5,7 @@
 }
 
 .blank {
-    height: 2vh;
+    min-height: 2vh;
 }
 
 input,
@@ -33,7 +33,8 @@ body {
     margin: auto;
     width: 100vw;
     height: 100vh;
-    overflow: hidden;
+    overflow-y: scroll;
+    overflow-x: hidden;
     font-family: 'Numans', sans-serif;
 }
 
@@ -237,8 +238,8 @@ i {
 }
 
 #content {
-    height: -webkit-fill-available;
-    overflow: scroll;
+    margin-top: 3em;
+    height: max-content;
     display: flex;
     flex-direction: column;
     /* width: 100%; */
@@ -417,6 +418,7 @@ ul {
 }
 
 .banner {
+    display: flex;
     justify-content: center;
     align-items: center;
     width: 90vw;
@@ -433,6 +435,7 @@ ul {
 /* Style inputs with type="text", select elements and textareas */
 input[type=text], select, textarea {
     width: 100%; /* Full width */
+    text-align: center;
     padding: 12px; /* Some padding */  
     border: 1px solid #ccc; /* Gray border */
     border-radius: 4px; /* Rounded borders */
@@ -528,10 +531,15 @@ input[type=text], select, textarea {
 /******* Nav Styles *******/
 
 nav {
+    width: 100vw;
+    position: absolute;
+    top: 0;
+    left: 0;
+    margin: 0;
     height: 3em;
     display: flex;
     background-color: #359C8C;
-    /*background: linear-gradient(180deg, rgba(53, 156, 140,1), rgba(53, 156, 140,0.7));*/
+    /* background: linear-gradient(180deg, rgba(53, 156, 140,1), rgba(53, 156, 140,0.7)); */
     box-shadow: 0 2px 7px 0px rgba(121, 120, 119, 0.74);
 }
 
@@ -598,6 +606,7 @@ div#volumeControl {
     display: flex;
     align-items: center;
     color: #022B3A;
+    font-size: 1.5em;
 }
 
 #dayNightSwitch {    
@@ -606,6 +615,7 @@ div#volumeControl {
     display: flex;
     align-items: center;
     color: #022B3A;
+    font-size: 1.5em;
 }
 
 /* The switch - the box around the slider */
