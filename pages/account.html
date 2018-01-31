@@ -1,51 +1,53 @@
 <!-- account page -->
-<ul>
-	<li class="" style="
-    width: 100%;
-    display: flex;
-    align-items: center;
-    padding: 0.5em;
-    box-sizing: border-box;
-">
-        <div id="volumeControl">
-            <!-- Rounded switch -->
-            <label class="switch">
-              <input type="checkbox" checked>
-              <span class="slider round"></span>
-            </label>
-            <i class="fa fa-volume-up" aria-hidden="true"></i>	
-            <i class="fa fa-volume-off hide" aria-hidden="true"></i>
-		</div>
-        <div id="dayNightSwitch">
-            <i class="fa fa-sun-o" aria-hidden="true"></i>
-            <i class="hide fa fa-moon-o" aria-hidden="true"></i>
-            <!-- Rounded switch -->
-            <label class="switch">
-              <input type="checkbox">
-              <span class="slider round"></span>
-            </label>
-        </div>
+<div class="container">
+    <ul>
+        <li class="" style="
+        width: 100%;
+        display: flex;
+        align-items: center;
+        padding: 0.5em;
+        box-sizing: border-box;
+    ">
+            <div id="volumeControl">
+                <!-- Rounded switch -->
+                <label class="switch">
+                  <input type="checkbox" checked>
+                  <span class="slider round"></span>
+                </label>
+                <i class="fa fa-volume-up" aria-hidden="true"></i>	
+                <i class="fa fa-volume-off hide" aria-hidden="true"></i>
+            </div>
+            <div id="dayNightSwitch">
+                <i class="fa fa-sun-o" aria-hidden="true"></i>
+                <i class="hide fa fa-moon-o" aria-hidden="true"></i>
+                <!-- Rounded switch -->
+                <label class="switch">
+                  <input type="checkbox">
+                  <span class="slider round"></span>
+                </label>
+            </div>
 
-	</li>
-	<li class="center avatar">
-        <div class="circle">
-            <i class="fa fa-user-plus" aria-hidden="true"></i>
-            <i class="fa fa-camera hide" aria-hidden="true"></i>
-        </div>
-    </li>
-        
-    <li class="center addAccount">
-		<p class="info">
-			Create a free profile and save your progress
-		</p>
-        <input type="text" id="username" name="accountName" placeholder="accountName.." style="width: 80%;">
-	</li>
-    <li class="center accountDetails hide">
-        <h5 id="userId"></h5>
-        <h5 id="joinedOn"></h5>
-    </li>
-	<li class="center">
-        <button class="outlineBtn" id="addOrDeleteAccount"></button>
-	</li>
-    <li class="center accountInfo">
-</ul>
+        </li>
+        <li class="center avatar">
+            <div class="circle">
+                <i class="fa fa-user-plus" aria-hidden="true"></i>
+                <i class="fa fa-camera hide" aria-hidden="true"></i>
+            </div>
+        </li>
+
+        <li class="center addAccount">
+            <p class="info">
+                Create a free profile and save your progress
+            </p>
+            <input type="text" id="username" name="accountName" placeholder="accountName.." style="width: 80%;">
+        </li>
+        <li class="center accountDetails hide">
+            <h5 id="userId"></h5>
+            <h5 id="joinedOn"></h5>
+        </li>
+        <li class="center">
+            <button class="outlineBtn" id="addOrDeleteAccount"></button>
+        </li>
+        <li class="center accountInfo">
+    </ul>
+</div>

@@ -143,352 +143,6 @@ let utils = {
 };
 
 
-/*****************************
-        Timer functions 
-******************************/
-let timer = {
-    //time is then the running time of the timer
-    time: 0, 
-    //timerSet is initialzed as the html element to display timer
-    timerSet: "",
-    getStarted: 0,
-    // counter for current session time, pushed to userAccount and cleared after each session 
-    sessionTime: 0,
-    // Interval for displaying timer
-    myInterval: 0,
-    // boolean for if timer started
-    started: false,
-    //add predifined amounts to timer +=
-    addTime: function (minutes) {
-        this.time += parseInt(minutes);
-        this.timerSet.innerHTML = this.convertTime(this.time);
-    },
-    // zero out timer and stop it
-    reset: function () {
-        timer.time = 0;
-        timer.timerSet.innerHTML = "00:00:00";
-        clearInterval(timer.myInterval);
-        timer.started = false;
-        timer.sessionTime = 0;
-    },
-    // pause timer
-    pause: function () {
-        if (this.started === true) {
-            clearInterval(timer.myInterval);
-            timer.started = false;
-        }
-    },
-    // start timer and go to vocab trainer page to choose list.
-    // should start timer actually once list chosen and not before.
-    start: function () {
-        if (timer.time > 0) {
-            if (timer.started === false) {
-                let sessionTime = this.time;
-                timer.myInterval = setInterval(function () {
-                    timer.sessionTime += 1;
-                    timer.time -= 1;
-                    timer.timerSet.innerHTML = timer.convertTime(timer.time);
-                    if (timer.time < 1) {
-                        clearInterval(timer.myInterval);
-                        timer.timerDone();
-                    }
-                }, 1000);
-                //popUp(6);
-                /*this.getStarted = setTimeout(function() {
-                    popUpHide();
-                    this.startTimer;
-                    changeContent("vocabTrainer", pages);
-                }, 1500);*/
-            }
-            timer.started = true;
-        } else {
-            popUp(5);
-        }
-    },
-    // pad function adds 0 if only one number given so time has format 00:00:00
-    pad: function (b, width) {
-        b = b + '';
-        return b.length >= width ? b : new Array(width - b.length + 1)
-            .join('0') + b;
-    },
-    //convert function formats time to 00:00:00
-    convertTime: function (time) {
-        let hh = Math.floor(time / 3600);
-        let mm = Math.floor((time % 3600) / 60);
-        let ss = time % 60;
-        let convertedTime = timer.pad(hh, 2) + ":" + timer.pad(mm, 2) + ":" + timer.pad(ss, 2);
-        return convertedTime;
-    },
-    // once timer complete, go to stat page, pop to indicate finished.
-    timerDone: function () {
-        let finish = new Promise(function(resolve, reject){
-            resolve(vocabTrainer.endTrainer());
-        });
-        // navigation away from page only once vocabTrainer.endTrainer() has run
-        finish.then(function(value){
-            navi.changeContent("stats");
-        })
-        
-        //make pop up with option to cont learning or go to stats
-        popUps.popUp(7);
-        timer.started = false;
-        userAccount.lastSession = this.sessionTime;
-        userAccount.totalTime += this.sessionTime;
-        this.sessionTime = 0;
-    }
-};
-
-
-/*****************************
-        popUps functions
-******************************/
-let popUps = {
-    popUpElement: document.querySelector('#popUp'),
-    // Object containing texts for all popups also additional info
-    popUpTexts: [
-        {
-            title: "trainerInfo",
-            text: "Info text - how to play!",
-            top: "8%",
-            left: "7%",
-            borderColor: "rgba(0, 0, 0, 0.6)"
-         },
-        {
-            title: "caseSensitive",
-            text: "Good work but this test is case sensitive!",
-            top: "8%",
-            left: "7%",
-            borderColor: "rgba(0, 0, 0, 0.6)"
-          },
-        {
-            title: "article",
-            text: "Almost there, you must have the correct Article!",
-            top: "8%",
-            left: "7%",
-            borderColor: "rgba(0, 0, 0, 0.6)"
-          },
-        {
-            title: "account",
-            text: "Account Added!",
-            top: "8%",
-            left: "7%",
-            borderColor: "rgba(0, 0, 0, 0.6)"
-          },
-        {
-            title: "deleteAccount",
-            text: "pages/popups/addAccount.html",
-            top: "8%",
-            left: "7%",
-            borderColor: "rgba(0, 0, 0, 0.6)"
-          },
-        {
-            title: "assignTime",
-            text: "You need to add a time first!",
-            top: "8%",
-            left: "7%",
-            borderColor: "rgba(0, 0, 0, 0.6)"
-          },
-        {
-            title: "start",
-            text: "Ready......Steady......Go!",
-            top: "8%",
-            left: "7%",
-            borderColor: "rgba(0, 0, 0, 0.6)"
-          },
-        {
-            title: "timerEnd",
-            text: "You're done!",
-            top: "8%",
-            left: "7%",
-            borderColor: "rgba(0, 0, 0, 0.6)"
-          }
-
-
-        ],
-     //set CSS style
-    setCSS: function (e, style) {
-        for (let prop in style) {
-            e.style[prop] = style[prop];
-        }
-    },
-    //Display PopUp and set content and position
-    popUp: function (textNumber) {
-        let selectedPopUp = this.popUpTexts[textNumber];
-        this.popUpElement.innerHTML = selectedPopUp['text'];
-        this.popUpElement.classList.remove('hide');
-    },
-    //Hide PopUp
-    popUpHide: function () {
-        this.popUpElement.classList.add('hide');
-    }
-};
-
-
-/*****************************
-        addVocab functions 
-******************************/
-let addVocab = {
-    //imported vocab from DB
-    ImportedVocab: "",
-    // local vocab saved in IndexDB
-    localVocabList: "",
-    //new word object to be added to local vocab
-    newWord: "",
-    //Input field for new word in English
-    wordInEnglish: "",
-    //Input field for new word in German
-    wordInGerman: "",
-    //Input field for new word's gender
-    gender: "",
-    // list options is HTML Element where current vocab lists are stored and able to be selected.
-    listOptions: "",
-    // sets up values for above properties once page is loaded
-    setProperties: function () {
-        this.wordInEnglish = document.getElementById('english');
-        this.wordInGerman = document.getElementById('german');
-        this.gender = document.addVocab.gender;
-        this.listOptions = document.getElementById('listOptions');
-    },
-    //populates list Options HTML element from collected Vocab Lists, also adds option add List
-    populateWordLists: function (selected) {
-        this.listOptions.innerHTML = "";
-        if (this.localVocabList != null) {
-            this.localVocabList = app.localVocab;
-            let i = 0;
-            while (i < this.localVocabList.length) {
-                addVocab.listOptions.innerHTML += "<option value= \"" + Object.keys(addVocab.localVocabList[i])[0] + "\">" + Object.keys(addVocab.localVocabList[i])[0] + "</option>";
-                i++;
-            }
-        } else {
-            addVocab.localVocabList = {};
-        }
-        this.listOptions.innerHTML += "<option value= \"createNew\"> Create New Category </option>";
-        if (selected) {
-            this.listOptions.querySelector('option[value=\"' + selected + '\"]').selected = true;
-        }
-    },
-    //resets form for adding a new word - currently not used ******* NEEDS CHECKING ********
-    clearForm: function () {
-        this.wordInEnglish.value = "";
-        this.wordInGerman.value = "";
-        this.gender[0].checked = true;
-        this.wordInGerman.style.borderColor = "rgba(255, 119, 35, 0.74)";
-        this.wordInEnglish.style.borderColor = "rgba(255, 119, 35, 0.74)";
-    },
-    // mini function to grab inputted gender for new word
-    getGender: function () {
-        for (let i = 0; i < addVocab.gender.length; i += 1) {
-            if (addVocab.gender[i].checked) {
-                return addVocab.gender[i].dataset.gender;
-            }
-        }
-    },
-    // checks for duplicates and also contains logic for checking input is correct - ****** NEEDS CHECKING *******
-    checkIfDoubled: function () {
-        console.log("checking for dupliate...");
-        return true;
-        /*
-        let englishWordList = [];
-        let germanWordList = [];
-        app.localVocab[listOptions.value].forEach(word => {
-            englishWordList.push(word.wordInEnglish);
-            germanWordList.push(word.wordInGerman);
-        });
-
-        if (englishWordList.includes(newWord.wordInEnglish) || germanWordList.includes(newWord.wordInGerman)) {
-            //should this change only be local (change indices but not actually over write word??)
-            confirm("that word is already in your vocab list do you want to replace it?");
-            if (englishWordList.includes(newWord.wordInEnglish)) {
-                console.log(englishWordList.indexOf(newWord.wordInEnglish));
-                vocab.splice(englishWordList.indexOf(newWord.wordInEnglish), 1);
-            } else if (germanWordList.includes(newWord.wordInGerman)) {
-                vocab.splice(germanWordList.indexOf(newWord.wordInGerman), 1);
-            }
-        }*/
-    },
-     // check answer fits format, alert if not
-    checkInput: function () {
-        let englishWord = this.wordInEnglish.value.toString()
-            .trim();
-        let germanWord = this.wordInGerman.value.toString()
-            .trim();
-        let forbiddenChars = /^[A-Za-z]+$/;
-        this.newWord = {
-            "id": "null",
-            "wordInEnglish": englishWord,
-            "wordInGerman": germanWord,
-            "gender": addVocab.getGender()
-        };
-        if (englishWord.split(" ")
-            .length === 1 && germanWord.split(" ")
-            .length === 1 && forbiddenChars.test(englishWord) && forbiddenChars.test(germanWord) && addVocab.newWord.gender != undefined) {
-            if (addVocab.checkIfDoubled()) {
-                return true;
-            }
-        } else {
-            console.log("that is not a valid input!");
-            if (addVocab.newWord.gender == undefined) {
-                console.log("Tip: you need to select the gender of the word in German.");
-
-            }
-            if (!forbiddenChars.test(englishWord)) {
-                addVocab.wordInEnglish.style.borderColor = "red";
-            } else if (forbiddenChars.test(englishWord)) {
-                addVocab.wordInEnglish.style.borderColor = "green";
-            } else {
-                addVocab.wordInEnglish.style.borderColor = "rgba(255, 119, 35, 0.74)";
-            }
-            if (!forbiddenChars.test(germanWord)) {
-                addVocab.wordInGerman.style.borderColor = "red";
-            } else if (forbiddenChars.test(germanWord)) {
-                addVocab.wordInGerman.style.borderColor = "green";
-            } else {
-                addVocab.wordInGerman.style.borderColor = "rgba(255, 119, 35, 0.74)";
-            }
-        }
-    },
-    // adds new word to selected list or creates new list if that has been selected
-    addWord: function () {
-        if (addVocab.checkInput()) {
-            if (addVocab.listOptions.value) {
-                if (addVocab.listOptions.value == "createNew") {
-                    // change to div popup
-                    let newList = prompt("name you new list", "New Category Name");
-                    addVocab.listOptions.value = newList;
-                    for (let k = 0; k < app.localVocab.length; k++) {
-                        if (app.localVocab[k][0] === newList) {
-                            // change to div popup
-                            confirm("You will be overwriting an existing list");
-                        }
-
-                    }
-                    let insertList = {}
-                    insertList[newList] = [addVocab.newWord];
-                    app.localVocab.unshift(insertList);
-                    // change to div popup
-                    alert(addVocab.newWord.wordInEnglish + " was added to your " + newList + " List.");
-                    addVocab.clearForm();
-                    addVocab.populateWordLists(newList);
-
-                } else {
-                    for (let t = 0; t < app.localVocab.length; t++) {
-                        if (app.localVocab[t][0] === addVocab.listOptions.value) {
-                            app.localVocab[t][addVocab.listOptions.value].push(addVocab.newWord);
-                        }
-                    }
-                    // change to div popup
-                    alert(addVocab.newWord.wordInEnglish + " was added to your " + addVocab.listOptions.value + " List.");
-
-                    addVocab.clearForm();
-                    addVocab.populateWordLists(addVocab.listOptions.value);
-                }
-            }
-        }
-
-    }
-};
-
-
 /************************************
         Page navigation functions
 *************************************/
@@ -733,9 +387,9 @@ let navi = {
                 }).then(function () {
                     script();
                     if (clickedPage === "home") {
-                        app.footer.style.display = "flex";
+                        app.footer.classList.remove('hide');
                     } else {
-                        app.footer.style.display = "none";
+                        app.footer.classList.add('hide');
                     }
 
                 });
@@ -743,6 +397,350 @@ let navi = {
                 console.log('Network request for products.json failed with response ' + response.status + ': ' + response.statusText);
             }
         })
+    }
+};
+
+
+/********************************
+        Vocab Trainer functions
+*********************************/
+let vocabTrainer = {
+    // word to be guessed
+    wordToGuess: "",
+    // input for user answer
+    answer: "",
+    // div with card elements inside
+    vocabCard: "",
+    // selects div element for choosing the vocab List, hides when playing
+    chooseList: "",
+    // selects the instruction div and shows it while you are playing
+    instruct: "",
+    //element to contain list of possible vocab lists
+    vocabList: "",
+    // interval for displaying timer while playing
+    trainerInterval: "",
+    // sets current Index to initial value, before trainer starts this is personalized to the chosen list length
+    currentIndex: Math.floor(Math.random() * 3),
+    // set to an array of objects with the words from the list selected to trian with
+    vocabToTrain: "",
+    // array to hold all vocab, both from the DB and locally stored
+    allVocab: [],
+    vocabLists: "",
+    //initialize values for above properties
+    initialize: function () {
+        this.wordToGuess = document.getElementById('wordToGuess');
+        this.answer = document.querySelector('.answer');
+        this.vocabCard = document.querySelector('.card');
+        this.chooseList = document.getElementById('chooseList');
+        this.instruct = document.getElementById('Instruct');
+        this.vocabList = document.getElementById('vocabList');
+        this.populateWordLists();
+    },
+    //initialize and set up the list of vocab available
+    populateWordLists: function () {
+        this.allVocab = function () {
+            if (ImportedVocab != null && app.localVocab != null) {
+                return [...app.localVocab, ...ImportedVocab];
+            } else if (ImportedVocab != null) {
+                return [...ImportedVocab];
+            } else if (app.localVocab != null) {
+                return [...app.localVocab];
+            } else {
+                return [];
+            }
+        }
+        if (vocabTrainer.allVocab().length < 1) {
+            vocabTrainer.vocabList.innerHTML += "<li data-vocabList = \"1\">No categories currently available, add your own</li>";
+            //Not working - goes straight to add vocab page // document.querySelector('#vocabList li').addEventListener('click', changeContent("addVocab", pages));
+        } else {
+            let i = 0;
+            while (i < vocabTrainer.allVocab().length) {
+                vocabTrainer.vocabList.innerHTML += "<li data-vocabList = \"" + i + "\">" + Object.keys(vocabTrainer.allVocab()[i])[0] + "</li>";
+                i++;
+            }
+            vocabTrainer.vocabLists = document.querySelectorAll('#vocabList li');
+            vocabTrainer.vocabLists.forEach(vocabList => vocabList.addEventListener('click', vocabTrainer.chosenWordList));
+        }
+    },
+    //starts trainer with selected Vocab List (goes into play mode)
+    startTrainer: function () { 
+        this.currentIndex = Math.floor(Math.random() * this.vocabToTrain.length)
+        this.wordToGuess.innerHTML = this.vocabToTrain[this.currentIndex].wordInEnglish;
+                
+        if(timer.time > 0 ){
+            vocabTrainer.trainerInterval = setInterval( function(){
+                document.getElementById('vocabTimer').innerHTML = timer.convertTime(timer.time);
+            }, 1000);
+            if(!timer.started){
+                document.querySelector('.fa-pause-circle-o').classList.add('hide');
+                document.querySelector('.fa-play-circle-o').classList.remove('hide');
+            }
+        } else {
+            document.querySelector('.fa-pause-circle-o').setAttribute('class', 'hide');
+        }
+
+        this.answer.addEventListener("click", function (e) {
+            if (document.activeElement == document.getElementById('answer')) {
+                console.log("focused");
+                utils.keyboardUp();
+
+            }
+        });
+       
+        
+        document.querySelector('.exit').addEventListener('click', this.endTrainer);
+    },
+    //end trainer return nav bar, clear interval
+    endTrainer: function () {
+        app.nav.removeAttribute('class', 'hide');
+        clearInterval(vocabTrainer.trainerInterval);
+        vocabTrainer.instruct.classList.add('hide');
+        vocabTrainer.chooseList.removeAttribute('class', 'hide');
+        vocabTrainer.chooseList.removeAttribute('class', 'hide');
+        app.nav.removeAttribute('class', 'hide');
+    },
+    // utility function to remove articles from words to check if correct word has been given without article
+    removeArticles: function (str) {
+        let words = str.split(" ");
+        if (words.length <= 1) return (str);
+        if (words[0] == "Der" || words[0] == "Die" || words[0] == "Das") {
+            return words.splice(1)
+                .join(" ");
+        }
+        return str;
+    },
+    // run checks on answer, if correct goes to next word, hints given if almost correct
+    checkAnswer: function () {
+        // NOT WORKING - prevent enter key from working during submitting of input(should stop bug when moving on to next work in vocab)
+        window.addEventListener("keydown", function (e) {
+            if ([13].indexOf(e.keyCode) > -1) {
+                e.preventDefault();
+            }
+        }, false);
+        //answer converted to string to avoid non string inputs
+        let answerToCheck = vocabTrainer.answer.value.toString();
+        let correctAnswer = vocabTrainer.vocabToTrain[vocabTrainer.currentIndex].gender + " " + vocabTrainer.vocabToTrain[vocabTrainer.currentIndex].wordInGerman;
+        let correctExpression = new RegExp(vocabTrainer.removeArticles(correctAnswer), 'gi');
+        //check if matches word exactly
+        if (correctAnswer === answerToCheck) {
+            vocabTrainer.answer.style.borderColor = "green";
+            utils.plusPoint();
+            utils.playPointSound();
+            popUps.popUpHide();
+            setTimeout(function () {
+                vocabTrainer.changeWord(1);
+            }, 1000);
+            //check if matches regardless of case & alert
+        } else if (correctAnswer.toLowerCase() === answerToCheck.toLowerCase()) {
+            popUps.popUp(1);
+            //check if matches without article 
+        } else if (answerToCheck.match(correctExpression)) {
+            popUps.popUp(2);
+        } else {
+            vocabTrainer.answer.style.borderColor = "rgba(255, 119, 35, 0.74)";
+        }
+    },
+    // offers hint (first three letters of word (without article) not working on firefox!!!!!
+    takeHint: function () {
+        vocabTrainer.answer.value = "";
+        vocabTrainer.answer.value = vocabTrainer.vocabToTrain[vocabTrainer.currentIndex].wordInGerman.slice(0, 3);
+        app.hintTaken = true;
+    },
+    //changes word either by skipping or correct completion
+    changeWord: function (direction) {
+        if (direction == 1 && vocabTrainer.currentIndex === vocabTrainer.vocabToTrain.length - 1) {
+            vocabTrainer.currentIndex = 0;
+        } else if (direction == 1) {
+            vocabTrainer.currentIndex++;
+        } else if (direction == -1 && currentIndex === 0) {
+            vocabTrainer.currentIndex = vocabTrainer.vocabToTrain.length - 1;
+        } else {
+            vocabTrainer.currentIndex--;
+        }
+        this.wordToGuess.innerHTML = this.vocabToTrain[this.currentIndex].wordInEnglish;
+        this.answer.value = "";
+        this.flipToNext();
+        this.checkAnswer();
+    },
+    //flip animation for when correct answer given or word is skipped
+    flipToNext: function () {
+        this.vocabCard.classList.toggle('flipped');
+    },
+    //when user selects their chosen word list this starts the trainer and removes the nav and vocab lists (ie goes into play mode)
+    chosenWordList: function (event) {
+        vocabTrainer.chooseList.setAttribute('class', 'hide');
+        vocabTrainer.chooseList.setAttribute('class', 'hide');
+        app.nav.setAttribute('class', 'hide');
+        vocabTrainer.instruct.classList.remove('hide');
+        vocabTrainer.instruct.querySelector('#actualScore').innerHTML = app.newScore;
+        vocabTrainer.vocabToTrain = vocabTrainer.allVocab()[this.dataset.vocablist][this.innerHTML];
+        vocabTrainer.startTrainer();
+    }
+
+}
+
+
+/*****************************
+        addVocab functions 
+******************************/
+let addVocab = {
+    //imported vocab from DB
+    ImportedVocab: "",
+    // local vocab saved in IndexDB
+    localVocabList: "",
+    //new word object to be added to local vocab
+    newWord: "",
+    //Input field for new word in English
+    wordInEnglish: "",
+    //Input field for new word in German
+    wordInGerman: "",
+    //Input field for new word's gender
+    gender: "",
+    // list options is HTML Element where current vocab lists are stored and able to be selected.
+    listOptions: "",
+    // sets up values for above properties once page is loaded
+    setProperties: function () {
+        this.wordInEnglish = document.getElementById('english');
+        this.wordInGerman = document.getElementById('german');
+        this.gender = document.addVocab.gender;
+        this.listOptions = document.getElementById('listOptions');
+    },
+    //populates list Options HTML element from collected Vocab Lists, also adds option add List
+    populateWordLists: function (selected) {
+        this.listOptions.innerHTML = "";
+        if (this.localVocabList != null) {
+            this.localVocabList = app.localVocab;
+            let i = 0;
+            while (i < this.localVocabList.length) {
+                addVocab.listOptions.innerHTML += "<option value= \"" + Object.keys(addVocab.localVocabList[i])[0] + "\">" + Object.keys(addVocab.localVocabList[i])[0] + "</option>";
+                i++;
+            }
+        } else {
+            addVocab.localVocabList = {};
+        }
+        this.listOptions.innerHTML += "<option value= \"createNew\"> Create New Category </option>";
+        if (selected) {
+            this.listOptions.querySelector('option[value=\"' + selected + '\"]').selected = true;
+        }
+    },
+    //resets form for adding a new word - currently not used ******* NEEDS CHECKING ********
+    clearForm: function () {
+        this.wordInEnglish.value = "";
+        this.wordInGerman.value = "";
+        this.gender[0].checked = true;
+        this.wordInGerman.style.borderColor = "rgba(255, 119, 35, 0.74)";
+        this.wordInEnglish.style.borderColor = "rgba(255, 119, 35, 0.74)";
+    },
+    // mini function to grab inputted gender for new word
+    getGender: function () {
+        for (let i = 0; i < addVocab.gender.length; i += 1) {
+            if (addVocab.gender[i].checked) {
+                return addVocab.gender[i].dataset.gender;
+            }
+        }
+    },
+    // checks for duplicates and also contains logic for checking input is correct - ****** NEEDS CHECKING *******
+    checkIfDoubled: function () {
+        console.log("checking for dupliate...");
+        return true;
+        /*
+        let englishWordList = [];
+        let germanWordList = [];
+        app.localVocab[listOptions.value].forEach(word => {
+            englishWordList.push(word.wordInEnglish);
+            germanWordList.push(word.wordInGerman);
+        });
+
+        if (englishWordList.includes(newWord.wordInEnglish) || germanWordList.includes(newWord.wordInGerman)) {
+            //should this change only be local (change indices but not actually over write word??)
+            confirm("that word is already in your vocab list do you want to replace it?");
+            if (englishWordList.includes(newWord.wordInEnglish)) {
+                console.log(englishWordList.indexOf(newWord.wordInEnglish));
+                vocab.splice(englishWordList.indexOf(newWord.wordInEnglish), 1);
+            } else if (germanWordList.includes(newWord.wordInGerman)) {
+                vocab.splice(germanWordList.indexOf(newWord.wordInGerman), 1);
+            }
+        }*/
+    },
+     // check answer fits format, alert if not
+    checkInput: function () {
+        let englishWord = this.wordInEnglish.value.toString()
+            .trim();
+        let germanWord = this.wordInGerman.value.toString()
+            .trim();
+        let forbiddenChars = /^[A-Za-z]+$/;
+        this.newWord = {
+            "id": "null",
+            "wordInEnglish": englishWord,
+            "wordInGerman": germanWord,
+            "gender": addVocab.getGender()
+        };
+        if (englishWord.split(" ")
+            .length === 1 && germanWord.split(" ")
+            .length === 1 && forbiddenChars.test(englishWord) && forbiddenChars.test(germanWord) && addVocab.newWord.gender != undefined) {
+            if (addVocab.checkIfDoubled()) {
+                return true;
+            }
+        } else {
+            console.log("that is not a valid input!");
+            if (addVocab.newWord.gender == undefined) {
+                console.log("Tip: you need to select the gender of the word in German.");
+
+            }
+            if (!forbiddenChars.test(englishWord)) {
+                addVocab.wordInEnglish.style.borderColor = "red";
+            } else if (forbiddenChars.test(englishWord)) {
+                addVocab.wordInEnglish.style.borderColor = "green";
+            } else {
+                addVocab.wordInEnglish.style.borderColor = "rgba(255, 119, 35, 0.74)";
+            }
+            if (!forbiddenChars.test(germanWord)) {
+                addVocab.wordInGerman.style.borderColor = "red";
+            } else if (forbiddenChars.test(germanWord)) {
+                addVocab.wordInGerman.style.borderColor = "green";
+            } else {
+                addVocab.wordInGerman.style.borderColor = "rgba(255, 119, 35, 0.74)";
+            }
+        }
+    },
+    // adds new word to selected list or creates new list if that has been selected
+    addWord: function () {
+        if (addVocab.checkInput()) {
+            if (addVocab.listOptions.value) {
+                if (addVocab.listOptions.value == "createNew") {
+                    // change to div popup
+                    let newList = prompt("name you new list", "New Category Name");
+                    addVocab.listOptions.value = newList;
+                    for (let k = 0; k < app.localVocab.length; k++) {
+                        if (app.localVocab[k][0] === newList) {
+                            // change to div popup
+                            confirm("You will be overwriting an existing list");
+                        }
+
+                    }
+                    let insertList = {}
+                    insertList[newList] = [addVocab.newWord];
+                    app.localVocab.unshift(insertList);
+                    // change to div popup
+                    alert(addVocab.newWord.wordInEnglish + " was added to your " + newList + " List.");
+                    addVocab.clearForm();
+                    addVocab.populateWordLists(newList);
+
+                } else {
+                    for (let t = 0; t < app.localVocab.length; t++) {
+                        if (app.localVocab[t][0] === addVocab.listOptions.value) {
+                            app.localVocab[t][addVocab.listOptions.value].push(addVocab.newWord);
+                        }
+                    }
+                    // change to div popup
+                    alert(addVocab.newWord.wordInEnglish + " was added to your " + addVocab.listOptions.value + " List.");
+
+                    addVocab.clearForm();
+                    addVocab.populateWordLists(addVocab.listOptions.value);
+                }
+            }
+        }
+
     }
 };
 
@@ -848,180 +846,194 @@ let account = {
 }
 
 
-/********************************
-        Vocab Trainer functions
-*********************************/
-let vocabTrainer = {
-    // word to be guessed
-    wordToGuess: "",
-    // input for user answer
-    answer: "",
-    // div with card elements inside
-    vocabCard: "",
-    // selects div element for choosing the vocab List, hides when playing
-    chooseList: "",
-    // selects the instruction div and shows it while you are playing
-    instruct: "",
-    //element to contain list of possible vocab lists
-    vocabList: "",
-    // interval for displaying timer while playing
-    trainerInterval: "",
-    // sets current Index to initial value, before trainer starts this is personalized to the chosen list length
-    currentIndex: Math.floor(Math.random() * 3),
-    // set to an array of objects with the words from the list selected to trian with
-    vocabToTrain: "",
-    // array to hold all vocab, both from the DB and locally stored
-    allVocab: [],
-    vocabLists: "",
-    //initialize values for above properties
-    initialize: function () {
-        this.wordToGuess = document.getElementById('wordToGuess');
-        this.answer = document.querySelector('.answer');
-        this.vocabCard = document.querySelector('.card');
-        this.chooseList = document.getElementById('chooseList');
-        this.instruct = document.getElementById('Instruct');
-        this.vocabList = document.getElementById('vocabList');
-        this.populateWordLists();
+/*****************************
+        Timer functions 
+******************************/
+let timer = {
+    //time is then the running time of the timer
+    time: 0, 
+    //timerSet is initialzed as the html element to display timer
+    timerSet: "",
+    getStarted: 0,
+    // counter for current session time, pushed to userAccount and cleared after each session 
+    sessionTime: 0,
+    // Interval for displaying timer
+    myInterval: 0,
+    // boolean for if timer started
+    started: false,
+    //add predifined amounts to timer +=
+    addTime: function (minutes) {
+        this.time += parseInt(minutes);
+        this.timerSet.innerHTML = this.convertTime(this.time);
     },
-    //initialize and set up the list of vocab available
-    populateWordLists: function () {
-        this.allVocab = function () {
-            if (ImportedVocab != null && app.localVocab != null) {
-                return [...app.localVocab, ...ImportedVocab];
-            } else if (ImportedVocab != null) {
-                return [...ImportedVocab];
-            } else if (app.localVocab != null) {
-                return [...app.localVocab];
-            } else {
-                return [];
-            }
-        }
-        if (vocabTrainer.allVocab().length < 1) {
-            vocabTrainer.vocabList.innerHTML += "<li data-vocabList = \"1\">No categories currently available, add your own</li>";
-            //Not working - goes straight to add vocab page // document.querySelector('#vocabList li').addEventListener('click', changeContent("addVocab", pages));
-        } else {
-            let i = 0;
-            while (i < vocabTrainer.allVocab().length) {
-                vocabTrainer.vocabList.innerHTML += "<li data-vocabList = \"" + i + "\">" + Object.keys(vocabTrainer.allVocab()[i])[0] + "</li>";
-                i++;
-            }
-            vocabTrainer.vocabLists = document.querySelectorAll('#vocabList li');
-            vocabTrainer.vocabLists.forEach(vocabList => vocabList.addEventListener('click', vocabTrainer.chosenWordList));
+    // zero out timer and stop it
+    reset: function () {
+        timer.time = 0;
+        timer.timerSet.innerHTML = "00:00:00";
+        clearInterval(timer.myInterval);
+        timer.started = false;
+        timer.sessionTime = 0;
+    },
+    // pause timer
+    pause: function () {
+        if (this.started === true) {
+            clearInterval(timer.myInterval);
+            timer.started = false;
         }
     },
-    //starts trainer with selected Vocab List (goes into play mode)
-    startTrainer: function () { 
-        this.currentIndex = Math.floor(Math.random() * this.vocabToTrain.length)
-        this.wordToGuess.innerHTML = this.vocabToTrain[this.currentIndex].wordInEnglish;
-                
-        if(timer.time > 0){
-            vocabTrainer.trainerInterval = setInterval( function(){
-                document.getElementById('vocabTimer').innerHTML = timer.convertTime(timer.time);
-            }, 1000);
-        } else {
-            document.querySelector('.fa-pause-circle-o').setAttribute('class', 'hide');
-        }
-
-        this.answer.addEventListener("click", function (e) {
-            if (document.activeElement == document.getElementById('answer')) {
-                console.log("focused");
-                utils.keyboardUp();
-
+    // start timer and go to vocab trainer page to choose list.
+    // should start timer actually once list chosen and not before.
+    start: function () {
+        if (timer.time > 0) {
+            if (timer.started === false) {
+                let sessionTime = this.time;
+                timer.myInterval = setInterval(function () {
+                    timer.sessionTime += 1;
+                    timer.time -= 1;
+                    timer.timerSet.innerHTML = timer.convertTime(timer.time);
+                    if (timer.time < 1) {
+                        clearInterval(timer.myInterval);
+                        timer.timerDone();
+                    }
+                }, 1000);
+                popUps.popUp(6);
+                this.getStarted = setTimeout(function() {
+                    popUps.popUpHide();
+                    this.startTimer;
+                    navi.changeContent("vocabTrainer");
+                }, 1500);
             }
+            timer.started = true;
+        } else {
+            popUp(5);
+        }
+    },
+    // pad function adds 0 if only one number given so time has format 00:00:00
+    pad: function (b, width) {
+        b = b + '';
+        return b.length >= width ? b : new Array(width - b.length + 1)
+            .join('0') + b;
+    },
+    //convert function formats time to 00:00:00
+    convertTime: function (time) {
+        let hh = Math.floor(time / 3600);
+        let mm = Math.floor((time % 3600) / 60);
+        let ss = time % 60;
+        let convertedTime = timer.pad(hh, 2) + ":" + timer.pad(mm, 2) + ":" + timer.pad(ss, 2);
+        return convertedTime;
+    },
+    // once timer complete, go to stat page, pop to indicate finished.
+    timerDone: function () {
+        let finish = new Promise(function(resolve, reject){
+            resolve(vocabTrainer.endTrainer());
         });
-       
+        // navigation away from page only once vocabTrainer.endTrainer() has run
+        finish.then(function(value){
+            navi.changeContent("stats");
+        })
         
-        document.querySelector('.exit').addEventListener('click', this.endTrainer);
-    },
-    //end trainer return nav bar, clear interval
-    endTrainer: function () {
-        app.nav.removeAttribute('class', 'hide');
-        clearInterval(vocabTrainer.trainerInterval);
-        vocabTrainer.instruct.classList.add('hide');
-        vocabTrainer.chooseList.removeAttribute('class', 'hide');
-        vocabTrainer.chooseList.removeAttribute('class', 'hide');
-        app.nav.removeAttribute('class', 'hide');
-    },
-    // utility function to remove articles from words to check if correct word has been given without article
-    removeArticles: function (str) {
-        let words = str.split(" ");
-        if (words.length <= 1) return (str);
-        if (words[0] == "Der" || words[0] == "Die" || words[0] == "Das") {
-            return words.splice(1)
-                .join(" ");
-        }
-        return str;
-    },
-    // run checks on answer, if correct goes to next word, hints given if almost correct
-    checkAnswer: function () {
-        // NOT WORKING - prevent enter key from working during submitting of input(should stop bug when moving on to next work in vocab)
-        window.addEventListener("keydown", function (e) {
-            if ([13].indexOf(e.keyCode) > -1) {
-                e.preventDefault();
-            }
-        }, false);
-        //answer converted to string to avoid non string inputs
-        let answerToCheck = vocabTrainer.answer.value.toString();
-        let correctAnswer = vocabTrainer.vocabToTrain[vocabTrainer.currentIndex].gender + " " + vocabTrainer.vocabToTrain[vocabTrainer.currentIndex].wordInGerman;
-        let correctExpression = new RegExp(vocabTrainer.removeArticles(correctAnswer), 'gi');
-        //check if matches word exactly
-        if (correctAnswer === answerToCheck) {
-            vocabTrainer.answer.style.borderColor = "green";
-            utils.plusPoint();
-            utils.playPointSound();
-            popUps.popUpHide();
-            setTimeout(function () {
-                vocabTrainer.changeWord(1);
-            }, 1000);
-            //check if matches regardless of case & alert
-        } else if (correctAnswer.toLowerCase() === answerToCheck.toLowerCase()) {
-            popUps.popUp(1);
-            //check if matches without article 
-        } else if (answerToCheck.match(correctExpression)) {
-            popUps.popUp(2);
-        } else {
-            vocabTrainer.answer.style.borderColor = "rgba(255, 119, 35, 0.74)";
-        }
-    },
-    // offers hint (first three letters of word (without article) not working on firefox!!!!!
-    takeHint: function () {
-        vocabTrainer.answer.value = "";
-        vocabTrainer.answer.value = vocabTrainer.vocabToTrain[vocabTrainer.currentIndex].wordInGerman.slice(0, 3);
-        app.hintTaken = true;
-    },
-    //changes word either by skipping or correct completion
-    changeWord: function (direction) {
-        if (direction == 1 && vocabTrainer.currentIndex === vocabTrainer.vocabToTrain.length - 1) {
-            vocabTrainer.currentIndex = 0;
-        } else if (direction == 1) {
-            vocabTrainer.currentIndex++;
-        } else if (direction == -1 && currentIndex === 0) {
-            vocabTrainer.currentIndex = vocabTrainer.vocabToTrain.length - 1;
-        } else {
-            vocabTrainer.currentIndex--;
-        }
-        this.wordToGuess.innerHTML = this.vocabToTrain[this.currentIndex].wordInEnglish;
-        this.answer.value = "";
-        this.flipToNext();
-        this.checkAnswer();
-    },
-    //flip animation for when correct answer given or word is skipped
-    flipToNext: function () {
-        this.vocabCard.classList.toggle('flipped');
-    },
-    //when user selects their chosen word list this starts the trainer and removes the nav and vocab lists (ie goes into play mode)
-    chosenWordList: function (event) {
-        vocabTrainer.chooseList.setAttribute('class', 'hide');
-        vocabTrainer.chooseList.setAttribute('class', 'hide');
-        app.nav.setAttribute('class', 'hide');
-        vocabTrainer.instruct.classList.remove('hide');
-        vocabTrainer.instruct.querySelector('#actualScore').innerHTML = app.newScore;
-        vocabTrainer.vocabToTrain = vocabTrainer.allVocab()[this.dataset.vocablist][this.innerHTML];
-        vocabTrainer.startTrainer();
+        //make pop up with option to cont learning or go to stats
+        popUps.popUp(7);
+        timer.started = false;
+        userAccount.lastSession = this.sessionTime;
+        userAccount.totalTime += this.sessionTime;
+        this.sessionTime = 0;
     }
+};
 
-}
 
+/*****************************
+        popUps functions
+******************************/
+let popUps = {
+    popUpElement: document.querySelector('#popUp p'),
+    close: document.querySelector('#popUp span.close'),
+    // Object containing texts for all popups also additional info
+    popUpTexts: [
+        {
+            title: "trainerInfo",
+            text: "Info text - how to play!",
+            top: "8%",
+            left: "7%",
+            borderColor: "rgba(0, 0, 0, 0.6)"
+         },
+        {
+            title: "caseSensitive",
+            text: "Good work but this test is case sensitive!",
+            top: "8%",
+            left: "7%",
+            borderColor: "rgba(0, 0, 0, 0.6)"
+          },
+        {
+            title: "article",
+            text: "Almost there, you must have the correct Article!",
+            top: "8%",
+            left: "7%",
+            borderColor: "rgba(0, 0, 0, 0.6)"
+          },
+        {
+            title: "account",
+            text: "Account Added!",
+            top: "8%",
+            left: "7%",
+            borderColor: "rgba(0, 0, 0, 0.6)"
+          },
+        {
+            title: "deleteAccount",
+            text: "pages/popups/addAccount.html",
+            top: "8%",
+            left: "7%",
+            borderColor: "rgba(0, 0, 0, 0.6)"
+          },
+        {
+            title: "assignTime",
+            text: "You need to add a time first!",
+            top: "8%",
+            left: "7%",
+            borderColor: "rgba(0, 0, 0, 0.6)"
+          },
+        {
+            title: "start",
+            text: "Ready......Steady......Go!",
+            top: "8%",
+            left: "7%",
+            borderColor: "rgba(0, 0, 0, 0.6)"
+          },
+        {
+            title: "timerEnd",
+            text: "You're done!",
+            top: "8%",
+            left: "7%",
+            borderColor: "rgba(0, 0, 0, 0.6)"
+          }
+
+
+        ],
+     //set CSS style ****************NOT USING *********************
+    setCSS: function (e, style) {
+        for (let prop in style) {
+            e.style[prop] = style[prop];
+        }
+    },
+    //Display PopUp and set content and position
+    popUp: function (textNumber) {
+        let selectedPopUp = this.popUpTexts[textNumber];
+        this.popUpElement.innerHTML = selectedPopUp['text'];
+        this.popUpElement.parentElement.classList.remove('hide');
+        this.close.addEventListener('click', popUps.popUpHide);
+        if(textNumber != 0){
+            setTimeout(function() { popUps.popUpHide();}, 1500);
+        }
+    },
+    //Hide PopUp
+    popUpHide: function () {
+        popUps.popUpElement.parentElement.classList.add('popUpFadeOut');
+        setTimeout(function() {
+            popUps.popUpElement.parentElement.classList.add('hide');
+            popUps.popUpElement.parentElement.classList.remove('popUpFadeOut')
+                }, 1000);
+    }
+};
 
 
 /*****************************
