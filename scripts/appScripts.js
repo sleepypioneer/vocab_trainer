@@ -492,12 +492,11 @@ let vocabTrainer = {
     },
     //end trainer return nav bar, clear interval
     endTrainer: function () {
-        app.nav.removeAttribute('class', 'hide');
         clearInterval(vocabTrainer.trainerInterval);
         vocabTrainer.instruct.classList.add('hide');
         vocabTrainer.chooseList.removeAttribute('class', 'hide');
         vocabTrainer.chooseList.removeAttribute('class', 'hide');
-        app.nav.removeAttribute('class', 'hide');
+        app.nav.classList.remove('hide');
     },
     // utility function to remove articles from words to check if correct word has been given without article
     removeArticles: function (str) {
@@ -570,7 +569,7 @@ let vocabTrainer = {
     chosenWordList: function (event) {
         vocabTrainer.chooseList.setAttribute('class', 'hide');
         vocabTrainer.chooseList.setAttribute('class', 'hide');
-        app.nav.setAttribute('class', 'hide');
+        app.nav.classList.add('hide');
         vocabTrainer.instruct.classList.remove('hide');
         vocabTrainer.instruct.querySelector('#actualScore').innerHTML = app.newScore;
         vocabTrainer.vocabToTrain = vocabTrainer.allVocab()[this.dataset.vocablist][this.innerHTML];

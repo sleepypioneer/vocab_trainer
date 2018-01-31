@@ -274,7 +274,7 @@ i {
 }
 
 #content {
-    margin-top: 3em;
+    margin-top: 3.6em;
     height: max-content;
     display: flex;
     flex-direction: column;
@@ -341,7 +341,7 @@ i {
 .card {
     margin: 1em;
     height: 40vh;
-    max-height: 250px;
+    max-height: 12em;
     display: flex;
     /* align-items: baseline; */
     justify-content: flex-end;
@@ -384,6 +384,24 @@ i {
     width: 100%;
     border-radius: 90px 90px 0 0;
     background: #F2F4F3;
+}
+
+.hintAndInfo {
+    display: flex;
+    justify-content: space-around;
+    font-size: 1.4em;
+    color: white;
+    position: absolute;
+    top: 2%;
+    width: 100%;
+}
+
+h1#wordToGuess {
+    position: absolute;
+    top: 40%;
+    margin: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
 }
 
 .addVocab {
@@ -502,10 +520,10 @@ input[type=text], select, textarea {
 
 /* Add a background color and some padding around the form */
 .container {
-    margin-top: 2vh;
     border-radius: 5px;
     background-color: #f2f2f2;
     padding: 20px;
+    position: relative;
 }
 /* Customize the label (the container) */
 .radioBtn {
@@ -570,7 +588,7 @@ input[type=text], select, textarea {
 }
 /******* Nav Styles *******/
 
-nav {
+nav.app {
     width: 100vw;
     position: absolute;
     top: 0;
@@ -583,7 +601,7 @@ nav {
     box-shadow: 0 2px 7px 0px rgba(121, 120, 119, 0.74);
 }
 
-.rowNav {
+.app .rowNav {
     display: flex;
     justify-content: space-between;
     /*padding: 0 1em;*/
@@ -592,11 +610,11 @@ nav {
 
 /* icons in top bar*/
 
-.topbar {
+.app .topbar {
     width: 100%;
 }
 
-.topbar li {
+.app .topbar li {
     color: #022B3A;
     font-size: 1.5em;
     flex: 1;
@@ -608,7 +626,7 @@ nav {
 
 /* pts & timer in top bar*/
 
-.topbar li h4 {
+.app .topbar li h4 {
     font-size: 0.75em;
     margin: 0 0.5em;
 }
@@ -617,6 +635,7 @@ nav {
     box-sizing: border-box;
     height: fit-content;
     width: fit-content;
+    min-width: 8em;
     display: flex;
     padding: 1.4em 1.4em;
     align-items: center;
@@ -624,7 +643,7 @@ nav {
     margin: 0.65em;
     flex: 2;
     color: #022b3a;
-    font-size: initial;
+    font-size: 0.8em;
     font-weight: 600;
     border: solid 0.15em  #359C8C;
     border-radius: 0.5em;
@@ -866,36 +885,26 @@ font-family: 'Orbitron', sans-serif;
 
 /*************** Media Query Medium Screen ***************/
 
-@media screen and (min-width: 951px) {
-
+@media screen and (min-width: 751px) {
+    body {
+        font-size: 2em;
+    }
+    
+    .pageLink {
+        font-size: 1em;
+    }
+    
+    .card {
+        margin: 2em;
+    }
+    
+    h1#wordToGuess {
+        top: 30%;
+    }
     /******* Text Styles *******/
     /******* Image Styles *******/
     /******* Layout Styles *******/
-    .banner {
-        width: 60vw;
-    }
-
-    #content {
-        max-width: 500px;
-        margin: auto;
-    }
-
-
-    /******* Nav Styles *******/
-    .topbar {
-        width: 400px;
-    }
-    nav {
-        display: flex;
-        justify-content: flex-end;
-    }
-
-    #home {
-        color: white;
-        position: fixed;
-        left: 2vw;
-    }
-
+    
     /*************** With grid Support ***************/
 }
 
@@ -907,6 +916,10 @@ font-family: 'Orbitron', sans-serif;
         height: 100%; 
         width: 100%; 
         border: none;
+    }
+    
+    nav.app {
+        display: none;
     }
     
     #content{
