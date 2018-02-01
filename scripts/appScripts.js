@@ -33,9 +33,8 @@ let app = {
     soundOn: true,
     nightMode: false,
     hintTaken: false,
-    isLoading: true,
     localVocab: [],
-    spinner: document.querySelector('.loader')
+    spinner: document.querySelector('.loader'),
 };
 
 /***************************
@@ -69,13 +68,6 @@ if (!('indexedDB' in window)) {
 /********************************************
  Methods to update/refresh the local Storage 
 *********************************************/
-app.updateVocabList = function (data) {
-    if (app.isLoading) {
-        app.spinner.setAttribute('hidden', true);
-        app.isLoading = false;
-    }
-};
-
 app.saveSelectedVocab = function () {
     console.log("saving to DB");
     window.localforage.setItem('localVocab', app.localVocab);
@@ -130,15 +122,7 @@ let utils = {
         newStyleSheet.id = styleName;
         newStyleSheet.href = styleSheet;
         head.appendChild(newStyleSheet);
-    },
-    // change styling when keyboard up - currently redundant need to check ****** NEEDS CHECKING ******* 
-    keyboardUp: function () {
-        if (document.documentElement.clientHeight < 350 && document.documentElement.clientWidth < 800) {
-            console.log("keyboardUp");
-            //app.nav.classList.add("keyboardUp");
-            //document.querySelector('#Instruct div h3').setAttribute('style', 'display: none;')
-        }
-    },
+    }
     
 };
 
@@ -478,15 +462,6 @@ let vocabTrainer = {
         } else {
             document.querySelector('.fa-pause-circle-o').setAttribute('class', 'hide');
         }
-
-        this.answer.addEventListener("click", function (e) {
-            if (document.activeElement == document.getElementById('answer')) {
-                console.log("focused");
-                utils.keyboardUp();
-
-            }
-        });
-       
         
         document.querySelector('.exit').addEventListener('click', this.endTrainer);
     },
@@ -1040,6 +1015,7 @@ let popUps = {
 ******************************/
 
 // To use back and forwards buttons in Browser 
+
 window.onpopstate = function (e) {
     if (e.state) {
         content.innerHTML = e.state.html;
@@ -1072,9 +1048,9 @@ window.addEventListener('load', function () {
             app.actualScore.innerHTML = app.userAccount.score;
         }
     });
-    
     // Go to home page
     navi.changeContent("home");
+    app.spinner.setAttribute('hidden', true);
     
     // set the icon for the account
     if(!account.haveAccount){
@@ -1084,5 +1060,8 @@ window.addEventListener('load', function () {
     }
 
 });
+
+
+
 
 //})();

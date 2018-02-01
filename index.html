@@ -49,20 +49,19 @@
 
     </head>
 
-    <body>
+        <body onresize="lookForResize()">
     
         <noscript> This site needs JavaScript to run </noscript>
-        <!--<script type="text/javascript">
-
-        // goes in body tag onresize="lookForResize()"
-
+        
+        <script type="text/javascript">
             function lookForResize(){
-              if (screen.width >= 1050) {
-                window.location = "http://localhost/vocabTrainerDemo/";
+              if (document.body.getBoundingClientRect().width >= 1050) {
+                window.location.replace("http://localhost/vocabTrainerDemo/");
               }
             }
+            //run on load
             lookForResize();
-        </script>-->
+        </script>
         
         <nav class="app">
             <ul class="rowNav topbar">
@@ -100,11 +99,11 @@
             <p></p>
         </div>
 
-        <!-- <div class="loader">
+        <div class="loader">
             <svg viewBox="0 0 32 32" width="32" height="32">
                 <circle id="ud811Spinner" cx="16" cy="16" r="14" fill="none"></circle>
             </svg>
-        </div>-->
+        </div>
         
 
         <script src="scripts/appScripts.js"></script>
@@ -142,7 +141,6 @@
 
         </script>
         
-        <iframe id="iframeForDesktop" src="http://localhost/vocabTrainerDemo/"/>
         
     </body>
 

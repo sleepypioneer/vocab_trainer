@@ -842,27 +842,13 @@ button#manageLocalLists {
     margin-top: 4vh;
 }
 /******* Keyboard up when Input in focus Styles (Mobile only) *******/
-
-.keyboardUp #Instruct h3 {
-    display: none;
+@media screen and ( max-height: 600px) {
+    .card {
+        height: 90vh;
+    }
 }
 
-nav.keyboardUp{
-    position: absolute;
-    bottom: 110vh;
-    width: 100%;
-}
 
-.keyboardUp {
-   
-}
-
-.keyboardUp  {
-}
-
-.keyboardUp  {
-    
-}
 
 
 /*************** Media Query Small Screen ***************/
