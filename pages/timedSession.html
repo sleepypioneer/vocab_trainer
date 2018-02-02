@@ -1,28 +1,47 @@
 <!-- timed session page -->
 <ul class="innerContent">
-	<li class="center title">
-		<h1 class="titleText">Trainer Timer</h1>
-	</li>
-	<li class="pageLink">
-		<form>
-			<input type="button" class="length" value="10" data-minutes="600" />
-			<input type="button" class="length" value="20" data-minutes="1200" />
-			<input type="button" class="length" value="30" data-minutes="1800" />
-		</form>
-	</li>
-	<li style="flex:5;" class="pageLink">
-		<h1 class="half-space numberFont" id="timerSet"></h1>
-	</li>
-	<li class="pageLink">
-		<div>
-			<input type="button" id="reset" value="reset" />
-			<input type="button" id="pause" value="pause" />
-			<input type="button" id="play" value="play" />
-		</div>
-	</li>
-	<li class="center">
-		<p class="info">
-			Set a timed session to organise your learning session. When the timer is up you can always continue learning.
-		</p>
-	</li>
+    <li class="center title">
+        <h1 class="titleText">Trainer Timer</h1>
+    </li>
+    <li class="center">
+        <form>
+            <input class="addBtn length" value="10" data-minutes="600" />
+            <input  class="addBtn length" value="20" data-minutes="1200" />
+            <input  class="addBtn length" value="30" data-minutes="1800" />
+        </form>
+    </li>
+    <li class="center">
+        <div class="timer">
+            <div class="timerBtns">
+                <div class="arrow arrow-up" id="hourPlusTen"></div>
+                <div class="arrow arrow-up" id="hourPlusOne"></div>
+                <div class="arrow arrow-up" id="minutePlusTen"></div>
+                <div class="arrow arrow-up" id="minutePlusOne"></div>
+            </div>
+            <div class="timerDisplay">
+                <span id="hourTens">0</span>
+                <span id="hourOnes">0</span> :
+                <span id="minuteTens">0</span>
+                <span id="minuteOnes">0</span>
+            </div>
+            <div class="timerBtns">
+                <div class="arrow arrow-down" id="hourMinusTen"></div>
+                <div class="arrow arrow-down" id="hourMinusOne"></div>
+                <div class="arrow arrow-down" id="minuteMinusTen"></div>
+                <div class="arrow arrow-down" id="minuteMinusOne"></div>
+            </div>
+        </div>
+    </li>
+    <li class="center">
+         <div class="controls">
+            <div class="outlineBtn" id="reset">reset</div>
+            <div class="outlineBtn" id="pause">pause</div>
+            <div class="outlineBtn" id="play">play</div>
+        </div>
+    </li>
+    <li class="center">
+        <p class="info">
+            Set a timed session to organise your learning session. When the timer is up you can always continue learning.
+        </p>
+    </li>
 </ul>

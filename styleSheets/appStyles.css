@@ -1,5 +1,19 @@
 /*************** Mobile First - no grid Support ***************/
 
+/****************************************
+                General / Utility Styles 
+*****************************************/
+
+body {
+    font-size: 1.2em;
+    margin: 0;
+    width: 100vw;
+    height: 100vh;
+    overflow-y: scroll;
+    overflow-x: hidden;
+    font-family: 'Numans', sans-serif;
+}
+
 .hide {
     display: none !important;
 }
@@ -26,21 +40,9 @@ select {
     line-height: inherit !important;
 }
 
-#iframeForDesktop{
-    display: none;
-}
-
-body {
-    font-size: 1.2em;
-    margin: 0;
-    width: 100vw;
-    height: 100vh;
-    overflow-y: scroll;
-    overflow-x: hidden;
-    font-family: 'Numans', sans-serif;
-}
-
-/******* Text Styles *******/
+/****************************************
+                Text Styles 
+*****************************************/
 
 p {
     margin: 0.5em;
@@ -104,7 +106,7 @@ p {
     flex: 1;
 }
 
-.circle{
+.circle {
     border: solid rgba(121, 120, 119, 0.62) 0.05em;
     border-radius: 100%;
     height: 4em;
@@ -122,19 +124,23 @@ p {
 .iconsHome {
     font-size: 2.6em;
 }
-/******* Image Styles *******/
 
-.fa-camera{
-     font-size: -webkit-xxx-large;
+/****************************************
+                Image Styles 
+*****************************************/
+
+.fa-camera {
+    font-size: -webkit-xxx-large;
 }
 
-.fa-user-plus{
-     font-size: -webkit-xxx-large;
+.fa-user-plus {
+    font-size: -webkit-xxx-large;
 }
 
 /* make home icon white*/
+
 i {
-  margin: 0.25em;  
+    margin: 0.25em;
 }
 
 #home {
@@ -170,7 +176,9 @@ i {
     left: 0;
 }
 
-/* loader */
+/*************************
+    Loader Styles
+**************************/
 
 .loader {
     left: 50%;
@@ -248,7 +256,13 @@ i {
     }
 }
 
-/******* Layout Styles *******/
+/****************************************
+                Layout Styles 
+*****************************************/
+
+/*************************
+    General Layout Styles
+**************************/
 
 .center {
     justify-content: center;
@@ -269,8 +283,18 @@ i {
     margin: auto;
 }
 
-#timer {
-    padding: 0 0.8em;
+
+.half-space div input {
+    border-radius: 20%;
+    font-size: xx-large;
+    padding: 4%;
+    width: 10vw;
+}
+
+ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
 }
 
 #content {
@@ -292,6 +316,89 @@ i {
     margin: 1vh 0;
 }
 
+/* Add a background color and some padding */
+.container {
+    border-radius: 5px;
+    background-color: #f2f2f2;
+    padding: 20px;
+    position: relative;
+}
+
+/*************************
+    Timer Styles
+**************************/
+
+.timerBtns {
+    display: flex;
+    justify-content: center;
+}
+
+.timer {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    background: #359C8C;
+    height: 50vw;
+    width: 80vw;
+    margin: 1em;
+    border-radius: 0.5em;
+    color: white;
+    box-shadow: 0px 0 12px 2px rgba(121, 120, 119, 0.74);
+}
+
+.timer span {
+    margin: 0.05em;
+}
+
+.timerDisplay {
+    font-size: 2em;
+}
+
+/* Timer controls div containing control buttons */
+.controls {
+    margin-top: 2em;
+    display: flex;
+}
+
+.controls .outlineBtn {
+    margin: 0.25em;
+}
+
+input.addBtn.length {
+    width: 2em;
+    padding: 1em;
+    text-align: center;
+    margin: 0.4em;
+    box-shadow: 0px 0 12px 2px rgba(121, 120, 119, 0.74);
+}
+
+
+/* Arrows for adding and minusing time */
+
+.arrow-up {
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-bottom: 20px solid white;
+    margin: 0.6em;
+}
+
+.arrow-down {
+    width: 0;
+    height: 0;
+    border-left: 20px solid transparent;
+    border-right: 20px solid transparent;
+    border-top: 20px solid white;
+    margin: 0.6em;
+}
+
+
+/*************************
+    Vocab Trainer Styles
+**************************/
+
 .trainerNavBar {
     display: flex;
     justify-content: space-between;
@@ -301,42 +408,6 @@ i {
     margin-top: 0.4em;
     width: 89%;
 }
-
-.innerTimer{
-    text-align: right;
-    border: solid 0.04em;
-    border-radius: 0.2em;
-    padding: 0 0.2em;
-    box-shadow: inset 0 0 6px 0px #fbfbfb;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-}
-
-.exit {
-    text-align: left;
-}
-
-.exit i {
-    transform: rotate(180deg);
-    margin: 6vw 0;
-}
-
-.outerTimer {
-    background: #359C8C;
-    padding: 0 0.2em;
-    border-radius: 0.4em;
-    height: fit-content;
-    color: white;
-    display: flex;
-    justify-content: space-between;
-    margin-top: 4vw;
-    width: 100%;
-    align-items: center;
-}
-
-
 
 .card {
     margin: 1em;
@@ -367,7 +438,6 @@ i {
     line-height: 200px;
 }
 
-
 .card .back {
     -webkit-transform: rotatey(180deg);
     background-color: #359C8C;
@@ -386,23 +456,9 @@ i {
     background: #F2F4F3;
 }
 
-.hintAndInfo {
-    display: flex;
-    justify-content: space-around;
-    font-size: 1.4em;
-    color: white;
-    position: absolute;
-    top: 2%;
-    width: 100%;
-}
-
-h1#wordToGuess {
-    position: absolute;
-    top: 40%;
-    margin: 0;
-    left: 50%;
-    transform: translate(-50%, -50%);
-}
+/*************************
+    ADD VOCAB Styles
+**************************/
 
 .addVocab {
     height: fit-content;
@@ -418,23 +474,6 @@ h1#wordToGuess {
 .addVocab .pageLink {
     width: 80%;
     padding: 0;
-}
-
-input[type="radio"] {
-    -webkit-appearance: radio;
-}
-
-.half-space div input {
-    border-radius: 20%;
-    font-size: xx-large;
-    padding: 4%;
-    width: 10vw;
-}
-
-ul {
-    list-style: none;
-    padding: 0;
-    margin: 0;
 }
 
 #vocabList {
@@ -468,125 +507,10 @@ ul {
     margin: 0;
 }
 
-.footer {
-    margin: 2vh 0;
-    height: 10vh;
-    width: 100%;
-}
 
-.banner {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 90vw;
-    height: 8vh;
-    margin: auto;
-    color: #022b3a;
-    background-color: #f2bb053b;
-    border: solid 0.1em #ffa975;
-    border-radius: 0.5em;
-    box-shadow: 0px 0 8px 0px #022b3a8a;
-}
-
-/******* ADD VOCAB FORM *******/
-/* Style inputs with type="text", select elements and textareas */
-input[type=text], select, textarea {
-    width: 100%; /* Full width */
-    text-align: center;
-    padding: 12px; /* Some padding */  
-    border: 1px solid #ccc; /* Gray border */
-    border-radius: 4px; /* Rounded borders */
-    box-sizing: border-box; /* Make sure that padding and width stays in place */
-    margin-top: 6px; /* Add a top margin */
-    margin-bottom: 16px; /* Bottom margin */
-    resize: vertical /* Allow the user to vertically resize the textarea (not horizontally) */
-}
-
-/* Style the submit button with a specific background color etc */
-.addBtn {
-    background-color: #359c8c;
-    color: white;
-    padding: 12px 20px;
-    border: none;
-    border-radius: 0.2em;
-    cursor: pointer;
-    margin: 4vh;
-}
-
-/* When moving the mouse over the submit button, add a darker green color */
-.addBtn:hover {
-    background-color: rgb(36, 114, 102);
-}
-
-/* Add a background color and some padding around the form */
-.container {
-    border-radius: 5px;
-    background-color: #f2f2f2;
-    padding: 20px;
-    position: relative;
-}
-/* Customize the label (the container) */
-.radioBtn {
-    display: inline-flex;
-  position: relative;
-  padding-left: 35px;
-  margin-bottom: 12px;
-  cursor: pointer;
-  font-size: 22px;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
-/* Hide the browser's default radio button */
-.radioBtn input {
-  position: absolute;
-  opacity: 0;
-}
-
-/* Create a custom radio button */
-.checkmark {
-  position: absolute;
-  top: 0;
-  left: 0;
-  height: 25px;
-  width: 25px;
-  background-color: #eee;
-  border-radius: 50%;
-}
-
-/* On mouse-over, add a grey background color */
-.container:hover input ~ .checkmark {
-  background-color: #ccc;
-}
-
-/* When the radio button is checked, add a blue background */
-.container input:checked ~ .checkmark {
-  background-color: #359C8C;
-}
-
-/* Create the indicator (the dot/circle - hidden when not checked) */
-.checkmark:after {
-  position: absolute;
-  display: none;
-}
-
-/* Show the indicator (dot/circle) when checked */
-.container input:checked ~ .checkmark:after {
-  display: block;
-}
-
-/* Style the indicator (dot/circle) */
-.container .checkmark:after {
-  top: 9px;
-  left: 9px;
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: white;
-}
-/******* Nav Styles *******/
+/**************************
+    Nav Styles 
+***************************/
 
 nav.app {
     width: 100vw;
@@ -609,7 +533,6 @@ nav.app {
 }
 
 /* icons in top bar*/
-
 .app .topbar {
     width: 100%;
 }
@@ -625,7 +548,6 @@ nav.app {
 }
 
 /* pts & timer in top bar*/
-
 .app .topbar li h4 {
     font-size: 0.75em;
     margin: 0 0.5em;
@@ -645,20 +567,179 @@ nav.app {
     color: #022b3a;
     font-size: 0.8em;
     font-weight: 600;
-    border: solid 0.15em  #359C8C;
+    border: solid 0.15em #359C8C;
     border-radius: 0.5em;
     background: #ffffff7d;
     box-shadow: 0px 0 8px 0px #022b3a8a;
 }
 
-.pageLink p {
-
-}
+.pageLink p {}
 
 .pageLink button {
     margin: 1em;
 }
 
+/*************************
+    ADD VOCAB FORM 
+**************************/
+
+/* Style inputs with type="text", select elements and textareas */
+
+input[type=text],
+select,
+textarea {
+    width: 100%;
+    /* Full width */
+    text-align: center;
+    padding: 12px;
+    /* Some padding */
+    border: 1px solid #ccc;
+    /* Gray border */
+    border-radius: 4px;
+    /* Rounded borders */
+    box-sizing: border-box;
+    /* Make sure that padding and width stays in place */
+    margin-top: 6px;
+    /* Add a top margin */
+    margin-bottom: 16px;
+    /* Bottom margin */
+    resize: vertical/* Allow the user to vertically resize the textarea (not horizontally) */
+}
+
+/* Style the submit button with a specific background color etc */
+.addBtn {
+    background-color: #359c8c;
+    color: white;
+    padding: 12px 20px;
+    border: none;
+    border-radius: 0.2em;
+    cursor: pointer;
+    margin: 4vh;
+}
+
+/* When moving the mouse over the submit button, add a darker green color */
+.addBtn:hover {
+    background-color: rgb(36, 114, 102);
+}
+
+/* Customize the label (the container) */
+.radioBtn {
+    display: inline-flex;
+    position: relative;
+    padding-left: 35px;
+    margin-bottom: 12px;
+    cursor: pointer;
+    font-size: 22px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+}
+
+/* Hide the browser's default radio button */
+.radioBtn input {
+    position: absolute;
+    opacity: 0;
+}
+
+/* Create a custom radio button */
+.checkmark {
+    position: absolute;
+    top: 0;
+    left: 0;
+    height: 25px;
+    width: 25px;
+    background-color: #eee;
+    border-radius: 50%;
+}
+
+/* On mouse-over, add a grey background color */
+.container:hover input ~ .checkmark {
+    background-color: #ccc;
+}
+
+/* When the radio button is checked, add a blue background */
+.container input:checked ~ .checkmark {
+    background-color: #359C8C;
+}
+
+/* Create the indicator (the dot/circle - hidden when not checked) */
+.checkmark:after {
+    position: absolute;
+    display: none;
+}
+
+/* Show the indicator (dot/circle) when checked */
+.container input:checked ~ .checkmark:after {
+    display: block;
+}
+
+/* Style the indicator (dot/circle) */
+.container .checkmark:after {
+    top: 9px;
+    left: 9px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: white;
+}
+
+/*******************
+    Button Styles 
+********************/
+
+/*** Hint and Info buttons **/
+.hintAndInfo {
+    display: flex;
+    justify-content: space-around;
+    font-size: 1.4em;
+    color: white;
+    position: absolute;
+    top: 2%;
+    width: 100%;
+}
+
+h1#wordToGuess {
+    position: absolute;
+    top: 40%;
+    margin: 0;
+    left: 50%;
+    transform: translate(-50%, -50%);
+}
+
+/* exit trainer button */
+.exit {
+    text-align: left;
+}
+
+.exit i {
+    transform: rotate(180deg);
+    margin: 6vw 0;
+}
+
+.outlineBtn {
+    color: #359C8C;
+    border-radius: 0.5em;
+    border: 0.15em solid #359C8C;
+    background-color: white;
+    padding: 14px 28px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.outlineBtn:hover {
+    background: #359C8C;
+    color: white;
+}
+
+button#manageLocalLists {
+    margin: auto;
+    margin-top: 4vh;
+}
+
+/*****************************
+    Sound and Style controls
+******************************/
 
 div#volumeControl {
     margin-top: 2vh;
@@ -668,7 +749,7 @@ div#volumeControl {
     font-size: 1.5em;
 }
 
-#dayNightSwitch {    
+#dayNightSwitch {
     margin-left: auto;
     margin-top: 2vh;
     display: flex;
@@ -677,7 +758,10 @@ div#volumeControl {
     font-size: 1.5em;
 }
 
-/* The switch - the box around the slider */
+/**************************
+    Rounded Toggle sliders 
+***************************/
+
 .switch {
     position: relative;
     display: inline-block;
@@ -686,57 +770,56 @@ div#volumeControl {
 }
 
 /* Hide default HTML checkbox */
-.switch input {display:none;}
+.switch input {
+    display: none;
+}
 
 /* The slider */
 .slider {
-  position: absolute;
-  cursor: pointer;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: #ccc;
-  -webkit-transition: .4s;
-  transition: .4s;
+    position: absolute;
+    cursor: pointer;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: #ccc;
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 34px;
 }
 
 .slider:before {
-  position: absolute;
-  content: "";
-  height: 26px;
-  width: 26px;
-  left: 4px;
-  bottom: 4px;
-  background-color: white;
-  -webkit-transition: .4s;
-  transition: .4s;
+    position: absolute;
+    content: "";
+    height: 26px;
+    width: 26px;
+    left: 4px;
+    bottom: 4px;
+    background-color: white;
+    -webkit-transition: .4s;
+    transition: .4s;
+    border-radius: 50%;
 }
 
 input:checked + .slider {
-  background-color: #359C8C;
+    background-color: #359C8C;
 }
 
 input:focus + .slider {
-  box-shadow: 0 0 1px #2196F3;
+    box-shadow: 0 0 1px #2196F3;
 }
 
 input:checked + .slider:before {
-  -webkit-transform: translateX(26px);
-  -ms-transform: translateX(26px);
-  transform: translateX(26px);
+    -webkit-transform: translateX(26px);
+    -ms-transform: translateX(26px);
+    transform: translateX(26px);
 }
 
-/* Rounded sliders */
-.slider.round {
-  border-radius: 34px;
-}
 
-.slider.round:before {
-  border-radius: 50%;
-}
+/***********************
+    Score Board Styles 
+************************/
 
-/*stats table */
 table {
     margin: 1em auto;
     border: 0.15em solid #359C8C;
@@ -749,12 +832,15 @@ table {
     padding-left: 2em;
 }
 
-th, td {
+th,
+td {
     padding: 0.2em 0.5em;
 }
 
 
-/******* PopUp Styles *******/
+/*******************
+    PopUp Styles 
+********************/
 
 .popUp {
     border: 0.2em solid;
@@ -793,6 +879,7 @@ th, td {
     margin-left: -0.531em;
     margin-bottom: -1.062em;
 }
+
 .popUp:before {
     bottom: -0.06em;
     z-index: -6;
@@ -800,8 +887,6 @@ th, td {
     border-top-color: #022b3a;
     left: 48%;
 }
-
-
 
 .popUpFadeOut {
     opacity: 0;
@@ -815,6 +900,8 @@ th, td {
     text-align: center;
 }
 
+/* close X for Popup */
+
 span.close {
     text-align: right;
     width: 100%;
@@ -822,33 +909,38 @@ span.close {
     font-size: 2em;
 }
 
-.outlineBtn {
-    color: #359C8C;
-    border-radius: 0.5em;
-    border: 0.15em solid #359C8C;
-    background-color: white;
-    padding: 14px 28px;
-    font-size: 16px;
-    cursor: pointer;
+
+/*************************
+    Footer with Banner 
+**************************/
+
+.footer {
+    margin: 2vh 0;
+    height: 10vh;
+    width: 100%;
 }
 
-.outlineBtn:hover {
-    background: #359C8C;
-    color: white;
-}
-
-button#manageLocalLists {
+.banner {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 90vw;
+    height: 8vh;
     margin: auto;
-    margin-top: 4vh;
+    color: #022b3a;
+    background-color: #f2bb053b;
+    border: solid 0.1em #ffa975;
+    border-radius: 0.5em;
+    box-shadow: 0px 0 8px 0px #022b3a8a;
 }
+
 /******* Keyboard up when Input in focus Styles (Mobile only) *******/
+
 @media screen and ( max-height: 600px) {
     .card {
         height: 90vh;
     }
 }
-
-
 
 
 /*************** Media Query Small Screen ***************/
@@ -875,51 +967,24 @@ font-family: 'Orbitron', sans-serif;
     body {
         font-size: 2em;
     }
-    
+
     .pageLink {
         font-size: 1em;
     }
-    
+
     .card {
         margin: 2em;
     }
-    
+
     h1#wordToGuess {
         top: 30%;
     }
     /******* Text Styles *******/
     /******* Image Styles *******/
     /******* Layout Styles *******/
-    
     /*************** With grid Support ***************/
 }
 
 /*************** Media Query Large Screen ***************/
-@media screen and (min-width: 1050px) {
-/******* Text Styles *******/
-    #iframeForDesktop{
-        display: block;
-        height: 100%; 
-        width: 100%; 
-        border: none;
-    }
-    
-    nav.app {
-        display: none;
-    }
-    
-    #content{
-        display: none;
-    }
-    
-    .footer {
-        display: none;
-    }
-/******* Image Styles *******/
 
-/******* Layout Styles *******/
-
-/******* Nav Styles *******/
-
-/*************** With grid Support ***************/
-}
+/* NOT NEEDED AS THIS SITE REDIRECTS TO ANOTHER URL WHEN OVER 1050px */

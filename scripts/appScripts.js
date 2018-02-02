@@ -2,9 +2,10 @@
 'use strict';
 /***********************************
         Emulating local Content 
-************************************/
+/************************************/
 let vocabMine = {};
 let userAccount = {};
+
 function emulateLocalStorage(url) {
     return fetch(url).then(function (response) {
         if (response.ok) {
@@ -19,7 +20,7 @@ function emulateLocalStorage(url) {
 
 /***********************
         App Object 
-************************/
+/************************/
 let app = {
     /*************** Global Variables for App ***************/
     body: document.querySelector("body"),
@@ -34,12 +35,103 @@ let app = {
     nightMode: false,
     hintTaken: false,
     localVocab: [],
+    
+    /*function () {
+        let transaction = db.transaction(["LocalVocab"]);
+        let objectStore = transaction.objectStore("LocalVocab");
+        let keys = objectStore.getAllKeys();
+        keys.onerror = function (event) {
+            alert("Unable to retrieve data from database!");
+        };
+
+        keys.onsuccess = function (event) {
+                let keys = request.result;
+                console.log(keys);
+                for (var i in keys){
+                    return objectStore.get(keys[i]);
+                }
+        }
+
+    },*/
     spinner: document.querySelector('.loader'),
+};
+
+/********************************************
+        Indexed DB for local storage 
+/*********************************************/
+ //prefixes of implementation that we want to test
+ //window.indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB;
+
+ //prefixes of window.IDB objects
+ //window.IDBTransaction = window.IDBTransaction || window.webkitIDBTransaction || window.msIDBTransaction;
+ //window.IDBKeyRange = window.IDBKeyRange || window.webkitIDBKeyRange || window.msIDBKeyRange
+
+ if (!window.indexedDB) {
+     window.alert("Your browser doesn't support a stable version of IndexedDB.")
+ }
+
+ const starterVocab = [
+     {ListName: "Animals1", 
+      wordList : [{
+         wordInEnglish: "Dog",
+         wordInGerman: "Hund",
+         gender: "Der"
+     },
+     {
+         wordInEnglish: "Cat",
+         wordInGerman: "Katze",
+         gender: "Die"
+     }]},
+     {ListName: "Animals2", 
+      wordList : [{
+         wordInEnglish: "Mouse",
+         wordInGerman: "Maus",
+         gender: "Der"
+     },
+     {
+         wordInEnglish: "House",
+         wordInGerman: "Pferd",
+         gender: "Der"
+     }]}
+ ];
+
+var db;
+
+var request = window.indexedDB.open("newDatabase", 1);
+
+request.onerror = function(event) {
+    console.log("error: ");
+};
+
+request.onsuccess = function(event) {
+    db = request.result;
+    console.log("success: "+ db);
+};
+
+request.onupgradeneeded = function(event) {
+    var db = event.target.result;
+    var objectStore = db.createObjectStore("LocalVocab", {keyPath: "ListName"});
+    for (var i in starterVocab) {
+       objectStore.add(starterVocab[i]);
+    }
+    
+}
+
+
+
+
+
+/********************************************
+        Save to local DB
+/*********************************************/
+app.saveSelectedVocab = function () {
+    console.log("saving to DB");
+    window.localforage.setItem('localVocab', app.localVocab);
 };
 
 /***************************
         Service Worker 
-****************************/
+/****************************/
 
 /*if (!('serviceWorker' in navigator)) {
     alert('No service-worker on this browser');
@@ -58,39 +150,11 @@ navigator.serviceWorker.ready.then(function(swRegistration) {
 });
 */
 
-/*****************************
- Indexed DB for local storage 
-******************************/
-if (!('indexedDB' in window)) {
-    console.log('This browser doesn\'t support IndexedDB');
-}
 
-/********************************************
- Methods to update/refresh the local Storage 
-*********************************************/
-app.saveSelectedVocab = function () {
-    console.log("saving to DB");
-    window.localforage.setItem('localVocab', app.localVocab);
-};
-
-app.loadLocalStorage = function () {
-    window.localforage.getItem('localVocab', function (err, vocabList) {
-        if (vocabList) {
-            app.localVocab = vocabList;
-        } else {
-            app.localVocab = Object.keys(vocabMine).map(function (key) {
-                return {
-                        [key]: vocabMine[key]
-                };
-            });
-            app.saveSelectedVocab();
-        }
-    });
-};
 
 /*****************************
         Utility Functions
-******************************/
+/******************************/
 let utils = {
     body: document.querySelector("body"),
     // add point
@@ -123,16 +187,17 @@ let utils = {
         newStyleSheet.href = styleSheet;
         head.appendChild(newStyleSheet);
     }
-    
+
 };
 
 
 /************************************
         Page navigation functions
-*************************************/
+/*************************************/
 let navi = {
     // Object containing information for all pages incl. name/url/pageTitle and scripts upon page loading
     pages: [
+                //home
         {
             name: "home",
             url: "pages/home.html",
@@ -147,6 +212,7 @@ let navi = {
                 }));
             }
         },
+                //Vocab trainer
         {
             name: "vocabTrainer",
             url: "pages/vocabTrainer.html",
@@ -169,12 +235,8 @@ let navi = {
                     .addEventListener('click', function () {
                         vocabTrainer.changeWord(1);
                     });
-                document.getElementById('back')
-                    .addEventListener('click', function () {
-                        vocabTrainer.changeWord(-1);
-                    });
-                 document.getElementById('timerControl').addEventListener('click', function(){
-                    if(timer.started){
+                document.getElementById('timerControl').addEventListener('click', function () {
+                    if (timer.started) {
                         timer.pause();
                         document.querySelector('.fa-pause-circle-o').classList.add('hide');
                         document.querySelector('.fa-play-circle-o').classList.remove('hide');
@@ -188,6 +250,7 @@ let navi = {
                 vocabTrainer.initialize();
             }
         },
+                //timer
         {
             name: "timedSession",
             url: "pages/timedSession.html",
@@ -195,19 +258,59 @@ let navi = {
             urlPath: "/timedSession",
             script: function () {
                 // have timer counting down in display if one is running
-                timer.timerSet = document.getElementById("timerSet");
-                timer.timerSet.innerHTML = timer.convertTime(timer.time);
+                timer.timerSet = document.querySelector(".timerDisplay");
+                //timer.timerSet.innerHTML = timer.convertTime(timer.time);
                 document.getElementById('reset').addEventListener('click', timer.reset);
                 document.getElementById('pause').addEventListener('click', timer.pause);
-                document.getElementById('play').addEventListener('click', timer.start);
+                document.getElementById('play').addEventListener('click', function () {
+                    popUps.popUp(6);
+                    timer.start();
+                    timer.getStarted = setTimeout(function () {
+                        popUps.popUpHide();
+                        navi.changeContent("vocabTrainer");
+                    }, 1500);
+                });
+                document.querySelectorAll('.arrow').forEach(arrow => {
+                    arrow.addEventListener('click', function () {
+                        console.log(arrow.id);
+                        switch (arrow.id) {
+                            case "hourPlusTen":
+                                timer.time += 36000;
+                                break;
+                            case "hourPlusOne":
+                                timer.time += 3600;
+                                break;
+                            case "minutePlusTen":
+                                timer.time += 600;
+                                break;
+                            case "minutePlusOne":
+                                timer.time += 60;
+                                break;
+                            case "hourMinusTen":
+                                timer.time -= 36000;
+                                break;
+                            case "hourMinusOne":
+                                timer.time -= 3600;
+                                break;
+                            case "minuteMinusTen":
+                                timer.time -= 600;
+                                break;
+                            case "minuteMinusOne":
+                                timer.time -= 60;
+                                break;
+                        }
+                        timer.displayTime(timer.convertTime(timer.time));
+                    });
+                });
                 document.querySelectorAll('.length').forEach(length => {
                     length.addEventListener('click', function () {
                         timer.addTime(length.dataset.minutes);
                     });
                 });
-            }
 
-        },
+            }
+                },
+                //add Vocab
         {
             name: "addVocab",
             url: "pages/addVocab.html",
@@ -216,7 +319,7 @@ let navi = {
             script: function () {
                 document.querySelector('#addWord')
                     .addEventListener('click', addVocab.addWord);
-                document.getElementById('manageLocalLists').addEventListener('click', function(){
+                document.getElementById('manageLocalLists').addEventListener('click', function () {
                     console.log("click");
                     navi.changeContent("manageVocab");
                 });
@@ -225,7 +328,8 @@ let navi = {
                 addVocab.setProperties();
                 addVocab.populateWordLists();
             }
-        },
+                },
+                //stats
         {
             name: "stats",
             url: "pages/stats.html",
@@ -239,7 +343,7 @@ let navi = {
                 // Add is Last Session Time to Score Board
                 document.getElementById('lastSession').innerHTML = timer.convertTime(userAccount.lastSession);
                 // If Account display account details above score board, if not display hint to make one below.
-                if(account.haveAccount){
+                if (account.haveAccount) {
                     document.querySelector('#userId').innerHTML = app.userAccount.name;
                     document.querySelector('#joinedOn').innerHTML = app.userAccount.joined;
                     document.querySelector('#addAccountHint').classList.add('hide');
@@ -247,14 +351,13 @@ let navi = {
                 } else {
                     document.querySelector('.accountDetails').classList.add('hide');
                     document.querySelector('#addAccountHint').classList.remove('hide');
-                    document.querySelector('#addAccountHint button').addEventListener('click', function(){
+                    document.querySelector('#addAccountHint button').addEventListener('click', function () {
                         navi.changeContent("account");
                     });
                 }
-                
-                
             }
-        },
+                    },
+                //account
         {
             name: "account",
             url: "pages/account.html",
@@ -276,7 +379,8 @@ let navi = {
                      Day/Night Mode 
                 **********************/
                 let nightDayMode = document.querySelector('#dayNightSwitch input');
-                function checkNightTime(){
+
+                function checkNightTime() {
                     if (app.nightMode) {
                         document.querySelector(".fa-sun-o").classList.add('hide');
                         document.querySelector(".fa-moon-o").classList.remove('hide');
@@ -286,8 +390,8 @@ let navi = {
                         document.querySelector(".fa-sun-o").classList.remove('hide');
                     }
                 }
-                
-                nightDayMode.addEventListener('change', function(){
+
+                nightDayMode.addEventListener('change', function () {
                     if (!app.nightMode) {
                         utils.addStyle("styleSheets/nightMode.css", "nightMode");
                         app.nightMode = true;
@@ -298,10 +402,10 @@ let navi = {
                     }
                     checkNightTime();
                 });
-            
+
                 checkNightTime();
-                
-                
+
+
                 /*********************
                      Sound On / Off 
                 **********************/
@@ -335,19 +439,20 @@ let navi = {
                     Check for Account 
                  **********************/
                 account.checkAccount();
-                
+
             }
-        },
+                        },
+                //manage Vocab
         {
             name: "manageVocab",
             url: "pages/manageLocalLists.html",
             pageTitle: "manageVocab",
             urlPath: "/manageVocab",
             script: function () {
-                
+
             }
-        },
-            ],
+                    },
+                ],
     // content div is where new html is staged
     content: document.querySelector("#content"),
     // function to add routing ******* NEEDS CHECKING *******
@@ -387,7 +492,7 @@ let navi = {
 
 /********************************
         Vocab Trainer functions
-*********************************/
+/*********************************/
 let vocabTrainer = {
     // word to be guessed
     wordToGuess: "",
@@ -422,7 +527,7 @@ let vocabTrainer = {
     },
     //initialize and set up the list of vocab available
     populateWordLists: function () {
-        this.allVocab = function () {
+        vocabTrainer.allVocab = function () {
             if (ImportedVocab != null && app.localVocab != null) {
                 return [...app.localVocab, ...ImportedVocab];
             } else if (ImportedVocab != null) {
@@ -447,22 +552,22 @@ let vocabTrainer = {
         }
     },
     //starts trainer with selected Vocab List (goes into play mode)
-    startTrainer: function () { 
+    startTrainer: function () {
         this.currentIndex = Math.floor(Math.random() * this.vocabToTrain.length)
         this.wordToGuess.innerHTML = this.vocabToTrain[this.currentIndex].wordInEnglish;
-                
-        if(timer.time > 0 ){
-            vocabTrainer.trainerInterval = setInterval( function(){
+
+        if (timer.time > 0) {
+            vocabTrainer.trainerInterval = setInterval(function () {
                 document.getElementById('vocabTimer').innerHTML = timer.convertTime(timer.time);
             }, 1000);
-            if(!timer.started){
+            if (!timer.started) {
                 document.querySelector('.fa-pause-circle-o').classList.add('hide');
                 document.querySelector('.fa-play-circle-o').classList.remove('hide');
             }
         } else {
             document.querySelector('.fa-pause-circle-o').setAttribute('class', 'hide');
         }
-        
+
         document.querySelector('.exit').addEventListener('click', this.endTrainer);
     },
     //end trainer return nav bar, clear interval
@@ -556,7 +661,7 @@ let vocabTrainer = {
 
 /*****************************
         addVocab functions 
-******************************/
+/******************************/
 let addVocab = {
     //imported vocab from DB
     ImportedVocab: "",
@@ -636,7 +741,7 @@ let addVocab = {
             }
         }*/
     },
-     // check answer fits format, alert if not
+    // check answer fits format, alert if not
     checkInput: function () {
         let englishWord = this.wordInEnglish.value.toString()
             .trim();
@@ -644,7 +749,8 @@ let addVocab = {
             .trim();
         let forbiddenChars = /^[A-Za-z]+$/;
         this.newWord = {
-            "id": "null",
+            //"id": "null",
+            "ListName": "",
             "wordInEnglish": englishWord,
             "wordInGerman": germanWord,
             "gender": addVocab.getGender()
@@ -697,10 +803,54 @@ let addVocab = {
                     app.localVocab.unshift(insertList);
                     // change to div popup
                     alert(addVocab.newWord.wordInEnglish + " was added to your " + newList + " List.");
+                    /*************************/
+                        /*************************/                    
+                    var request = db.transaction(["LocalVocab"], "readwrite")
+                         .objectStore("LocalVocab")
+                         .add({ListName: newList, wordList : [addVocab.newWord]});
+
+                     request.onsuccess = function (event) {
+                         alert("added to your database.");
+                     };
+
+                     request.onerror = function (event) {
+                         console.log(event.target);
+                     }
+                         /*************************/
+                     /*************************/
                     addVocab.clearForm();
                     addVocab.populateWordLists(newList);
 
                 } else {
+                    /*************************/
+                        /*************************/
+                    
+                    var objectStore = db.transaction(["LocalVocab"], "readwrite").objectStore("LocalVocab");
+                    var request = objectStore.get(addVocab.listOptions.value);
+                    request.onerror = function (event) {
+                        // Handle errors!
+                        console.log(event.target);
+                    };
+                    request.onsuccess = function (event) {
+                        // Get the old value that we want to update
+                        var data = event.target.result;
+
+                        // update the value(s) in the object that you want to change
+                        data.wordList.push(addVocab.newWord);
+                        // Put this updated object back into the database.
+                        var requestUpdate = objectStore.put(data);
+                        requestUpdate.onerror = function (event) {
+                            // Do something with the error
+                        };
+                        requestUpdate.onsuccess = function (event) {
+                            // Success - the data is updated!
+                            console.log("updated");
+                        };
+                    };
+                    
+                        /*************************/
+                     /*************************/
+                    
                     for (let t = 0; t < app.localVocab.length; t++) {
                         if (app.localVocab[t][0] === addVocab.listOptions.value) {
                             app.localVocab[t][addVocab.listOptions.value].push(addVocab.newWord);
@@ -708,7 +858,6 @@ let addVocab = {
                     }
                     // change to div popup
                     alert(addVocab.newWord.wordInEnglish + " was added to your " + addVocab.listOptions.value + " List.");
-
                     addVocab.clearForm();
                     addVocab.populateWordLists(addVocab.listOptions.value);
                 }
@@ -721,51 +870,13 @@ let addVocab = {
 
 /*****************************
         account functions 
-******************************/
+/******************************/
 let account = {
     // Boolean for if account is present
     haveAccount: false,
-    // size for % of text to go in input (connected to reduceFontSizeOnInput)
-    size: 150,
-    // text.length for % of text to go in input (connected to reduceFontSizeOnInput)
-    textLength: 0,
     // reduce font size as user inputs - need to seperate out into a utility function and only keep length logic here
-    reduceFontSizeOnInput: function (e) {
-        let answer = document.querySelector('.answer');
-        let input = document.querySelector('#username');
-        if (e.which === 13) {
-            e.preventDefault();
-        }
-
-        if (input.innerText.length < 3) {
-            answer.style.border = "solid red 0.1em";
-            account.textLength = input.innerText.length;
-        } else if (input.innerText.length < 18) {
-            input.contentEditable = true;
-            answer.style.border = "solid green 0.1em";
-            if (input.innerText.length > account.textLength) {
-                if (input.innerText.length % 4 === 0) {
-                    if (account.size > 45) {
-                        account.size -= 35;
-                    }
-                    input.style.fontSize = account.size.toString() + "%";
-                }
-                account.textLength = input.innerText.length;
-            } else if (input.innerText.length < account.textLength) {
-                if (input.innerText.length % 4 === 0) {
-                    account.size += 35;
-                    input.style.fontSize = account.size.toString() + "%";
-                }
-                account.textLength = input.innerText.length;
-            }
-
-        } else if (input.innerText.length >= 18) {
-            console.log("username must be between 3 and 25 characters");
-            answer.style.border = "solid red 0.1em";
-            if (e.which != 8) {
-                e.preventDefault();
-            }
-        }
+    checkUserNameInput: function (inputUserName) {
+        return /((?!.*[^a-zA-Z0-9].*$).{4,20})/.test(inputUserName.value);
     },
     // check if an account exists and set properties in either case
     checkAccount: function () {
@@ -782,7 +893,7 @@ let account = {
         } else {
             document.querySelector('.accountDetails').classList.add('hide');
             document.querySelector('.addAccount').classList.remove('hide');
-            
+
             addOrDelete.innerHTML = "Add Account";
         }
     },
@@ -790,7 +901,7 @@ let account = {
     addAccount: function () {
         let inputUserName = document.getElementById('username');
         // should I add a message that you need a user name?
-        if (inputUserName.value != "") {
+        if (account.checkUserNameInput(inputUserName)) {
             let dateJoined = new Date(),
                 yearJoined = dateJoined.getFullYear(),
                 monthJoined = dateJoined.getMonth() + 1,
@@ -799,10 +910,14 @@ let account = {
             app.userAccount.name = inputUserName.value.toString();
             app.userAccount.joined = dateJoined;
             account.haveAccount = true;
+            account.checkAccount();
+            inputUserName.value = "";
+            console.log("account added");
+            inputUserName.style.border = "solid #ccc 0.1em";
+        } else {
+            inputUserName.style.border = "solid red 0.1em";
+            console.log("username must be between 4 and 20 characters, it can only contain letters or numbers")
         }
-        account.checkAccount();
-        inputUserName.value = "";
-        console.log("account added");
     },
     // Delete Account 
     deleteAccount: function () {
@@ -822,10 +937,10 @@ let account = {
 
 /*****************************
         Timer functions 
-******************************/
+/******************************/
 let timer = {
     //time is then the running time of the timer
-    time: 0, 
+    time: 0,
     //timerSet is initialzed as the html element to display timer
     timerSet: "",
     getStarted: 0,
@@ -838,7 +953,7 @@ let timer = {
     //add predifined amounts to timer +=
     addTime: function (minutes) {
         this.time += parseInt(minutes);
-        this.timerSet.innerHTML = this.convertTime(this.time);
+        timer.displayTime(timer.convertTime(timer.time));
     },
     // zero out timer and stop it
     reset: function () {
@@ -864,21 +979,16 @@ let timer = {
                 timer.myInterval = setInterval(function () {
                     timer.sessionTime += 1;
                     timer.time -= 1;
-                    timer.timerSet.innerHTML = timer.convertTime(timer.time);
+                    timer.displayTime(timer.convertTime(timer.time));
                     if (timer.time < 1) {
                         clearInterval(timer.myInterval);
                         timer.timerDone();
                     }
                 }, 1000);
-                popUps.popUp(6);
-                this.getStarted = setTimeout(function() {
-                    popUps.popUpHide();
-                    this.startTimer;
-                    navi.changeContent("vocabTrainer");
-                }, 1500);
             }
             timer.started = true;
-        } else {
+        } 
+        else {
             popUp(5);
         }
     },
@@ -896,16 +1006,27 @@ let timer = {
         let convertedTime = timer.pad(hh, 2) + ":" + timer.pad(mm, 2) + ":" + timer.pad(ss, 2);
         return convertedTime;
     },
+    displayTime: function (convertedTime) {
+        let hourTens = document.getElementById('hourTens');
+        let hourOnes = document.getElementById('hourOnes');
+        let minuteTens = document.getElementById('minuteTens');
+        let minuteOnes = document.getElementById('minuteOnes');
+
+        hourTens.innerHTML = convertedTime[0];
+        hourOnes.innerHTML = convertedTime[1];
+        minuteTens.innerHTML = convertedTime[3];
+        minuteOnes.innerHTML = convertedTime[4];
+    },
     // once timer complete, go to stat page, pop to indicate finished.
     timerDone: function () {
-        let finish = new Promise(function(resolve, reject){
+        let finish = new Promise(function (resolve, reject) {
             resolve(vocabTrainer.endTrainer());
         });
         // navigation away from page only once vocabTrainer.endTrainer() has run
-        finish.then(function(value){
+        finish.then(function (value) {
             navi.changeContent("stats");
         })
-        
+
         //make pop up with option to cont learning or go to stats
         popUps.popUp(7);
         timer.started = false;
@@ -918,12 +1039,13 @@ let timer = {
 
 /*****************************
         popUps functions
-******************************/
+/******************************/
 let popUps = {
     popUpElement: document.querySelector('#popUp p'),
     close: document.querySelector('#popUp span.close'),
     // Object containing texts for all popups also additional info
     popUpTexts: [
+        //Trainer Info
         {
             title: "trainerInfo",
             text: "Info text - how to play!",
@@ -931,6 +1053,7 @@ let popUps = {
             left: "7%",
             borderColor: "rgba(0, 0, 0, 0.6)"
          },
+        //Case Sensitive Hint
         {
             title: "caseSensitive",
             text: "Good work but this test is case sensitive!",
@@ -938,6 +1061,7 @@ let popUps = {
             left: "7%",
             borderColor: "rgba(0, 0, 0, 0.6)"
           },
+        // Article Hint
         {
             title: "article",
             text: "Almost there, you must have the correct Article!",
@@ -945,6 +1069,7 @@ let popUps = {
             left: "7%",
             borderColor: "rgba(0, 0, 0, 0.6)"
           },
+        // Account
         {
             title: "account",
             text: "Account Added!",
@@ -952,6 +1077,7 @@ let popUps = {
             left: "7%",
             borderColor: "rgba(0, 0, 0, 0.6)"
           },
+        // Delete Account
         {
             title: "deleteAccount",
             text: "pages/popups/addAccount.html",
@@ -959,6 +1085,7 @@ let popUps = {
             left: "7%",
             borderColor: "rgba(0, 0, 0, 0.6)"
           },
+        //Assign Time
         {
             title: "assignTime",
             text: "You need to add a time first!",
@@ -966,6 +1093,7 @@ let popUps = {
             left: "7%",
             borderColor: "rgba(0, 0, 0, 0.6)"
           },
+        //Start
         {
             title: "start",
             text: "Ready......Steady......Go!",
@@ -973,6 +1101,7 @@ let popUps = {
             left: "7%",
             borderColor: "rgba(0, 0, 0, 0.6)"
           },
+        //Timer End
         {
             title: "timerEnd",
             text: "You're done!",
@@ -980,39 +1109,33 @@ let popUps = {
             left: "7%",
             borderColor: "rgba(0, 0, 0, 0.6)"
           }
-
-
         ],
-     //set CSS style ****************NOT USING *********************
-    setCSS: function (e, style) {
-        for (let prop in style) {
-            e.style[prop] = style[prop];
-        }
-    },
     //Display PopUp and set content and position
     popUp: function (textNumber) {
         let selectedPopUp = this.popUpTexts[textNumber];
         this.popUpElement.innerHTML = selectedPopUp['text'];
         this.popUpElement.parentElement.classList.remove('hide');
         this.close.addEventListener('click', popUps.popUpHide);
-        if(textNumber != 0){
-            setTimeout(function() { popUps.popUpHide();}, 1500);
+        if (textNumber != 0) {
+            setTimeout(function () {
+                popUps.popUpHide();
+            }, 1500);
         }
     },
     //Hide PopUp
     popUpHide: function () {
         popUps.popUpElement.parentElement.classList.add('popUpFadeOut');
-        setTimeout(function() {
+        setTimeout(function () {
             popUps.popUpElement.parentElement.classList.add('hide');
             popUps.popUpElement.parentElement.classList.remove('popUpFadeOut')
-                }, 1000);
+        }, 1000);
     }
 };
 
 
 /*****************************
         Event Listeners 
-******************************/
+/******************************/
 
 // To use back and forwards buttons in Browser 
 
@@ -1033,9 +1156,19 @@ app.accountBtn.addEventListener('click', function () {
     navi.changeContent("account");
 });
 
-// load events
+// load events and App initizialisation
 window.addEventListener('load', function () {
-    //emulating local storage word List ****** TEMPORARY ******
+    // Go to home page
+    navi.changeContent("home");
+    app.spinner.setAttribute('hidden', true);
+    // set the icon for the account
+    if (!account.haveAccount) {
+        document.querySelector('#account').innerHTML = "<i class=\"fa fa-user-secret\" aria-hidden=\"true\"></i>"
+    } else {
+        document.querySelector('#account').innerHTML = app.userAccount.icon;
+    }
+    
+    /*emulating local storage word List ****** TEMPORARY *****
     emulateLocalStorage('assets/wordLists.json').then((value) => {
         vocabMine = value;
         app.loadLocalStorage();
@@ -1047,17 +1180,7 @@ window.addEventListener('load', function () {
         } else {
             app.actualScore.innerHTML = app.userAccount.score;
         }
-    });
-    // Go to home page
-    navi.changeContent("home");
-    app.spinner.setAttribute('hidden', true);
-    
-    // set the icon for the account
-    if(!account.haveAccount){
-       document.querySelector('#account').innerHTML  = "<i class=\"fa fa-user-secret\" aria-hidden=\"true\"></i>"
-    } else {
-        document.querySelector('#account').innerHTML  = app.userAccount.icon;
-    }
+    });*/
 
 });
 

@@ -1,0 +1,50 @@
+/************************************************************************************************************
+		Scripts developed during Vocab Trainer Project but not used or noteworthy Scritps for reuse
+************************************************************************************************************/
+
+
+    //set CSS style ****************NOT USING *********************
+    setCSS: function (e, style) {
+        for (let prop in style) {
+            e.style[prop] = style[prop];
+        }
+    },
+	
+	// reduce font size as user inputs - need to seperate out into a utility function and only keep length logic here
+    reduceFontSizeOnInput: function (e) {
+        let answer = document.querySelector('.answer');
+        let input = document.querySelector('#username');
+        if (e.which === 13) {
+            e.preventDefault();
+        }
+
+        if (input.innerText.length < 3) {
+            answer.style.border = "solid red 0.1em";
+            account.textLength = input.innerText.length;
+        } else if (input.innerText.length < 18) {
+            input.contentEditable = true;
+            answer.style.border = "solid green 0.1em";
+            if (input.innerText.length > account.textLength) {
+                if (input.innerText.length % 4 === 0) {
+                    if (account.size > 45) {
+                        account.size -= 35;
+                    }
+                    input.style.fontSize = account.size.toString() + "%";
+                }
+                account.textLength = input.innerText.length;
+            } else if (input.innerText.length < account.textLength) {
+                if (input.innerText.length % 4 === 0) {
+                    account.size += 35;
+                    input.style.fontSize = account.size.toString() + "%";
+                }
+                account.textLength = input.innerText.length;
+            }
+
+        } else if (input.innerText.length >= 18) {
+            console.log("username must be between 3 and 25 characters");
+            answer.style.border = "solid red 0.1em";
+            if (e.which != 8) {
+                e.preventDefault();
+            }
+        }
+    },
