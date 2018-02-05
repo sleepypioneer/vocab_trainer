@@ -1,22 +1,4 @@
-<!--<?php
-	include('./php/dbconnection.php');
-    $query = "SELECT * FROM vocab_standard";  
-    $run = mysqli_query($connection, $query);
-	$myJSON1 = array ();
-	while($result = mysqli_fetch_assoc($run)){
-
-		array_push($myJSON1,$result);
-	}	
-    $query2 = "SELECT * FROM vocab_shopping";  
-    $run2 = mysqli_query($connection, $query2);
-	$myJSON2 = array ();
-	while($result2 = mysqli_fetch_assoc($run2)){
-
-		array_push($myJSON2,$result2);
-	}	
-?>-->
-
-    <!DOCTYPE html>
+<!DOCTYPE html>
     <html>
 
     <head>
@@ -108,45 +90,22 @@
 
         <script src="scripts/appScripts.js"></script>
         <script type="text/javascript" language="javascript">
-            let vocabImport1 = [{id: "1", wordInEnglish: "Keyboard", wordInGerman: "Tastatur", gender: "Der"},
-{id: "2", wordInEnglish: "Slide Show", wordInGerman: "Diashow", gender: "Die"},
-{id: "7", wordInEnglish: "Monitor", wordInGerman: "Bildschirm", gender: "Der"},
-{id: "8", wordInEnglish: "Reception", wordInGerman: "Empfang", gender: "Der"},
-{id: "9", wordInEnglish: "Branch /store", wordInGerman: "Filiale", gender: "Die"},
-{id: "10", wordInEnglish: "Staff Member (sg/m)", wordInGerman: "Mitarbeiter", gender: "Der"},
-{id: "11", wordInEnglish: "Staff Member(sg f)", wordInGerman: "Mitarbeiterin", gender: "Die"},
-{id: "12", wordInEnglish: "Telephone System", wordInGerman: "Telefonanlage", gender: "Die"},
-{id: "13", wordInEnglish: "Sister Company", wordInGerman: "Tochterunternehmen", gender: "Das"},
-{id: "14", wordInEnglish: "Department", wordInGerman: "Abteilung", gender: "Die"},
-{id: "15", wordInEnglish: "Purchase", wordInGerman: "Einkauf", gender: "Der"},
-{id: "16", wordInEnglish: "Management", wordInGerman: "Geschaeftsleitung", gender: "Die"}];   
-                
-            /*<?php echo json_encode($myJSON1); ?>*/
-            /*if(vocabImport.length > 0){
-                let vocabMine = [...vocabImport];
-            }*/
-            let vocabImport2 = [{id: "10", wordInEnglish: "Staff Member (sg/m)", wordInGerman: "Mitarbeiter", gender: "Der"},
-{id: "11", wordInEnglish: "Staff Member(sg f)", wordInGerman: "Mitarbeiterin", gender: "Die"},
-{id: "12", wordInEnglish: "Telephone System", wordInGerman: "Telefonanlage", gender: "Die"},
-{id: "13", wordInEnglish: "Sister Company", wordInGerman: "Tochterunternehmen", gender: "Das"},
-{id: "14", wordInEnglish: "Department", wordInGerman: "Abteilung", gender: "Die"},
-{id: "15", wordInEnglish: "Purchase", wordInGerman: "Einkauf", gender: "Der"},
-{id: "16", wordInEnglish: "Management", wordInGerman: "Geschaeftsleitung", gender: "Die"}];
-                
-                
-                /*<?php echo json_encode($myJSON2); ?>;*/
-            ImportedVocab = [{"vocabImport1" : vocabImport1}, {"vocabImport2": vocabImport2}
-            ];
-
+            let importedVocab;
+            fetch("connectToDb.php").then(function (response) {
+                if (response.ok) {
+                    console.log("ok");
+                    console.log(response.text());
+                    /*response.text().then(function (text) {
+                        document.body.innerHTML += text;
+                    })*/
+                } else {
+                    importedVocab = null;
+                    console.log('Network request for products.json failed with response ' + response.status + ': ' + response.statusText);
+                }
+            });
         </script>
         
         
     </body>
 
     </html>
-
-   <!-- <?php
-
-
-   	mysqli_close($connection);     
-?> -->
