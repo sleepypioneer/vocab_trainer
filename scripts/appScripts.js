@@ -163,17 +163,43 @@ let utils = {
     body: document.querySelector("body"),
     // add point
     plusPoint: function () {
-        /* Update Score */
-        userAccount.score != undefined ? app.actualScore.innerHTML = app.newScore : app.actualScore.innerHTML = 0;
-        if (app.hintTaken) {
-            app.newScore += 1;
-            app.hintTaken = false;
-        } else {
-            app.newScore += 2;
-        }
-        
-        vocabTrainer.instruct.querySelector('#actualScore').innerHTML = app.newScore;
-        app.userAccount.score = app.newScore.toString();
+        var promise1 = new Promise(function(resolve, reject) {
+            let objectStore = db.transaction(["UserAccount"], "readwrite").objectStore("UserAccount");
+            let request = objectStore.get(app.userAccount.name);
+            request.onerror = function (event) {
+                // Handle errors!
+                console.log(event.target);
+            };
+            request.onsuccess = function (event) {
+           
+                // Get the old value that we want to update
+                let data = event.target.result;
+
+                //update the value(s) in the object that you want to change
+                if (app.hintTaken) {
+                    data['score'] += 1;
+                    app.hintTaken = false;
+                } else {
+                    data['score'] += 2;
+                }
+                // Put this updated object back into the database.
+                let requestUpdate = objectStore.put(data);
+                requestUpdate.onerror = function (event) {
+                    // Do something with the error
+                };
+                requestUpdate.onsuccess = function (event) {
+                    // Success - the data is updated!
+                    console.log(app.userAccount.score);
+                };
+            }
+            resolve(app.userAccount.score);
+        });
+
+        promise1.then(function(score){
+            console.log(score);
+            account.updateAccount();
+            vocabTrainer.instruct.querySelector('#actualScore').innerHTML = score;
+        });      
     },
     // play sound to notify a correct answer (can turn off sounds on account page)
     playPointSound: function () {
@@ -192,7 +218,6 @@ let utils = {
         newStyleSheet.href = styleSheet;
         head.appendChild(newStyleSheet);
     }
-
 };
 
 
@@ -455,9 +480,8 @@ let navi = {
             urlPath: "/manageVocab",
             script: function () {
                 manageLocalList.initialize();
-
                 manageLocalList.populateLocalVocabList();
-
+                manageLocalList.populateDataBaseVocabLists();
                
             }
                     },
@@ -546,7 +570,7 @@ let vocabTrainer = {
             alert("Unable to retrieve data from local database!");
         };
         /* If local Vocab found goes through key array and adds them to the list options */
-        keys.onsuccess = function (event) {
+       keys.onsuccess = function (event) {
             addVocab.localVocabLists = keys.result;
             if (addVocab.localVocabLists.length < 1) {
                 vocabTrainer.vocabList.innerHTML += "<li data-vocabList = \"1\">No categories currently available, add your own</li>";
@@ -558,16 +582,36 @@ let vocabTrainer = {
                 i++;
             }
             vocabTrainer.vocabLists = document.querySelectorAll('#vocabList li');
-            vocabTrainer.vocabLists.forEach(vocabList => vocabList.addEventListener('click', vocabTrainer.chosenWordList));
+           console.log("complete");
+           vocabTrainer.vocabLists.forEach(vocabList => vocabList.addEventListener('click', function(){
+                    vocabTrainer.chosenWordList;
+                }));
         } 
+       
+        fetch('./php/getVocabLists.php').then(function (response) {
+            if (response.ok) {
+                response.text().then(function (text) {
+                    console.log("success");
+                    vocabTrainer.vocabList.innerHTML += text;
+                }).then(function () {
+                    // add create category here
+                });
+            } else {
+                console.log('Network request for products.json failed with response ' + response.status + ': ' + response.statusText);
+            }
+        })
         
-        
-        
-        /* still need to fix in here imported list */
-
-        
+        /*document.querySelectorAll('#vocabList .localList').forEach(vocabList => vocabList.addEventListener('click', function(){
+            console.log("click");
+            vocabTrainer.chosenLocalWordList();
+        }));*/
         /* if not local or main database available. Ie no lists available */
         /**/
+        
+            /*if (addVocab.localVocabLists.length < 1) {
+                vocabTrainer.vocabList.innerHTML += "<li data-vocabList = \"1\">No local Lists, add your own, or download Lists for offline use</li>";
+                //Not working - goes straight to add vocab page // document.querySelector('#vocabList li').addEventListener('click', changeContent("addVocab", pages));
+            }*/
         
         /* set event listener on to list to sort which is clicked and provide the correct list */
     },
@@ -598,7 +642,7 @@ let vocabTrainer = {
         vocabTrainer.chooseList.removeAttribute('class', 'hide');
         vocabTrainer.chooseList.removeAttribute('class', 'hide');
         app.nav.classList.remove('hide');
-        app.actualScore.innerHTML = app.newScore;
+
     },
     // utility function to remove articles from words to check if correct word has been given without article
     removeArticles: function (str) {
@@ -668,7 +712,7 @@ let vocabTrainer = {
         this.vocabCard.classList.toggle('flipped');
     },
     //when user selects their chosen word list this starts the trainer and removes the nav and vocab lists (ie goes into play mode)
-    chosenWordList: function (event) {
+    chosenLocalWordList: function (event) {
         let transaction = db.transaction(["LocalVocab"]);
         let objectStore = transaction.objectStore("LocalVocab");
         let list = objectStore.get(this.dataset.vocablist);
@@ -682,7 +726,7 @@ let vocabTrainer = {
             vocabTrainer.chooseList.setAttribute('class', 'hide');
             app.nav.classList.add('hide');
             vocabTrainer.instruct.classList.remove('hide');
-            vocabTrainer.instruct.querySelector('#actualScore').innerHTML = app.newScore;
+            vocabTrainer.instruct.querySelector('#actualScore').innerHTML = app.userAccount['score'];
             vocabTrainer.startTrainer();
         };    
     }
@@ -847,23 +891,20 @@ let addVocab = {
                     let insertList = {}
                     insertList[newList] = [addVocab.newWord];
                     app.localVocab.unshift(insertList);
-                    
-                    /*************************/
-                        /*************************/                    
+                                      
                     let request = db.transaction(["LocalVocab"], "readwrite")
                          .objectStore("LocalVocab")
                          .add({ListName: newList, wordList : [addVocab.newWord]});
 
-                     request.onsuccess = function (event) {
-                         // change to div popup
+                    request.onsuccess = function (event) {
+                        // change to div popup
                         alert(addVocab.newWord.wordInEnglish + " was added to your " + newList + " List.");
-                     };
+                    };
 
-                     request.onerror = function (event) {
-                         console.log(event.target);
-                     }
-                         /*************************/
-                     /*************************/
+                    request.onerror = function (event) {
+                        console.log(event.target);
+                    }
+                     
                     addVocab.clearForm();
                     addVocab.populateWordLists(newList);
 
@@ -917,9 +958,69 @@ let addVocab = {
 /*****************************************/
 let manageLocalList = {
     listOptions: "",
+    dataBaseVocabLists: "",
+    deleteBtn: "",
     /* initialize document by finding elements needed for fucntions */
     initialize: function(){
-       this.listOptions = document.getElementById('listOptions'); 
+        this.dataBaseVocabLists = document.getElementById('dataBaseVocabLists'); 
+        this.listOptions = document.getElementById('listOptions'); 
+        this.deleteBtn = document.querySelector('#deleteList');
+    },
+    populateDataBaseVocabLists: function() {
+        /* clears Vocab List to begin*/
+        manageLocalList.dataBaseVocabLists.innerHTML = "";
+        /* Makes AJAX call to DB to look for Vocab List*/
+        fetch('./php/dataBaseVocabLists.php').then(function (response) {
+            if (response.ok) {
+                response.text().then(function (text) {
+                    console.log("ok");
+                    manageLocalList.dataBaseVocabLists.innerHTML = text;
+                }).then(function () {
+                    // add create category here
+                });
+            } else {
+                console.log('Network request for products.json failed with response ' + response.status + ': ' + response.statusText);
+            }
+        })
+    },
+    downloadVocabList: function(){
+        //declare list to download variable
+        let listToDownload;
+        let urlToDownload = "./php/downloadList.php?listToDownload=" + listToDownload;
+        let downloadedList;
+        //set list to download variable
+        let promise = Promise.resolve(
+            manageLocalList.dataBaseVocabLists.querySelectorAll("option").forEach(option => {
+                if(option.selected == true){
+                    listToDownload =  option.value;
+                }
+            }));
+        promise.then(function(value){
+            downloadedList = starterVocab;
+            fetch(urlToDownload).then(function (response) {
+                if (response.ok) {
+                    response.text().then(function (text) {
+                        downloadedList = text;
+                    });
+                } else {
+                    console.log('Network request for products.json failed with response ' + response.status + ': ' + response.statusText);
+                }
+            });
+            console.log(downloadedList);
+            let request = db.transaction(["LocalVocab"], "readwrite")
+                         .objectStore("LocalVocab")
+                         .add({ListName: listToDownload, wordList : downloadedList});
+
+            request.onsuccess = function (event) {
+                // change to div popup
+                alert("added");
+            };
+
+            request.onerror = function (event) {
+                console.log(event.target);
+            }
+            //manageLocalList.populateLocalVocabList();
+        });
     },
     populateLocalVocabList: function() {
         
@@ -946,14 +1047,18 @@ let manageLocalList = {
                 i++;
             }
         } 
+        manageLocalList.deleteBtn.addEventListener('click', function(){
+            manageLocalList.deleteLocalList()
+        });
     },
     deleteLocalList: function () {
-        
+        //declare list to delete variable
         let listToDelete;
+        //set list to delete variable
         let promise = Promise.resolve(
-            document.getElementById('listOptions').querySelectorAll("option").forEach(option => {
+            manageLocalList.listOptions.querySelectorAll("option").forEach(option => {
                 if(option.selected == true){
-                    listToDelete =  option.value
+                    listToDelete =  option.value;
                 }
             }));
         promise.then(function(value){
@@ -970,6 +1075,8 @@ let manageLocalList = {
         
     }
 }
+
+
 /*****************************
         account functions 
 /******************************/
@@ -992,10 +1099,11 @@ let account = {
             addOrDelete.innerHTML = "Delete Account";
             document.querySelector('.addAccount').classList.add('hide');
             document.querySelector('.accountDetails').classList.remove('hide');
+            document.querySelector('#account').innerHTML = app.userAccount.icon;
         } else {
             document.querySelector('.accountDetails').classList.add('hide');
             document.querySelector('.addAccount').classList.remove('hide');
-
+            document.querySelector('#account').innerHTML = "<i class=\"fa fa-user-secret\" aria-hidden=\"true\"></i>";
             addOrDelete.innerHTML = "Add Account";
         }
     },
@@ -1061,6 +1169,31 @@ let account = {
             account.haveAccount = false;
             account.checkAccount();
         }
+    },
+    updateAccount: function(){
+        let transaction = db.transaction(["UserAccount"]);
+        let objectStore = transaction.objectStore("UserAccount");
+        let localAccount = objectStore.getAll();
+        localAccount.onerror = function(event) {
+          alert("Error " + event);
+        };
+
+        localAccount.onsuccess = function(event) {
+            // set local Account and the icon for the account
+            if (localAccount.result[1]) {
+                account.haveAccount = true;
+                app.userAccount = localAccount.result[1];
+                document.querySelector('#account').innerHTML = app.userAccount.icon;
+                // set the user score, or defualt zero if no acocunt
+                app.actualScore.innerHTML = app.userAccount.score;
+            } else {
+                document.querySelector('#account').innerHTML = "<i class=\"fa fa-user-secret\" aria-hidden=\"true\"></i>";
+                // set the user score, or defualt zero if no acocunt
+                app.actualScore.innerHTML = 0;
+            }
+
+        };    
+
     }
 }
 
@@ -1292,21 +1425,8 @@ window.addEventListener('load', function () {
     // Go to home page
     navi.changeContent("home");
     app.spinner.setAttribute('hidden', true);
-    // set the icon for the account
-    if (!account.haveAccount) {
-        document.querySelector('#account').innerHTML = "<i class=\"fa fa-user-secret\" aria-hidden=\"true\"></i>"
-    } else {
-        document.querySelector('#account').innerHTML = app.userAccount.icon;
-    }
     
-    if (!app.userAccount.score) {
-        app.actualScore.innerHTML = app.newScore;
-    } else {
-        app.actualScore.innerHTML = app.userAccount.score;
-    }
-    
-    
-
+   account.updateAccount();
 });
 
 
