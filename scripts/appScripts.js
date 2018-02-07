@@ -1,5 +1,65 @@
+
 //(function() {
 'use strict';
+
+/********************************************
+        Indexed DB for local storage 
+/*********************************************/
+//Check for indexedDB in all browers in some it is called different
+let indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB;
+
+//alerts if indexedDB is not supported by Browser
+ if (!indexedDB) {
+     window.alert("Your browser doesn't support a stable version of IndexedDB.")
+ }
+
+
+// To start of database object store off it needs a list
+const starterVocab = [
+    {ListName: "Animals1", wordList : [{ wordInEnglish: "Dog", wordInGerman: "Hund", gender: "Der"},
+    { wordInEnglish: "Cat", wordInGerman: "Katze", gender: "Die"}
+]}];
+
+let db;
+// opens IndexedDB "localDataBase" if it exists with version one. If not there it is created.
+let open = indexedDB.open("localDatabase", 2);
+
+// Logs error to console if DB not found
+open.onerror = function(event) {
+    console.log(event);
+};
+
+// on success of DataBase save results to "db" and log success to console.
+open.onsuccess = function(event) {
+    db = open.result;
+    console.log("success: "+ db);
+};
+
+
+/* creates object store (local Vocab) if not already created and sets initial item to it (****will make this an empty oject and index from 1 in future****)**/
+open.onupgradeneeded = function(event) {
+    console.log(event);
+    let db = event.target.result;
+    // create Object Store called "LocalVocab" its keys will take the "ListName"
+    let objectStore = db.createObjectStore("LocalVocab", {keyPath: "ListName"});
+    // Adds initializer item (starter Vocab) to Object Store
+    objectStore.add(starterVocab);
+    // create Object Store called "UserAccount" its keys will take the "name"
+    let objectStoreUser = db.createObjectStore("UserAccount", {keyPath: "name"});
+    // Adds initializer item (blank user account) to Object Store
+    objectStoreUser.add(app.userAccount); 
+}
+
+
+/* creates object store (local Vocab) if not already created and sets initial item to it (****will make this an empty oject and index from 1 in future****)**/
+open.onupgradeneeded = function(event) {
+    let db = event.target.result;
+    let objectStore = db.createObjectStore("LocalVocab", {keyPath: "ListName"});
+    objectStore.add(starterVocab[0]);
+    let objectStoreUser = db.createObjectStore("UserAccount", {keyPath: "name"});
+    objectStoreUser.add(app.userAccount);
+    
+}
 
 /***********************
         App Object 
@@ -21,67 +81,18 @@ let app = {
         "lastSession": 0,
         "icon": ""
     },
-    //newScore: 0,
     soundOn: true,
     nightMode: false,
     hintTaken: false,
-    // not using?
-    //localVocab: [],
     //loading spinner - only visable when loading at start
     spinner: document.querySelector('.loader'),
 };
 
-/********************************************
-        Indexed DB for local storage 
-/*********************************************/
-// Check for indexedDB in all browers in some it is called different
-let indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB;
-
-//allerts if indexedDB is not supported by Browser
- if (!window.indexedDB) {
-     window.alert("Your browser doesn't support a stable version of IndexedDB.")
- }
-
-// To start of database object store off it needs a list
-const starterVocab = [
-    {ListName: "Animals1", wordList : [{ wordInEnglish: "Dog", wordInGerman: "Hund", gender: "Der"},
-    { wordInEnglish: "Cat", wordInGerman: "Katze", gender: "Die"}
-]}];
-
-let db;
-// opens IndexedDB "localDataBase" if it exists with version one. If not there it is created.
-let open = indexedDB.open("localDatabase", 1);
-
-// Logs error to console if DB not found
-open.onerror = function(event) {
-    console.log("error: " + event.result);
-};
-
-// on success of DataBase save results to "db" and log success to console.
-open.onsuccess = function(event) {
-    db = open.result;
-    console.log("success: "+ db);
-};
-
-
-/* creates object store (local Vocab) if not already created and sets initial item to it (****will make this an empty oject and index from 1 in future****)**/
-open.onupgradeneeded = function(event) {
-    let db = event.target.result;
-    // create Object Store called "LocalVocab" its keys will take the "ListName"
-    let objectStore = db.createObjectStore("LocalVocab", {keyPath: "ListName"});
-    // Adds initializer item (starter Vocab) to Object Store
-    objectStore.add(starterVocab);
-    // create Object Store called "UserAccount" its keys will take the "name"
-    let objectStoreUser = db.createObjectStore("UserAccount", {keyPath: "name"});
-    // Adds initializer item (blank user account) to Object Store
-    objectStoreUser.add(app.userAccount);
-    
-}
 
 /***************************
         Service Worker 
 /****************************/
-//Currently turned off
+
 /*if (!('serviceWorker' in navigator)) {
     alert('No service-worker on this browser');
 } else {
@@ -93,12 +104,10 @@ open.onupgradeneeded = function(event) {
     });
     //catch a registration error
 }
-
 navigator.serviceWorker.ready.then(function(swRegistration) {
     return swRegistration.sync.register('foo');
 });
 */
-
 
 
 /*****************************
