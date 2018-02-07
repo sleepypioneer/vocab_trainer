@@ -47,4 +47,23 @@
                 e.preventDefault();
             }
         }
-    },
+    }
+	
+	
+	/***********************************
+        Emulating local Content 
+/************************************/
+let vocabMine = {};
+let userAccount = {};
+
+function emulateLocalStorage(url) {
+    return fetch(url).then(function (response) {
+        if (response.ok) {
+            return response.json();
+        } else {
+            console.log('Network request for products.json failed with response ' + response.status + ': ' + response.statusText);
+        }
+    }).then((json) => {
+        return json;
+    });
+}

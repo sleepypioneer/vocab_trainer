@@ -1,22 +1,5 @@
 //(function() {
 'use strict';
-/***********************************
-        Emulating local Content 
-/************************************/
-let vocabMine = {};
-let userAccount = {};
-
-function emulateLocalStorage(url) {
-    return fetch(url).then(function (response) {
-        if (response.ok) {
-            return response.json();
-        } else {
-            console.log('Network request for products.json failed with response ' + response.status + ': ' + response.statusText);
-        }
-    }).then((json) => {
-        return json;
-    });
-}
 
 /***********************
         App Object 
@@ -29,6 +12,7 @@ let app = {
     homeBtn: document.getElementById('home'),
     accountBtn: document.getElementById('account'),
     actualScore: document.getElementById('actualScore'),
+    //Blank UserAccount if an account is stored locally this is replaced with it's details
     userAccount: {
         "name": "",
         "joined": "",
@@ -37,28 +21,13 @@ let app = {
         "lastSession": 0,
         "icon": ""
     },
-    newScore: 0,
+    //newScore: 0,
     soundOn: true,
     nightMode: false,
     hintTaken: false,
+    //
     localVocab: [],
-    /*function () {
-        let transaction = db.transaction(["LocalVocab"]);
-        let objectStore = transaction.objectStore("LocalVocab");
-        let keys = objectStore.getAllKeys();
-        keys.onerror = function (event) {
-            alert("Unable to retrieve data from database!");
-        };
-
-        keys.onsuccess = function (event) {
-                let keys = request.result;
-                console.log(keys);
-                for (let i in keys){
-                    return objectStore.get(keys[i]);
-                }
-        }
-
-    },*/
+    
     spinner: document.querySelector('.loader'),
 };
 
@@ -482,7 +451,7 @@ let navi = {
                 manageLocalList.initialize();
                 manageLocalList.populateLocalVocabList();
                 manageLocalList.populateDataBaseVocabLists();
-               
+                
             }
                     },
                 ],
@@ -565,12 +534,12 @@ let vocabTrainer = {
         let objectStore = transaction.objectStore("LocalVocab");
         /* gets key of local Vocab and stores in array */
         let keys = objectStore.getAllKeys();
-        /* If no local vocab only adds create new list */
+        //error message if problem connecting to indexedDB
         keys.onerror = function (event) {
             alert("Unable to retrieve data from local database!");
         };
         /* If local Vocab found goes through key array and adds them to the list options */
-       keys.onsuccess = function (event) {
+        keys.onsuccess = function (event) {
             addVocab.localVocabLists = keys.result;
             if (addVocab.localVocabLists.length < 1) {
                 vocabTrainer.vocabList.innerHTML += "<li data-vocabList = \"1\">No categories currently available, add your own</li>";
@@ -578,20 +547,14 @@ let vocabTrainer = {
             }
             let i = 0;
             while (i < addVocab.localVocabLists.length) {
-                vocabTrainer.vocabList.innerHTML += "<li data-vocabList = \"" + addVocab.localVocabLists[i] + "\">" + addVocab.localVocabLists[i] + "</li>";
+                vocabTrainer.vocabList.innerHTML += "<li class=\"localList\" data-vocabList = \"" + addVocab.localVocabLists[i] + "\">" + addVocab.localVocabLists[i] + "</li>";
                 i++;
             }
-            vocabTrainer.vocabLists = document.querySelectorAll('#vocabList li');
-           console.log("complete");
-           vocabTrainer.vocabLists.forEach(vocabList => vocabList.addEventListener('click', function(){
-                    vocabTrainer.chosenWordList;
-                }));
         } 
-       
+        // fetches DB lists then adds event listeners for all lists
         fetch('./php/getVocabLists.php').then(function (response) {
             if (response.ok) {
                 response.text().then(function (text) {
-                    console.log("success");
                     vocabTrainer.vocabList.innerHTML += text;
                 }).then(function () {
                     // add create category here
@@ -599,21 +562,30 @@ let vocabTrainer = {
             } else {
                 console.log('Network request for products.json failed with response ' + response.status + ': ' + response.statusText);
             }
-        })
-        
-        /*document.querySelectorAll('#vocabList .localList').forEach(vocabList => vocabList.addEventListener('click', function(){
-            console.log("click");
-            vocabTrainer.chosenLocalWordList();
-        }));*/
-        /* if not local or main database available. Ie no lists available */
-        /**/
-        
-            /*if (addVocab.localVocabLists.length < 1) {
+        }).then(function(){
+            if(document.querySelectorAll('#vocabList li').length > 0 ){
+                /* set event listener on to list to sort which is clicked and provide the correct list */
+                let localLists = document.querySelectorAll('#vocabList .localList');
+                
+                localLists.forEach(vocabList => vocabList.addEventListener('click', function(e){
+                    vocabTrainer.chosenLocalWordList(e);
+                }));
+
+                let DBLists = document.querySelectorAll('#vocabList .DBList');
+
+                DBLists.forEach(vocabList => vocabList.addEventListener('click', function(e){
+                    vocabTrainer.chosenDBWordList(e);
+                }));
+            } else {
+                /* If no local vocab only adds create new list */
                 vocabTrainer.vocabList.innerHTML += "<li data-vocabList = \"1\">No local Lists, add your own, or download Lists for offline use</li>";
-                //Not working - goes straight to add vocab page // document.querySelector('#vocabList li').addEventListener('click', changeContent("addVocab", pages));
-            }*/
-        
-        /* set event listener on to list to sort which is clicked and provide the correct list */
+                //Not working - goes straight to add vocab page // 
+                document.querySelector('#vocabList li').addEventListener('click', function(){
+                    changeContent("addVocab", pages);
+                });
+            }
+            
+        });
     },
     //starts trainer with selected Vocab List (goes into play mode)
     startTrainer: function () {
@@ -630,7 +602,7 @@ let vocabTrainer = {
                 document.querySelector('.fa-play-circle-o').classList.remove('hide');
             }
         } else {
-            document.querySelector('.fa-pause-circle-o').setAttribute('class', 'hide');
+            document.querySelector('.fa-pause-circle-o').classList.add('hide');
         }
 
         document.querySelector('.exit').addEventListener('click', this.endTrainer);
@@ -711,11 +683,34 @@ let vocabTrainer = {
     flipToNext: function () {
         this.vocabCard.classList.toggle('flipped');
     },
-    //when user selects their chosen word list this starts the trainer and removes the nav and vocab lists (ie goes into play mode)
+    //when user selects their chosen word list the below two functions starts the trainer and removes the nav and vocab lists (ie goes into play mode) depends on whether list is local or not
+     //function to handle chosen Database word lists - once clicked goes through to the trainer with words from server DB
+    chosenDBWordList: function (event) {
+        let VocabToTrain = event.srcElement.dataset.vocablist;
+        let url = "php/downloadList.php?listToDownload=" + VocabToTrain;
+        fetch(url).then(function (response) {
+                if (response.ok) {
+                    response.text().then(function (text) {
+                        //document.querySelector('#wordLists').innerHTML +
+                        vocabTrainer.vocabToTrain = JSON.parse(text);
+                    });
+                } else {
+                    console.log('Network request for products.json failed with response ' + response.status + ': ' + response.statusText);
+                }
+        }).then(function(){
+            vocabTrainer.chooseList.setAttribute('class', 'hide');
+            vocabTrainer.chooseList.setAttribute('class', 'hide');
+            app.nav.classList.add('hide');
+            vocabTrainer.instruct.classList.remove('hide');
+            vocabTrainer.instruct.querySelector('#actualScore').innerHTML = app.userAccount['score'];
+            vocabTrainer.startTrainer();
+        })
+    },
+    //function to handle chosen local word lists - once clicked goes through to the trainer with words from local DB
     chosenLocalWordList: function (event) {
         let transaction = db.transaction(["LocalVocab"]);
         let objectStore = transaction.objectStore("LocalVocab");
-        let list = objectStore.get(this.dataset.vocablist);
+        let list = objectStore.get(event.srcElement.dataset.vocablist);
         list.onerror = function(event) {
           alert("Error " + event);
         };
@@ -960,11 +955,16 @@ let manageLocalList = {
     listOptions: "",
     dataBaseVocabLists: "",
     deleteBtn: "",
+    //declare list to download variable
+    listToDownload: "",
+    urlToDownload: "",
+    downloadedList: "",
     /* initialize document by finding elements needed for fucntions */
     initialize: function(){
         this.dataBaseVocabLists = document.getElementById('dataBaseVocabLists'); 
         this.listOptions = document.getElementById('listOptions'); 
         this.deleteBtn = document.querySelector('#deleteList');
+        this.downloadBtn = document.querySelector('#downloadList');
     },
     populateDataBaseVocabLists: function() {
         /* clears Vocab List to begin*/
@@ -984,46 +984,43 @@ let manageLocalList = {
         })
     },
     downloadVocabList: function(){
-        //declare list to download variable
-        let listToDownload;
-        let urlToDownload = "./php/downloadList.php?listToDownload=" + listToDownload;
-        let downloadedList;
         //set list to download variable
         let promise = Promise.resolve(
             manageLocalList.dataBaseVocabLists.querySelectorAll("option").forEach(option => {
                 if(option.selected == true){
-                    listToDownload =  option.value;
+                    manageLocalList.listToDownload =  option.value;
+                    manageLocalList.urlToDownload = "php/downloadList.php?listToDownload=" + manageLocalList.listToDownload;
                 }
             }));
+
         promise.then(function(value){
-            downloadedList = starterVocab;
-            fetch(urlToDownload).then(function (response) {
+            fetch(manageLocalList.urlToDownload).then(function (response) {
                 if (response.ok) {
                     response.text().then(function (text) {
-                        downloadedList = text;
+                        //document.querySelector('#wordLists').innerHTML +
+                        manageLocalList.downloadedList = JSON.parse(text);
                     });
                 } else {
                     console.log('Network request for products.json failed with response ' + response.status + ': ' + response.statusText);
                 }
+            }).then(function(){
+                let request = db.transaction(["LocalVocab"], "readwrite")
+                             .objectStore("LocalVocab")
+                             .add({ListName: manageLocalList.listToDownload, wordList : manageLocalList.downloadedList});
+
+                request.onsuccess = function (event) {
+                    // change to div popup alert adds time delay
+                };
+
+                request.onerror = function (event) {
+                    console.log(event.target);
+                }
+                manageLocalList.populateLocalVocabList(); 
             });
-            console.log(downloadedList);
-            let request = db.transaction(["LocalVocab"], "readwrite")
-                         .objectStore("LocalVocab")
-                         .add({ListName: listToDownload, wordList : downloadedList});
-
-            request.onsuccess = function (event) {
-                // change to div popup
-                alert("added");
-            };
-
-            request.onerror = function (event) {
-                console.log(event.target);
-            }
-            //manageLocalList.populateLocalVocabList();
+            
         });
     },
     populateLocalVocabList: function() {
-        
         /* clears Vocab List to begin*/
         manageLocalList.listOptions.innerHTML = "";
         let i = 0;
@@ -1048,7 +1045,10 @@ let manageLocalList = {
             }
         } 
         manageLocalList.deleteBtn.addEventListener('click', function(){
-            manageLocalList.deleteLocalList()
+            manageLocalList.deleteLocalList();
+        });
+        manageLocalList.downloadBtn.addEventListener('click', function(){
+            manageLocalList.downloadVocabList();
         });
     },
     deleteLocalList: function () {
@@ -1228,6 +1228,7 @@ let timer = {
     },
     // pause timer
     pause: function () {
+        //if started then the interval is cleared and timer.started set to false.
         if (this.started === true) {
             clearInterval(timer.myInterval);
             timer.started = false;
@@ -1236,22 +1237,29 @@ let timer = {
     // start timer and go to vocab trainer page to choose list.
     // should start timer actually once list chosen and not before.
     start: function () {
+        // checks first if timer is set above zero, prompts user to add a time if it is not.
         if (timer.time > 0) {
+            //then checks if timer has already been started, if it has this button has not function.
             if (timer.started === false) {
+                //sets sessionTime to record it for the stats page
                 let sessionTime = this.time;
+                //sets timer interval to count down time and also display it.
                 timer.myInterval = setInterval(function () {
                     timer.sessionTime += 1;
                     timer.time -= 1;
                     timer.displayTime(timer.convertTime(timer.time));
+                    //once timer.time is below one the interval is cleared (timer is finished) the timerDone function is called.
                     if (timer.time < 1) {
                         clearInterval(timer.myInterval);
                         timer.timerDone();
                     }
                 }, 1000);
             }
+            //set timer.started to true for other functions
             timer.started = true;
         } 
         else {
+            // popup prompting user to add a time
             popUps.popUp(5);
         }
     },
@@ -1305,7 +1313,9 @@ let timer = {
         popUps functions
 /******************************/
 let popUps = {
+    //get popUp element from DOM (its a div within index HTML)
     popUpElement: document.querySelector('#popUp p'),
+    //find the span containing the X to close the popUp
     close: document.querySelector('#popUp span.close'),
     // Object containing texts for all popups also additional info
     popUpTexts: [
@@ -1376,11 +1386,17 @@ let popUps = {
         ],
     //Display PopUp and set content and position
     popUp: function (textNumber) {
+        //finds selected popup in above array through inputed number
         let selectedPopUp = this.popUpTexts[textNumber];
+        //sets text of popup from popup Object in above array
         this.popUpElement.innerHTML = selectedPopUp['text'];
+        //removes 'hide' class so the popup is displayed
         this.popUpElement.parentElement.classList.remove('hide');
+        //adds click event to the close span 'X'
         this.close.addEventListener('click', popUps.popUpHide);
+        //if the popup is not the game info it will automatically close, the user must close the game info themselves
         if (textNumber != 0) {
+            //time out delay before popup is hidden
             setTimeout(function () {
                 popUps.popUpHide();
             }, 1500);
@@ -1388,7 +1404,9 @@ let popUps = {
     },
     //Hide PopUp
     popUpHide: function () {
+        //first fades out the pop up 
         popUps.popUpElement.parentElement.classList.add('popUpFadeOut');
+        //then removes the popup by adding 'hide class' (display none), also removes fade out class
         setTimeout(function () {
             popUps.popUpElement.parentElement.classList.add('hide');
             popUps.popUpElement.parentElement.classList.remove('popUpFadeOut')
@@ -1424,9 +1442,10 @@ app.accountBtn.addEventListener('click', function () {
 window.addEventListener('load', function () {
     // Go to home page
     navi.changeContent("home");
+    // Stop Loader Spinning
     app.spinner.setAttribute('hidden', true);
-    
-   account.updateAccount();
+    // Check for account and update the details from local storage
+    account.updateAccount();
 });
 
 

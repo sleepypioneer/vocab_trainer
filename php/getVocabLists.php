@@ -7,7 +7,7 @@
 ?> 
 
 <html>
-    <li data-vocabList = \"" <?php echo $result['Tables_in_vocab_trainer']; ?> + "\"><?php echo $result['Tables_in_vocab_trainer']; ?> </li> 
+    <li class="DBList" data-vocabList ="<?php echo $result['Tables_in_vocab_trainer']; ?>">DB: <?php echo $result['Tables_in_vocab_trainer']; ?> </li> 
 
 </html>
         
