@@ -25,55 +25,39 @@ let app = {
     soundOn: true,
     nightMode: false,
     hintTaken: false,
-    //
-    localVocab: [],
-    
+    // not using?
+    //localVocab: [],
+    //loading spinner - only visable when loading at start
     spinner: document.querySelector('.loader'),
 };
 
 /********************************************
         Indexed DB for local storage 
 /*********************************************/
+// Check for indexedDB in all browers in some it is called different
 let indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedDB || window.msIndexedDB || window.shimIndexedDB;
 
+//allerts if indexedDB is not supported by Browser
  if (!window.indexedDB) {
      window.alert("Your browser doesn't support a stable version of IndexedDB.")
  }
 
-/** to start of database object store */
- const starterVocab = [
-     {ListName: "Animals1", 
-      wordList : [{
-         wordInEnglish: "Dog",
-         wordInGerman: "Hund",
-         gender: "Der"
-     },
-     {
-         wordInEnglish: "Cat",
-         wordInGerman: "Katze",
-         gender: "Die"
-     }]},
-     {ListName: "Animals2", 
-      wordList : [{
-         wordInEnglish: "Mouse",
-         wordInGerman: "Maus",
-         gender: "Der"
-     },
-     {
-         wordInEnglish: "House",
-         wordInGerman: "Pferd",
-         gender: "Der"
-     }]}
- ];
+// To start of database object store off it needs a list
+const starterVocab = [
+    {ListName: "Animals1", wordList : [{ wordInEnglish: "Dog", wordInGerman: "Hund", gender: "Der"},
+    { wordInEnglish: "Cat", wordInGerman: "Katze", gender: "Die"}
+]}];
 
-/* make request to the database and store returned results in DB let **/
 let db;
-let open = window.indexedDB.open("localDatabase", 2);
+// opens IndexedDB "localDataBase" if it exists with version one. If not there it is created.
+let open = indexedDB.open("localDatabase", 1);
 
+// Logs error to console if DB not found
 open.onerror = function(event) {
-    console.log("error: ");
+    console.log("error: " + event.result);
 };
 
+// on success of DataBase save results to "db" and log success to console.
 open.onsuccess = function(event) {
     db = open.result;
     console.log("success: "+ db);
@@ -83,29 +67,21 @@ open.onsuccess = function(event) {
 /* creates object store (local Vocab) if not already created and sets initial item to it (****will make this an empty oject and index from 1 in future****)**/
 open.onupgradeneeded = function(event) {
     let db = event.target.result;
+    // create Object Store called "LocalVocab" its keys will take the "ListName"
     let objectStore = db.createObjectStore("LocalVocab", {keyPath: "ListName"});
-    objectStore.add(starterVocab[0]);
+    // Adds initializer item (starter Vocab) to Object Store
+    objectStore.add(starterVocab);
+    // create Object Store called "UserAccount" its keys will take the "name"
     let objectStoreUser = db.createObjectStore("UserAccount", {keyPath: "name"});
+    // Adds initializer item (blank user account) to Object Store
     objectStoreUser.add(app.userAccount);
     
 }
 
-
-
-
-
-/********************************************
-        Save to local DB
-/*********************************************/
-app.saveSelectedVocab = function () {
-    console.log("saving to DB");
-    window.localforage.setItem('localVocab', app.localVocab);
-};
-
 /***************************
         Service Worker 
 /****************************/
-
+//Currently turned off
 /*if (!('serviceWorker' in navigator)) {
     alert('No service-worker on this browser');
 } else {
@@ -129,8 +105,7 @@ navigator.serviceWorker.ready.then(function(swRegistration) {
         Utility Functions
 /******************************/
 let utils = {
-    body: document.querySelector("body"),
-    // add point
+    // adds point when correct answer given. **** BROKEN ****
     plusPoint: function () {
         var promise1 = new Promise(function(resolve, reject) {
             let objectStore = db.transaction(["UserAccount"], "readwrite").objectStore("UserAccount");
@@ -511,7 +486,7 @@ let vocabTrainer = {
     // interval for displaying timer while playing
     trainerInterval: "",
     // sets current Index to initial value, before trainer starts this is personalized to the chosen list length
-    currentIndex: Math.floor(Math.random() * 3),
+    currentIndex: "",
     // set to an array of objects with the words from the list selected to trian with
     vocabToTrain: "",
     // array to hold all vocab, both from the DB and locally stored
@@ -529,16 +504,16 @@ let vocabTrainer = {
     },
     //initialize and set up the list of vocab available
     populateWordLists: function () {
-        /* Makes transaction to local DB to look for local Vocab */
+        //Makes transaction to local DB to look for local Vocab 
         let transaction = db.transaction(["LocalVocab"]);
         let objectStore = transaction.objectStore("LocalVocab");
-        /* gets key of local Vocab and stores in array */
+        // gets key of local Vocab and stores in array 
         let keys = objectStore.getAllKeys();
         //error message if problem connecting to indexedDB
         keys.onerror = function (event) {
             alert("Unable to retrieve data from local database!");
         };
-        /* If local Vocab found goes through key array and adds them to the list options */
+        //If local Vocab found goes through key array and adds them to the list options
         keys.onsuccess = function (event) {
             addVocab.localVocabLists = keys.result;
             if (addVocab.localVocabLists.length < 1) {
@@ -556,28 +531,25 @@ let vocabTrainer = {
             if (response.ok) {
                 response.text().then(function (text) {
                     vocabTrainer.vocabList.innerHTML += text;
-                }).then(function () {
-                    // add create category here
                 });
             } else {
                 console.log('Network request for products.json failed with response ' + response.status + ': ' + response.statusText);
             }
         }).then(function(){
+            //checks first that the there are some vocab lists to train with.
             if(document.querySelectorAll('#vocabList li').length > 0 ){
-                /* set event listener on to list to sort which is clicked and provide the correct list */
+                // set event listener on to local DB lists to sort which is clicked and provide the correct training vocab
                 let localLists = document.querySelectorAll('#vocabList .localList');
-                
                 localLists.forEach(vocabList => vocabList.addEventListener('click', function(e){
                     vocabTrainer.chosenLocalWordList(e);
                 }));
-
+                // set event listener on to Server DB lists to sort which is clicked and provide the correct training vocab
                 let DBLists = document.querySelectorAll('#vocabList .DBList');
-
                 DBLists.forEach(vocabList => vocabList.addEventListener('click', function(e){
                     vocabTrainer.chosenDBWordList(e);
                 }));
             } else {
-                /* If no local vocab only adds create new list */
+                //If no local vocab only adds create new list 
                 vocabTrainer.vocabList.innerHTML += "<li data-vocabList = \"1\">No local Lists, add your own, or download Lists for offline use</li>";
                 //Not working - goes straight to add vocab page // 
                 document.querySelector('#vocabList li').addEventListener('click', function(){
@@ -589,37 +561,45 @@ let vocabTrainer = {
     },
     //starts trainer with selected Vocab List (goes into play mode)
     startTrainer: function () {
-        this.currentIndex = Math.floor(Math.random() * this.vocabToTrain.length)
+        // Sets current Index to random value between 0 and word list length.
+        this.currentIndex = Math.floor(Math.random() * this.vocabToTrain.length);
+        //sets the word to guess using the current index set above
         this.wordToGuess.innerHTML = this.vocabToTrain[this.currentIndex].wordInEnglish;
-
+        // if timer is set displays timer
         if (timer.time > 0) {
            vocabTrainer.trainerInterval = setInterval(function () {
                 timer.displayTime(timer.convertTime(timer.time));
             }, 1000);
-            
+            // if timer not started (but timer has been set ie given timer.time > 0) hide the pause button and display play.
             if (!timer.started) {
                 document.querySelector('.fa-pause-circle-o').classList.add('hide');
                 document.querySelector('.fa-play-circle-o').classList.remove('hide');
             }
         } else {
+            // if not timer set hide the timer controler.
             document.querySelector('.fa-pause-circle-o').classList.add('hide');
         }
-
+        // sets even listener to exit trainer.
         document.querySelector('.exit').addEventListener('click', this.endTrainer);
     },
     //end trainer return nav bar, clear interval
     endTrainer: function () {
+        //clear interval to display timer
         clearInterval(vocabTrainer.trainerInterval);
+        //hide the vocab trainer
         vocabTrainer.instruct.classList.add('hide');
-        vocabTrainer.chooseList.removeAttribute('class', 'hide');
-        vocabTrainer.chooseList.removeAttribute('class', 'hide');
+        // hide the trainer nav
         app.nav.classList.remove('hide');
-
+        //display the lists to choose from
+        vocabTrainer.chooseList.removeAttribute('class', 'hide');
     },
     // utility function to remove articles from words to check if correct word has been given without article
     removeArticles: function (str) {
+        // split words by blank space to separate the article
         let words = str.split(" ");
+        //if no article given 
         if (words.length <= 1) return (str);
+        // if the first word matches the article remove it and then rejoin the words with a " " in between
         if (words[0] == "Der" || words[0] == "Die" || words[0] == "Das") {
             return words.splice(1)
                 .join(" ");
@@ -636,14 +616,21 @@ let vocabTrainer = {
         }, false);
         //answer converted to string to avoid non string inputs
         let answerToCheck = vocabTrainer.answer.value.toString();
+        // set correct answer
         let correctAnswer = vocabTrainer.vocabToTrain[vocabTrainer.currentIndex].gender + " " + vocabTrainer.vocabToTrain[vocabTrainer.currentIndex].wordInGerman;
+        // set RegExp with article removed
         let correctExpression = new RegExp(vocabTrainer.removeArticles(correctAnswer), 'gi');
         //check if matches word exactly
         if (correctAnswer === answerToCheck) {
+            // change border to green
             vocabTrainer.answer.style.borderColor = "green";
+            //plus point to score
             utils.plusPoint();
+            //play sound to indicate point gained
             utils.playPointSound();
+            //hide any pops ups currently displayed (ie hints)
             popUps.popUpHide();
+            //time out to move on to next word.
             setTimeout(function () {
                 vocabTrainer.changeWord(1);
             }, 1000);
@@ -654,60 +641,75 @@ let vocabTrainer = {
         } else if (answerToCheck.match(correctExpression)) {
             popUps.popUp(2);
         } else {
+            //resets border to regular color
             vocabTrainer.answer.style.borderColor = "rgba(255, 119, 35, 0.74)";
         }
     },
     // offers hint (first three letters of word (without article) not working on firefox!!!!!
     takeHint: function () {
+        //reset input to blank
         vocabTrainer.answer.value = "";
+        // give 3 first characters of word (article removed)
         vocabTrainer.answer.value = vocabTrainer.vocabToTrain[vocabTrainer.currentIndex].wordInGerman.slice(0, 3);
+        // sets hint taken to true as this action effects scoring
         app.hintTaken = true;
     },
     //changes word either by skipping or correct completion
     changeWord: function (direction) {
-        if (direction == 1 && vocabTrainer.currentIndex === vocabTrainer.vocabToTrain.length - 1) {
+        // checks first where in loop the current index is and loops back to start ("0") if at end
+        if (vocabTrainer.currentIndex === vocabTrainer.vocabToTrain.length - 1) {
             vocabTrainer.currentIndex = 0;
         } else if (direction == 1) {
             vocabTrainer.currentIndex++;
-        } else if (direction == -1 && currentIndex === 0) {
-            vocabTrainer.currentIndex = vocabTrainer.vocabToTrain.length - 1;
-        } else {
-            vocabTrainer.currentIndex--;
         }
+        // sets word to guess
         this.wordToGuess.innerHTML = this.vocabToTrain[this.currentIndex].wordInEnglish;
+        // returns answer input to blank
         this.answer.value = "";
+        //animated flip to next word
         this.flipToNext();
+        //starts check answer listener function
         this.checkAnswer();
     },
     //flip animation for when correct answer given or word is skipped
     flipToNext: function () {
+        // simple animation for "flipping" card to next one 
+        //****** WANT TO ADD ANSWER TO BACK OFF CARD SO IF SKIPPED THEY SEE IT FOR NEXT ROUND *****
         this.vocabCard.classList.toggle('flipped');
     },
     //when user selects their chosen word list the below two functions starts the trainer and removes the nav and vocab lists (ie goes into play mode) depends on whether list is local or not
      //function to handle chosen Database word lists - once clicked goes through to the trainer with words from server DB
     chosenDBWordList: function (event) {
+        // sets word vocab to train variable to use in fetch() from the chosen lists dataset info
         let VocabToTrain = event.srcElement.dataset.vocablist;
+        // sets url to use in fetch()
         let url = "php/downloadList.php?listToDownload=" + VocabToTrain;
+        // fetch to php with listToDownload set through $_GET (this equals the tables name)
         fetch(url).then(function (response) {
                 if (response.ok) {
                     response.text().then(function (text) {
-                        //document.querySelector('#wordLists').innerHTML +
+                        // sets the vocab to train to the returned parsed json data (= word objects array)
                         vocabTrainer.vocabToTrain = JSON.parse(text);
                     });
                 } else {
                     console.log('Network request for products.json failed with response ' + response.status + ': ' + response.statusText);
                 }
         }).then(function(){
+            // removes lists to choose from
             vocabTrainer.chooseList.setAttribute('class', 'hide');
-            vocabTrainer.chooseList.setAttribute('class', 'hide');
+            // hides the app nav
             app.nav.classList.add('hide');
+            // displays the trainer
             vocabTrainer.instruct.classList.remove('hide');
+            // sets score to actual user account score
             vocabTrainer.instruct.querySelector('#actualScore').innerHTML = app.userAccount['score'];
+            // starts trainer
             vocabTrainer.startTrainer();
         })
     },
     //function to handle chosen local word lists - once clicked goes through to the trainer with words from local DB
     chosenLocalWordList: function (event) {
+        //makes local DB call to local Vocab Objectstore and gets the correct list using the chosen lists dataset info
         let transaction = db.transaction(["LocalVocab"]);
         let objectStore = transaction.objectStore("LocalVocab");
         let list = objectStore.get(event.srcElement.dataset.vocablist);
@@ -716,12 +718,17 @@ let vocabTrainer = {
         };
 
         list.onsuccess = function(event) {
+            //sets vocab to train to returned list
             vocabTrainer.vocabToTrain = list.result.wordList;
+            // removes lists to choose from
             vocabTrainer.chooseList.setAttribute('class', 'hide');
-            vocabTrainer.chooseList.setAttribute('class', 'hide');
+            // hides the app nav
             app.nav.classList.add('hide');
+            // displays the trainer
             vocabTrainer.instruct.classList.remove('hide');
+            // sets score to actual user account score
             vocabTrainer.instruct.querySelector('#actualScore').innerHTML = app.userAccount['score'];
+            // starts trainer
             vocabTrainer.startTrainer();
         };    
     }
@@ -756,19 +763,19 @@ let addVocab = {
     },
     //populates list Options HTML element from collected Vocab Lists, also adds option add List
     populateWordLists: function (selected) {
-        /* clears Vocab List to begin*/
+        //clears Vocab List to begin
         addVocab.listOptions.innerHTML = "";
-        /* Makes transaction to local DB to look for local Vocab */
+        // Makes transaction to local DB to look for local Vocab
         let transaction = db.transaction(["LocalVocab"]);
         let objectStore = transaction.objectStore("LocalVocab");
-        /* gets key of local Vocab and stores in array */
+        // gets key of local Vocab and stores in array 
         let keys = objectStore.getAllKeys();
-        /* If no local vocab only adds create new list */
+        // If no local vocab only adds create new list 
         keys.onerror = function (event) {
             alert("Unable to retrieve data from database!");
             addVocab.listOptions.innerHTML += "<option value= \"createNew\"> Create New Category </option>";
         };
-        /* If local Vocab found goes through key array and adds them to the list options */
+        // If local Vocab found goes through key array and adds them to the list options 
         keys.onsuccess = function (event) {
             addVocab.localVocabLists = keys.result;
             let i = 0;
@@ -776,9 +783,9 @@ let addVocab = {
                 addVocab.listOptions.innerHTML += "<option value= \"" + addVocab.localVocabLists[i] + "\">" + addVocab.localVocabLists[i] + "</option>";
                 i++;
             }
-            /* At the end adds a create new list option */
+            // At the end adds a create new list option
             addVocab.listOptions.innerHTML += "<option value= \"createNew\"> Create New Category </option>";
-            /* Promsie with selected object passed into it it's on resolve function. */
+            // Promsie with selected object passed into it it's on resolve function.
             let promise = Promise.resolve(selected);
             promise.then(function(value){
                 /* On resolve checks for existence of selected and sets the list option with that value to be selected so it appears at the top of the list atfer the new word is added */
@@ -793,6 +800,7 @@ let addVocab = {
         this.wordInEnglish.value = "";
         this.wordInGerman.value = "";
         this.gender[0].checked = true;
+        //return border colors
         this.wordInGerman.style.borderColor = "rgba(255, 119, 35, 0.74)";
         this.wordInEnglish.style.borderColor = "rgba(255, 119, 35, 0.74)";
     },
@@ -804,7 +812,7 @@ let addVocab = {
             }
         }
     },
-    // checks for duplicates and also contains logic for checking input is correct - ****** NEEDS CHECKING *******
+    // checks for duplicates and also contains logic for checking input is correct - ****** NEEDS FINISHING *******
     checkIfDoubled: function () {
         console.log("checking for dupliate...");
         return true;
@@ -827,7 +835,7 @@ let addVocab = {
             }
         }*/
     },
-    // check answer fits format, alert if not
+    // check answer fits format, alert if not ****** NEEDS FINISHING *******
     checkInput: function () {
         let englishWord = this.wordInEnglish.value.toString()
             .trim();
@@ -871,21 +879,27 @@ let addVocab = {
     },
     // adds new word to selected list or creates new list if that has been selected
     addWord: function () {
+        // first checks that new word passes tests
         if (addVocab.checkInput()) {
+            // checks the list chosen to add too
             if (addVocab.listOptions.value) {
+                //if this is equal to "createNew" new list will be created
                 if (addVocab.listOptions.value == "createNew") {
-                    // change to div popup
+                    // ****** change to div popup **********
                     let newList = prompt("name you new list", "New Category Name");
+                    // save new list name from prompt above
                     addVocab.listOptions.value = newList;
-                    for (let k = 0; k < app.localVocab.length; k++) {
+                    //checks through the local vocab lists to see if this list name already exist  ******** needs                                                                      fixing to use indexed DB *******
+                    /*for (let k = 0; k < app.localVocab.length; k++) {
                         if (app.localVocab[k][0] === newList) {
-                            // change to div popup
+                            // ***** change to div popup ********
                             confirm("You will be overwriting an existing list");
                         }
-                    }
+                    }*/
+                    // define variable to temporarily hold the new list and its first word info
                     let insertList = {}
+                    // save list name the above object the first word under the title of the new list (as this is used as key path)
                     insertList[newList] = [addVocab.newWord];
-                    app.localVocab.unshift(insertList);
                                       
                     let request = db.transaction(["LocalVocab"], "readwrite")
                          .objectStore("LocalVocab")
@@ -899,12 +913,12 @@ let addVocab = {
                     request.onerror = function (event) {
                         console.log(event.target);
                     }
-                     
+                    //reset form
                     addVocab.clearForm();
+                    // repopulate the word lists to include the new one added
                     addVocab.populateWordLists(newList);
 
                 } else {
-                    /*************************/
                     /* First finds the selected list then adds new word to it and sends it back as updated*/
                     let objectStore = db.transaction(["LocalVocab"], "readwrite").objectStore("LocalVocab");
                     let request = objectStore.get(addVocab.listOptions.value);
@@ -929,11 +943,6 @@ let addVocab = {
                         };
                     };
                     
-                    for (let t = 0; t < app.localVocab.length; t++) {
-                        if (app.localVocab[t][0] === addVocab.listOptions.value) {
-                            app.localVocab[t][addVocab.listOptions.value].push(addVocab.newWord);
-                        }
-                    }
                     // Inform user word was added and to which list -  ******change to div popup ********
                     alert(addVocab.newWord.wordInEnglish + " was added to your " + addVocab.listOptions.value + " List.");
                     /* clear form for next usse */
@@ -959,7 +968,7 @@ let manageLocalList = {
     listToDownload: "",
     urlToDownload: "",
     downloadedList: "",
-    /* initialize document by finding elements needed for fucntions */
+    //initialize document by finding elements needed for fucntions 
     initialize: function(){
         this.dataBaseVocabLists = document.getElementById('dataBaseVocabLists'); 
         this.listOptions = document.getElementById('listOptions'); 
@@ -1083,16 +1092,19 @@ let manageLocalList = {
 let account = {
     // Boolean for if account is present
     haveAccount: false,
-    // reduce font size as user inputs - need to seperate out into a utility function and only keep length logic here
+    // Check User name meets specifications
     checkUserNameInput: function (inputUserName) {
         return /((?!.*[^a-zA-Z0-9].*$).{4,20})/.test(inputUserName.value);
     },
     // check if an account exists and set properties in either case
     checkAccount: function () {
-        /**** Set Add/Delete Button ****/
+        // Set Add/Delete Button
         let addOrDelete = document.getElementById('addOrDeleteAccount');
+        // finds user id element
         let userId = document.getElementById('userId');
+        // finds user joined on element
         let joinedOn = document.getElementById('joinedOn');
+        // If there is an account fill in the details to page and set add/ delete account to reflect the status
         if (this.haveAccount) {
             userId.innerHTML = app.userAccount.name;
             joinedOn.innerHTML = app.userAccount.joined;
@@ -1109,14 +1121,16 @@ let account = {
     },
     //add Account
     addAccount: function () {
+        // find user name input in DOM
         let inputUserName = document.getElementById('username');
-        // should I add a message that you need a user name?
+        // Checks for user name input and then sets up account - should I add a message that you need a user name?
         if (account.checkUserNameInput(inputUserName)) {
             let dateJoined = new Date(),
                 yearJoined = dateJoined.getFullYear(),
                 monthJoined = dateJoined.getMonth() + 1,
                 dayJoined = dateJoined.getDate();
             dateJoined = dayJoined + "/" + monthJoined + "/" + yearJoined;
+            //sets app user account info
             app.userAccount = {
                 name: inputUserName.value.toString(),
                 joined: dateJoined,
@@ -1126,11 +1140,14 @@ let account = {
                 icon: "<i class=\"fa fa-user-o\" aria-hidden=\"true\"></i>"     
             } 
             account.haveAccount = true;
+            // runs function to update that there is now an account
             account.checkAccount();
+            // reset input to blank (although it is hidden)
             inputUserName.value = "";
+            // reset the border also (although it is hidden)
             inputUserName.style.border = "solid #ccc 0.1em";
             
-            /* First finds the selected list then adds new word to it and sends it back as updated*/
+            // add user account to local storage
             let objectStore = db.transaction(["UserAccount"], "readwrite").objectStore("UserAccount");
             let request = objectStore.add(app.userAccount);
             request.onerror = function (event) {
@@ -1142,21 +1159,24 @@ let account = {
         
             };
         } else {
+            // red border to indicate error and message for restrictions for user name
             inputUserName.style.border = "solid red 0.1em";
             console.log("username must be between 4 and 20 characters, it can only contain letters or numbers")
         }
     },
     // Delete Account 
     deleteAccount: function () {
-        //prompt a confirmation!
-        /* First finds the selected list then adds new word to it and sends it back as updated*/
+        // *********** NEEDS FINISHING ********* prompt a confirmation!
+        // First finds the selected list then adds new word to it and sends it back as updated
         let objectStore = db.transaction(["UserAccount"], "readwrite").objectStore("UserAccount");
+        //removes user account from DB
         let request = objectStore.delete(app.userAccount.name);
         request.onerror = function (event) {
             // Handle errors!
             console.log(event.target);
         };
         request.onsuccess = function (event) {
+            //sets in app user account to blank account
             app.userAccount = {
                 name: "",
                 joined: "",
@@ -1165,21 +1185,25 @@ let account = {
                 lastSession: 0,
                 icon: ""
             }
+            // resets score in nav
             app.actualScore.innerHTML = 0;
+            // resets all account info
             account.haveAccount = false;
             account.checkAccount();
         }
     },
+    // update account from local DB
     updateAccount: function(){
         let transaction = db.transaction(["UserAccount"]);
         let objectStore = transaction.objectStore("UserAccount");
+        // gets all items in useraccount object store (don't forget first one is blank account to need to index from 1)
         let localAccount = objectStore.getAll();
         localAccount.onerror = function(event) {
           alert("Error " + event);
         };
 
         localAccount.onsuccess = function(event) {
-            // set local Account and the icon for the account
+            // Checks for local account and sets local Account for the app and the icon for the account
             if (localAccount.result[1]) {
                 account.haveAccount = true;
                 app.userAccount = localAccount.result[1];
@@ -1278,6 +1302,7 @@ let timer = {
         return convertedTime;
     },
     displayTime: function (convertedTime) {
+        // the below spans all contain one number from each the converted time to display
         let hourTens = document.getElementById('hourTens');
         let hourOnes = document.getElementById('hourOnes');
         let minuteTens = document.getElementById('minuteTens');
@@ -1302,8 +1327,10 @@ let timer = {
         //make pop up with option to cont learning or go to stats
         popUps.popUp(7);
         timer.started = false;
+        // send over last session time to account ************NEEDS FINISHING *********** should call to update account so this is also saved in the local storage
         userAccount.lastSession = this.sessionTime;
         userAccount.totalTime += this.sessionTime;
+        // resets session time
         this.sessionTime = 0;
     }
 };
