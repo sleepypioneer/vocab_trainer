@@ -21,36 +21,35 @@ const starterVocab = [
 
 let db;
 // opens IndexedDB "localDataBase" if it exists with version one. If not there it is created.
-let open = indexedDB.open("localDatabase", 2);
+let openDB = indexedDB.open("localDatabase", 1);
 
 // Logs error to console if DB not found
-open.onerror = function(event) {
+openDB.onerror = function(event) {
     console.log(event);
-};
-
-// on success of DataBase save results to "db" and log success to console.
-open.onsuccess = function(event) {
-    db = open.result;
-    console.log("success: "+ db);
 };
 
 
 /* creates object store (local Vocab) if not already created and sets initial item to it (****will make this an empty oject and index from 1 in future****)**/
 
-open.onupgradeneeded = function(event) {
+openDB.onupgradeneeded = function(event) {
     console.log(event);
-    let db = event.target.result;
+    let db = openDB.result;
     // create Object Store called "LocalVocab" its keys will take the "ListName"
-    let objectStore = db.createObjectStore("LocalVocab", {keyPath: "ListName"});
+    let objectStoreVocab = db.createObjectStore("LocalVocab", {keyPath: "ListName"});
     // Adds initializer item (starter Vocab) to Object Store
-    objectStore.add(starterVocab);
+    objectStoreVocab.add(starterVocab);
     // create Object Store called "UserAccount" its keys will take the "name"
     let objectStoreUser = db.createObjectStore("UserAccount", {keyPath: "name"});
     // Adds initializer item (blank user account) to Object Store
     objectStoreUser.add(app.userAccount); 
+    console.log("done");
 }
 
-
+// on success of DataBase save results to "db" and log success to console.
+openDB.onsuccess = function(event) {
+    db = openDB.result;
+    console.log("success: "+ db);
+};
 /***************************
         Service Worker 
 /****************************/
