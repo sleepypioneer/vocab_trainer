@@ -19,28 +19,134 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
-/* makes the font 33% larger relative to the icon container */
-.fa-lg {
-  font-size: 1.33333333em;
-  line-height: 0.75em;
-  vertical-align: -15%;
+
+.fa-home:before {
+  content: "\f015";
 }
-.fa-2x {
-  font-size: 2em;
+
+.fa-trophy:before {
+  content: "\f091";
 }
-.fa-3x {
-  font-size: 3em;
+
+.fa-user-circle-o:before {
+  content: "\f2be";
 }
-.fa-4x {
-  font-size: 4em;
+
+.fa-user-plus:before {
+  content: "\f234";
 }
-.fa-5x {
-  font-size: 5em;
+
+.fa-camera:before {
+  content: "\f030";
 }
-.fa-fw {
-  width: 1.28571429em;
-  text-align: center;
+
+.fa-volume-off:before {
+  content: "\f026";
 }
+.fa-volume-down:before {
+  content: "\f027";
+}
+.fa-volume-up:before {
+  content: "\f028";
+}
+
+.fa-sun-o:before {
+  content: "\f185";
+}
+.fa-moon-o:before {
+  content: "\f186";
+}
+
+.fa-pencil-square-o:before {
+  content: "\f044";
+}
+
+.fa-clock-o:before {
+  content: "\f017";
+}
+
+.fa-plus-square:before {
+  content: "\f0fe";
+}
+
+.fa-sign-out:before {
+  content: "\f08b";
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 .fa-ul {
   padding-left: 0;
   margin-left: 2.14285714em;

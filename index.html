@@ -1,21 +1,22 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
     <meta http-equiv="content-type" content="text/html;charset=utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale =1.0">
+    <meta name="theme-color" content="#359C8C" />
     <title>Vocab Trainer - @sleepypioneer </title>
+    
+    <!-- Web Manifest for Chrome -->
+    <link rel="manifest" href="/manifest.json">
 
     <!-- Add icon library -->
     <link rel="stylesheet" href="styleSheets/font-awesome-4.7.0/css/font-awesome.min.css">
 
     <!-- Add Google Fonts -->
-    <link href="styleSheets/googleFonts.css" rel="stylesheet">
+    <link href="styleSheets/googleFonts.min.css" rel="stylesheet">
 
     <!-- Add Style Sheet -->
     <link rel="stylesheet" type="text/css" href="styleSheets/appStyles.css">
-
-    <!-- Web Manifest for Chrome -->
-    <link rel="manifest" href="maifest.json">
 
     <!-- Icons for firefox app --
     <link rel="apple-touch-icon" sizes="60x60" href="apple-60.png">
@@ -37,7 +38,9 @@
     <script type="text/javascript">
         function lookForResize(){
           if (document.body.getBoundingClientRect().width >= 1050) {
-            window.location.replace("https://sleepypioneer.github.io/vocab_trainer_development_page/");
+            //window.location.replace("https://sleepypioneer.github.io/vocab_trainer_development_page/");
+            window.location.replace("http://localhost/vocabTrainerDemo/");
+               
           }
         }
         //run on load

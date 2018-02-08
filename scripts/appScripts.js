@@ -2,6 +2,26 @@
 //(function() {
 'use strict';
 
+/***************************
+        Service Worker 
+/****************************/
+
+/*if (!('serviceWorker' in navigator)) {
+    alert('No service-worker on this browser');
+} else {
+    navigator.serviceWorker.register('service-worker.js').then(function (registration) {
+        console.log('SW registered! Scope is:', registration.scope);
+    }).catch(function (err) {
+        //registration failed :(
+        console.log('ServiceWorker registration failed: ', err);
+    });
+    //catch a registration error
+}
+navigator.serviceWorker.ready.then(function(swRegistration) {
+    return swRegistration.sync.register('foo');
+});
+
+
 /********************************************
         Indexed DB for local storage 
 /*********************************************/
@@ -12,7 +32,6 @@ let indexedDB = window.indexedDB || window.mozIndexedDB || window.webkitIndexedD
  if (!indexedDB) {
      window.alert("Your browser doesn't support a stable version of IndexedDB.")
  }
-
 
 // To start of database object store off it needs a list
 const starterVocab = [
@@ -37,6 +56,7 @@ open.onsuccess = function(event) {
 
 
 /* creates object store (local Vocab) if not already created and sets initial item to it (****will make this an empty oject and index from 1 in future****)**/
+
 open.onupgradeneeded = function(event) {
     console.log(event);
     let db = event.target.result;
@@ -51,15 +71,6 @@ open.onupgradeneeded = function(event) {
 }
 
 
-/* creates object store (local Vocab) if not already created and sets initial item to it (****will make this an empty oject and index from 1 in future****)**/
-open.onupgradeneeded = function(event) {
-    let db = event.target.result;
-    let objectStore = db.createObjectStore("LocalVocab", {keyPath: "ListName"});
-    objectStore.add(starterVocab[0]);
-    let objectStoreUser = db.createObjectStore("UserAccount", {keyPath: "name"});
-    objectStoreUser.add(app.userAccount);
-    
-}
 
 /***********************
         App Object 
@@ -89,34 +100,13 @@ let app = {
 };
 
 
-/***************************
-        Service Worker 
-/****************************/
-
-/*if (!('serviceWorker' in navigator)) {
-    alert('No service-worker on this browser');
-} else {
-    navigator.serviceWorker.register('service-worker.js').then(function (registration) {
-        console.log('SW registered! Scope is:', registration.scope);
-    }).catch(function (err) {
-        //registration failed :(
-        console.log('ServiceWorker registration failed: ', err);
-    });
-    //catch a registration error
-}
-navigator.serviceWorker.ready.then(function(swRegistration) {
-    return swRegistration.sync.register('foo');
-});
-*/
-
-
 /*****************************
         Utility Functions
 /******************************/
 let utils = {
     // adds point when correct answer given. **** BROKEN ****
     plusPoint: function () {
-        var promise1 = new Promise(function(resolve, reject) {
+        //set promise to first get the user score and then update it, finally it should be changed in the display.
             let objectStore = db.transaction(["UserAccount"], "readwrite").objectStore("UserAccount");
             let request = objectStore.get(app.userAccount.name);
             request.onerror = function (event) {
@@ -124,7 +114,7 @@ let utils = {
                 console.log(event.target);
             };
             request.onsuccess = function (event) {
-           
+
                 // Get the old value that we want to update
                 let data = event.target.result;
 
@@ -132,7 +122,8 @@ let utils = {
                 if (app.hintTaken) {
                     data['score'] += 1;
                     app.hintTaken = false;
-                } else {
+                } 
+                else {
                     data['score'] += 2;
                 }
                 // Put this updated object back into the database.
@@ -142,17 +133,9 @@ let utils = {
                 };
                 requestUpdate.onsuccess = function (event) {
                     // Success - the data is updated!
-                    console.log(app.userAccount.score);
                 };
             }
-            resolve(app.userAccount.score);
-        });
-
-        promise1.then(function(score){
-            console.log(score);
             account.updateAccount();
-            vocabTrainer.instruct.querySelector('#actualScore').innerHTML = score;
-        });      
     },
     // play sound to notify a correct answer (can turn off sounds on account page)
     playPointSound: function () {
@@ -513,38 +496,45 @@ let vocabTrainer = {
     },
     //initialize and set up the list of vocab available
     populateWordLists: function () {
-        //Makes transaction to local DB to look for local Vocab 
-        let transaction = db.transaction(["LocalVocab"]);
-        let objectStore = transaction.objectStore("LocalVocab");
-        // gets key of local Vocab and stores in array 
-        let keys = objectStore.getAllKeys();
-        //error message if problem connecting to indexedDB
-        keys.onerror = function (event) {
-            alert("Unable to retrieve data from local database!");
-        };
-        //If local Vocab found goes through key array and adds them to the list options
-        keys.onsuccess = function (event) {
-            addVocab.localVocabLists = keys.result;
-            if (addVocab.localVocabLists.length < 1) {
-                vocabTrainer.vocabList.innerHTML += "<li data-vocabList = \"1\">No categories currently available, add your own</li>";
-                //Not working - goes straight to add vocab page // document.querySelector('#vocabList li').addEventListener('click', changeContent("addVocab", pages));
-            }
-            let i = 0;
-            while (i < addVocab.localVocabLists.length) {
-                vocabTrainer.vocabList.innerHTML += "<li class=\"localList\" data-vocabList = \"" + addVocab.localVocabLists[i] + "\">" + addVocab.localVocabLists[i] + "</li>";
-                i++;
-            }
-        } 
-        // fetches DB lists then adds event listeners for all lists
-        fetch('./php/getVocabLists.php').then(function (response) {
-            if (response.ok) {
-                response.text().then(function (text) {
-                    vocabTrainer.vocabList.innerHTML += text;
-                });
-            } else {
-                console.log('Network request for products.json failed with response ' + response.status + ': ' + response.statusText);
-            }
-        }).then(function(){
+        let populateLists = new Promise(function(resolve, reject) {
+            //Makes transaction to local DB to look for local Vocab 
+            let transaction = db.transaction(["LocalVocab"]);
+            let objectStore = transaction.objectStore("LocalVocab");
+            // gets key of local Vocab and stores in array 
+            let keys = objectStore.getAllKeys();
+            //error message if problem connecting to indexedDB
+            keys.onerror = function (event) {
+                alert("Unable to retrieve data from local database!");
+            };
+            //If local Vocab found goes through key array and adds them to the list options
+            keys.onsuccess = function (event) {
+                addVocab.localVocabLists = keys.result;
+                if (addVocab.localVocabLists.length < 1) {
+                    vocabTrainer.vocabList.innerHTML += "<li data-vocabList = \"1\">No categories currently available, add your own</li>";
+                    //Not working - goes straight to add vocab page // document.querySelector('#vocabList li').addEventListener('click', changeContent("addVocab", pages));
+                }
+                let i = 0;
+                while (i < addVocab.localVocabLists.length) {
+                    vocabTrainer.vocabList.innerHTML += "<li class=\"localList\" data-vocabList = \"" + addVocab.localVocabLists[i] + "\">" + addVocab.localVocabLists[i] + "</li>";
+                    i++;
+                }
+            } 
+            // fetches DB lists then adds event listeners for all lists
+            fetch('./php/getVocabLists.php').then(function (response) {
+                if (response.ok) {
+                    response.text().then(function (text) {
+                        vocabTrainer.vocabList.innerHTML += text;
+                    });
+                } else {
+                    console.log('Network request for products.json failed with response ' + response.status + ': ' + response.statusText);
+                }
+            }).then(function(){
+                resolve("finished");
+            });
+            
+        });
+            
+        populateLists.then(function(){
             //checks first that the there are some vocab lists to train with.
             if(document.querySelectorAll('#vocabList li').length > 0 ){
                 // set event listener on to local DB lists to sort which is clicked and provide the correct training vocab
@@ -741,7 +731,6 @@ let vocabTrainer = {
             vocabTrainer.startTrainer();
         };    
     }
-
 }
 
 
@@ -1003,17 +992,17 @@ let manageLocalList = {
     },
     downloadVocabList: function(){
         //set list to download variable
-        let promise = Promise.resolve(
+
             manageLocalList.dataBaseVocabLists.querySelectorAll("option").forEach(option => {
                 if(option.selected == true){
                     manageLocalList.listToDownload =  option.value;
                     manageLocalList.urlToDownload = "php/downloadList.php?listToDownload=" + manageLocalList.listToDownload;
                 }
-            }));
-
-        promise.then(function(value){
+            });
             fetch(manageLocalList.urlToDownload).then(function (response) {
                 if (response.ok) {
+                    console.log("A");
+
                     response.text().then(function (text) {
                         //document.querySelector('#wordLists').innerHTML +
                         manageLocalList.downloadedList = JSON.parse(text);
@@ -1022,21 +1011,19 @@ let manageLocalList = {
                     console.log('Network request for products.json failed with response ' + response.status + ': ' + response.statusText);
                 }
             }).then(function(){
-                let request = db.transaction(["LocalVocab"], "readwrite")
-                             .objectStore("LocalVocab")
-                             .add({ListName: manageLocalList.listToDownload, wordList : manageLocalList.downloadedList});
+                    let request = db.transaction(["LocalVocab"], "readwrite")
+                                 .objectStore("LocalVocab")
+                                 .add({ListName: manageLocalList.listToDownload, wordList : manageLocalList.downloadedList});
 
-                request.onsuccess = function (event) {
-                    // change to div popup alert adds time delay
-                };
+                    request.onsuccess = function (event) {
+                        // change to div popup alert adds time delay
+                        manageLocalList.populateLocalVocabList();
+                    };
 
-                request.onerror = function (event) {
-                    console.log(event.target);
-                }
-                manageLocalList.populateLocalVocabList(); 
+                    request.onerror = function (event) {
+                        console.log(event.target);
+                    }
             });
-            
-        });
     },
     populateLocalVocabList: function() {
         /* clears Vocab List to begin*/
@@ -1088,6 +1075,7 @@ let manageLocalList = {
             request.onsuccess = function (event) {
                 alert(listToDelete + " has been removed from your database.");
             };
+        }).then(function(){
             manageLocalList.populateLocalVocabList();
         });
         
@@ -1203,15 +1191,17 @@ let account = {
     },
     // update account from local DB
     updateAccount: function(){
-        let transaction = db.transaction(["UserAccount"]);
-        let objectStore = transaction.objectStore("UserAccount");
-        // gets all items in useraccount object store (don't forget first one is blank account to need to index from 1)
-        let localAccount = objectStore.getAll();
-        localAccount.onerror = function(event) {
-          alert("Error " + event);
-        };
+        console.log(db);
+        if(db){
+            let transaction = db.transaction(["UserAccount"]);
+            let objectStore = transaction.objectStore("UserAccount");
+            // gets all items in useraccount object store (don't forget first one is blank account to need to index from 1)
+            let localAccount = objectStore.getAll();
+            localAccount.onerror = function(event) {
+              alert("Error " + event);
+            };
 
-        localAccount.onsuccess = function(event) {
+            localAccount.onsuccess = function(event) {
             // Checks for local account and sets local Account for the app and the icon for the account
             if (localAccount.result[1]) {
                 account.haveAccount = true;
@@ -1219,6 +1209,9 @@ let account = {
                 document.querySelector('#account').innerHTML = app.userAccount.icon;
                 // set the user score, or defualt zero if no acocunt
                 app.actualScore.innerHTML = app.userAccount.score;
+                if(vocabTrainer.instruct){
+                    vocabTrainer.instruct.querySelector('#actualScore').innerHTML = app.userAccount.score;
+                }   
             } else {
                 document.querySelector('#account').innerHTML = "<i class=\"fa fa-user-secret\" aria-hidden=\"true\"></i>";
                 // set the user score, or defualt zero if no acocunt
@@ -1226,6 +1219,11 @@ let account = {
             }
 
         };    
+        } else {
+            setTimeout(function() {
+                account.updateAccount();
+            }, 1000);
+        }
 
     }
 }
@@ -1316,11 +1314,18 @@ let timer = {
         let hourOnes = document.getElementById('hourOnes');
         let minuteTens = document.getElementById('minuteTens');
         let minuteOnes = document.getElementById('minuteOnes');
+        let secondsTens = document.getElementById('secondsTens');
+        let secondsOnes = document.getElementById('secondsOnes');
 
         hourTens.innerHTML = convertedTime[0];
         hourOnes.innerHTML = convertedTime[1];
         minuteTens.innerHTML = convertedTime[3];
         minuteOnes.innerHTML = convertedTime[4];
+        
+        if(secondsTens && secondsOnes){
+            secondsTens.innerHTML = convertedTime[6];
+            secondsOnes.innerHTML = convertedTime[7];
+        }
     },
     // once timer complete, go to stat page, pop to indicate finished.
     timerDone: function () {
@@ -1481,10 +1486,10 @@ window.addEventListener('load', function () {
     // Stop Loader Spinning
     app.spinner.setAttribute('hidden', true);
     // Check for account and update the details from local storage
-    account.updateAccount();
+    setTimeout(function(){
+        account.updateAccount();
+    },1200);
 });
-
-
 
 
 //})();

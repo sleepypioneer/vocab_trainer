@@ -2,7 +2,7 @@
 "name": "Vocab Trainer",
 "short_name": "Vocab",
 "start_url": "/index.html",
-"background_color" : "#3E4EB8",
+"background_color" : "#359C8C",
 "theme_color" : "#359C8C",
 "display" : "standalone",
 "orientation": "portrait"

@@ -1,32 +1,31 @@
-/*var filesToCache = [
+var filesToCache = [
     '.',
-    'styleSheets/mainStyles.css',
+    'styleSheets/appStyles.css',
     'styleSheets/nightMode.css',
-    'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css',
-    'https://fonts.googleapis.com/css?family=Nova+Round|Numans|Orbitron|NTR|Poiret+One',
+    'styleSheets/font-awesome-4.7.0/css/font-awesome.min.css',
+    'styleSheets/googleFonts.min.css',
     'pages/account.html',
     'pages/addVocab.html',
     'pages/home.html',
+    'pages/manageLocalLists.html',
     'pages/stats.html',
     'pages/timedSession.html',
+    'php/dataBaseVocabLists.php',
+    'php/dbconnection.php',
+    'php/downloadList.php',
+    'php/getVocabLists.php',
     'pages/vocabTrainer.html',
-    'scripts/account.js',
-    'scripts/addVocab.js',
-    'scripts/app.js',
-    'scripts/home.js',
-    'scripts/mainScripts.js',
-     'scripts/popups.js',
-     'scripts/stats.js',
-     'scripts/timedSession.js',
-     'scripts/vocabTrainer.js',
-    'scripts/popups.js',
+    'scripts/appScripts.js',
+    'connectToDb.php',
+    'manifest.json',
+    'service-worker.js',
     'index.html'
     /*
     'pages/offline.html',
     'pages/404.html'*/
 
 ];
-/*
+
 var staticCacheName = 'pages-cache-v1';
 
 
