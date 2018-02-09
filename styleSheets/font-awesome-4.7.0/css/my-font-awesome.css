@@ -28,6 +28,10 @@
   content: "\f091";
 }
 
+.fa-user-o:before {
+  content: "\f2c0";
+}
+
 .fa-user-circle-o:before {
   content: "\f2be";
 }
@@ -89,3 +93,6 @@
   content: "\f059";
 }
 
+.fa-user-secret:before {
+  content: "\f21b";
+}

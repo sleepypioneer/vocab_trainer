@@ -63,7 +63,8 @@ p {
 }
 
 .titleText {
-    color: #FFA975;
+    /*color: #FFA975;*/
+    color: #700E00;
     margin: 4vw;
     font-style: italic;
     font-weight: 800;
