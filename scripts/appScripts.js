@@ -21,19 +21,12 @@ const starterVocab = [
 
 let db;
 // opens IndexedDB "localDataBase" if it exists with version one. If not there it is created.
-let open = indexedDB.open("localDatabase", 2);
+let open = indexedDB.open("localDatabase", 1);
 
 // Logs error to console if DB not found
 open.onerror = function(event) {
     console.log(event);
 };
-
-// on success of DataBase save results to "db" and log success to console.
-open.onsuccess = function(event) {
-    db = open.result;
-    console.log("success: "+ db);
-};
-
 
 /* creates object store (local Vocab) if not already created and sets initial item to it (****will make this an empty oject and index from 1 in future****)**/
 
@@ -49,6 +42,12 @@ open.onupgradeneeded = function(event) {
     // Adds initializer item (blank user account) to Object Store
     objectStoreUser.add(app.userAccount); 
 }
+
+// on success of DataBase save results to "db" and log success to console.
+open.onsuccess = function(event) {
+    db = open.result;
+    console.log("success: "+ db);
+};
 
 
 /***************************
@@ -622,16 +621,17 @@ let vocabTrainer = {
         if (correctAnswer === answerToCheck) {
             // change border to green
             vocabTrainer.answer.style.borderColor = "green";
-            //plus point to score
-            utils.plusPoint();
-            //play sound to indicate point gained
-            utils.playPointSound();
             //hide any pops ups currently displayed (ie hints)
             popUps.popUpHide();
-            //time out to move on to next word.
+            //time out to add delay
             setTimeout(function () {
+                //plus point to score
+                utils.plusPoint();
+                //play sound to indicate point gained
+                utils.playPointSound();
+                //move on to next word.
                 vocabTrainer.changeWord(1);
-            }, 1000);
+            }, 800);
             //check if matches regardless of case & alert
         } else if (correctAnswer.toLowerCase() === answerToCheck.toLowerCase()) {
             popUps.popUp(1);
@@ -1487,7 +1487,7 @@ window.addEventListener('load', function () {
     // Check for account and update the details from local storage
     setTimeout(function(){
         account.updateAccount();
-    },1200);
+    },2000);
 });
 
 
