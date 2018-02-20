@@ -22,9 +22,9 @@ A offline accessible Progressive Web App for training German vocabulary on your 
   
   * A timer is inlcuded for timed sessions and goal setting.
   
-  *Sound FX and styling choices (Night learning mode) can be changed on the account page.
+  * Sound FX and styling choices (Night learning mode) can be changed on the account page.
 
-**When viewed on larger screens the url points to this development page.
+**When viewed on larger screens the url points to this development page.**
 
 
 # Server
